@@ -16,7 +16,7 @@ public:
     static GameCore* getInstance();
     ~GameCore();
 
-    void setScene(GraphicsScene* scene) {m_scene = scene; if (m_isPaused) m_scene->pause(); else m_scene->unpause();}
+    void setScene(GraphicsScene* scene);
     void addObjectToScene(QString fileName, QPointF pos);
 
     void launchGlobalDataDialog();

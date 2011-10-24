@@ -32,6 +32,18 @@ GameCore::~GameCore()
 {
 }
 
+void GameCore::setScene(GraphicsScene *scene)
+{
+    m_scene = scene;
+    if (m_isPaused)
+        m_scene->pause();
+    else
+        m_scene->unpause();
+
+    PhysicsManager::getInstance()->setWorldBounds(m_scene->sceneRect());
+    connect(m_scene, SIGNAL(sceneRectChanged(QRectF)), PhysicsManager::getInstance(), SLOT(setWorldBounds(QRectF)));
+}
+
 void GameCore::addObjectToScene(QString fileName, QPointF pos)
 {
     QFile *file = new QFile(getObjectPath() + fileName);

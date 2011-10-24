@@ -21,11 +21,13 @@ private:
 
     b2World *m_world;
     QTimer *m_timer;
+    b2Body *m_worldBounds;
 
 public slots:
     void start();
     void pause();
     void takeStep();
+    void setWorldBounds(QRectF rect);
 
 signals:
     void stepTaken();
