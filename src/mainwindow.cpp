@@ -81,5 +81,10 @@ void MainWindow::addObject()
 
 void MainWindow::keyPressEvent(QKeyEvent *ke)
 {
-    GameCore::getInstance()->handleKeypress(ke);
+    GameCore::getInstance()->handleKeyEvent(ke);
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *ke)
+{
+    GameCore::getInstance()->handleKeyEvent(ke);
 }

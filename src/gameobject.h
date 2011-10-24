@@ -36,7 +36,7 @@ public:
     QDomElement serialize(QDomDocument *document);
     bool deserialize(const QDomElement &objectElement);
 
-    void distributeKeyPress(QKeyEvent *event);
+    void distributeKeyEvent(QKeyEvent *event);
 
 
 protected:

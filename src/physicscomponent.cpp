@@ -10,7 +10,7 @@ PhysicsComponent::PhysicsComponent(GameObject *parentObject) :
 
     this->setObjectName("Physics Component");
     m_isDynamic = false;
-    m_density = 20.0f;
+    m_density = 1.0f;
     m_friction = 0.03f;
     m_vx = 0;
     m_vy = 0;

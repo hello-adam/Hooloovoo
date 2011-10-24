@@ -17,7 +17,7 @@ public:
     void pause();
     void unpause();
 
-    void distributeKeyPress(QKeyEvent *event);
+    void distributeKeyEvent(QKeyEvent *event);
 
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect);
@@ -25,6 +25,7 @@ protected:
 
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 
 private:
     QList<GameObject*> m_gameObjects;

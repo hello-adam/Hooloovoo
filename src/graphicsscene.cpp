@@ -87,14 +87,19 @@ void GraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 void GraphicsScene::keyPressEvent(QKeyEvent *event)
 {
-    GameCore::getInstance()->handleKeypress(event);
+    GameCore::getInstance()->handleKeyEvent(event);
 }
 
-void GraphicsScene::distributeKeyPress(QKeyEvent *event)
+void GraphicsScene::keyReleaseEvent(QKeyEvent *event)
+{
+    GameCore::getInstance()->handleKeyEvent(event);
+}
+
+void GraphicsScene::distributeKeyEvent(QKeyEvent *event)
 {
     foreach(GameObject* go, m_gameObjects)
     {
-        go->distributeKeyPress(event);
+        go->distributeKeyEvent(event);
     }
 }
 

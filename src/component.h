@@ -18,6 +18,7 @@ public:
     virtual QSet<QString> getEditProperties() = 0;
     virtual void prepareForSerialization() {}
     virtual void keyPressEvent(QKeyEvent* ke) {}
+    virtual void keyReleaseEvent(QKeyEvent* ke) {}
 
 protected:
     GameObject* m_parentObject;

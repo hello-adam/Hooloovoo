@@ -8,17 +8,30 @@
 class PhysicsControllerComponent : public Component
 {
     Q_OBJECT
+    Q_PROPERTY(double jumpImpulse READ getJumpImpulse WRITE setJumpImpulse)
+    Q_PROPERTY(double movementSpeed READ getMovementSpeed WRITE setMovementSpeed)
+
 public:
     explicit PhysicsControllerComponent(GameObject *parentObject);
     ~PhysicsControllerComponent();
 
     QSet<QString> getEditProperties();
 
-protected:
+    void setJumpImpulse(double impulse) {m_jumpImpulse = impulse;}
+    double getJumpImpulse() {return m_jumpImpulse;}
+
+    void setMovementSpeed(double speed) {m_movementSpeed = speed;}
+    double getMovementSpeed() {return m_movementSpeed;}
+
     void keyPressEvent(QKeyEvent *ke);
+    void keyReleaseEvent(QKeyEvent *ke);
 
 private:
     PhysicsComponent* m_physicsComponent;
+    double m_jumpImpulse;
+    double m_movementSpeed;
+
+    QSet<int> m_pressedKeys;
 
 signals:
 

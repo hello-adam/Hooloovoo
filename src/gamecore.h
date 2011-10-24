@@ -32,7 +32,7 @@ public:
     QString getGamePath();
     QString getObjectPath();
 
-    void handleKeypress(QKeyEvent *ke);
+    void handleKeyEvent(QKeyEvent *ke);
 
 private:
     GraphicsScene* m_scene;

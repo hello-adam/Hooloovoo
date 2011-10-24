@@ -23,6 +23,7 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent *ke);
+    void keyReleaseEvent(QKeyEvent *ke);
 
 private:
     Ui::MainWindow *ui;

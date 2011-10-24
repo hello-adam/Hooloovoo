@@ -168,16 +168,16 @@ void GameCore::loadGame(QString fileName)
     }
 }
 
-void GameCore::handleKeypress(QKeyEvent *ke)
+void GameCore::handleKeyEvent(QKeyEvent *ke)
 {
-    if (ke->key() == Qt::Key_Space)
+    if (ke->key() == Qt::Key_Space && ke->type() == QKeyEvent::KeyPress)
     {
         this->togglePaused();
     }
     else
     {
         if (m_scene)
-            m_scene->distributeKeyPress(ke);
+            m_scene->distributeKeyEvent(ke);
     }
 }
 
