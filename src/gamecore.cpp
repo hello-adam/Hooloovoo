@@ -84,8 +84,14 @@ void GameCore::launchGlobalDataDialog()
     height.setMaximum(999999999);
     height.setValue(m_scene->height());
 
+    QSpinBox gravity;
+    gravity.setMinimum(-100);
+    gravity.setMaximum(100);
+    gravity.setValue(PhysicsManager::getInstance()->getGravity());
+
     formLayout.addRow("width", &width);
     formLayout.addRow("height", &height);
+    formLayout.addRow("gravity", &gravity);
 
     QDialogButtonBox buttons(QDialogButtonBox::Ok
                              | QDialogButtonBox::Cancel);
@@ -96,6 +102,7 @@ void GameCore::launchGlobalDataDialog()
     if (dlg.exec())
     {
         m_scene->setSceneRect(0, 0, width.value(), height.value());
+        PhysicsManager::getInstance()->setGravity(gravity.value());
     }
 }
 
@@ -228,6 +235,9 @@ QDomElement GameCore::serializeGlobal(QDomDocument *document)
     QDomElement scene = document->createElement("scene");
     scene.setAttribute("width", m_scene->width());
     scene.setAttribute("height", m_scene->height());
+    QDomElement gravity = document->createElement("gravity");
+    gravity.setAttribute("yGravity", PhysicsManager::getInstance()->getGravity());
+
     globalElement.appendChild(scene);
 
     return globalElement;
@@ -236,13 +246,18 @@ QDomElement GameCore::serializeGlobal(QDomDocument *document)
 bool GameCore::deserializeGlobal(const QDomElement &objectElement)
 {
     QDomElement scene = objectElement.firstChildElement("scene");
-
     if (!scene.isNull())
     {
         if (m_scene)
             m_scene->setSceneRect(0, 0,
                                   scene.attribute("width").toDouble(),
                                   scene.attribute("height").toDouble());
+    }
+
+    QDomElement gravity = objectElement.firstChildElement("gravity");
+    if (!gravity.isNull())
+    {
+        PhysicsManager::getInstance()->setGravity(gravity.attribute("yGravity").toDouble());
     }
 
     return true;

@@ -5,8 +5,9 @@ PhysicsManager* PhysicsManager::m_instance;
 PhysicsManager::PhysicsManager(QObject *parent) :
     QObject(parent)
 {
-    m_world = new b2World(b2Vec2(0.0f, -10.0f));
     m_worldBounds = 0;
+    m_gravity = -10;
+    m_world = new b2World(b2Vec2(0.0f, m_gravity));
 
     m_timer = new QTimer();
     m_timer->setInterval(1000.0 / 60.0);

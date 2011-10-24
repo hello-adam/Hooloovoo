@@ -15,6 +15,9 @@ public:
 
     b2World* getWorld() {return m_world;}
 
+    void setGravity(double gravity) {m_gravity = gravity;  m_world->SetGravity(b2Vec2(0, m_gravity));}
+    double getGravity() {return m_gravity;}
+
 private:
     PhysicsManager(QObject* parent = 0);
     static PhysicsManager* m_instance;
@@ -22,6 +25,8 @@ private:
     b2World *m_world;
     QTimer *m_timer;
     b2Body *m_worldBounds;
+
+    double m_gravity;
 
 public slots:
     void start();
