@@ -17,6 +17,10 @@ GameObject::GameObject(QGraphicsItem * parent) :
 {
     setObjectName("Game Object");
 
+    m_pixmap = QPixmap(42, 42);
+    m_pixmap.fill(Qt::darkBlue);
+    m_pixmapFileName = "";
+
     this->setFlag(QGraphicsItem::ItemIsFocusable, true);
     this->setPaused(true);
 
@@ -47,7 +51,12 @@ GameObject::~GameObject()
 void GameObject::setPixmapFile(QString fileName)
 {
     m_pixmapFileName = fileName;
-    m_pixmap.load(GameCore::getInstance()->getPicturePath() + fileName);
+    if (!m_pixmap.load(GameCore::getInstance()->getPicturePath() + fileName))
+    {
+        m_pixmap = QPixmap(42, 42);
+        m_pixmap.fill(Qt::darkBlue);
+        m_pixmapFileName = "";
+    }
 }
 
 void GameObject::paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
