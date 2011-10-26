@@ -30,17 +30,22 @@ GameObject::GameObject(QGraphicsItem * parent) :
 
 GameObject::~GameObject()
 {
-    GraphicsScene* scene = qobject_cast<GraphicsScene*>(this->scene());
-
-    if (scene)
+    //remove it from its scene if it has one
+    if (this->scene())
     {
-        scene->removeGameObject(this);
-    }
-    else
-    {
-        this->scene()->removeItem(this);
+        GraphicsScene* scene = qobject_cast<GraphicsScene*>(this->scene());
+
+        if (scene)
+        {
+            scene->removeGameObject(this);
+        }
+        else
+        {
+            this->scene()->removeItem(this);
+        }
     }
 
+    //remove its components
     foreach (Component* component, m_components)
     {
         delete component;

@@ -32,6 +32,31 @@ GameCore::~GameCore()
 {
 }
 
+void GameCore::initializeGameDirectoriesAndData()
+{
+    QDir dir;
+    if (!QDir(getPicturePath()).exists())
+    {
+        dir.mkdir(getPicturePath());
+    }
+    if (!QDir(getObjectPath()).exists())
+    {
+        dir.mkdir(getObjectPath());
+    }
+    if (!QDir(getGamePath()).exists())
+    {
+        dir.mkdir(getGamePath());
+    }
+
+    QString baseObjectFile = getObjectPath() + "baseobject.gameobject";
+    if (!QFile(baseObjectFile).exists())
+    {
+        GameObject* baseObject = new GameObject();
+        baseObject->saveObject("baseobject.gameobject");
+        delete baseObject;
+    }
+}
+
 void GameCore::setScene(GraphicsScene *scene)
 {
     m_scene = scene;

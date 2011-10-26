@@ -16,6 +16,8 @@ public:
     static GameCore* getInstance();
     ~GameCore();
 
+    void initializeGameDirectoriesAndData();
+
     void setScene(GraphicsScene* scene);
     void addObjectToScene(QString fileName, QPointF pos);
 

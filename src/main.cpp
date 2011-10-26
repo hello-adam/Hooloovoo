@@ -9,6 +9,7 @@ int main (int argc, char *argv[])
     MainWindow window;
     GameCore *core = GameCore::getInstance();
 
+    core->initializeGameDirectoriesAndData();
     core->setScene(window.getGraphicsScene());
 
     window.show();
