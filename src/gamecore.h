@@ -30,9 +30,9 @@ public:
     QDomElement serializeGlobal(QDomDocument *document);
     bool deserializeGlobal(const QDomElement &objectElement);
 
-    QString getPicturePath();
-    QString getGamePath();
-    QString getObjectPath();
+    static QString getPicturePath();
+    static QString getGamePath();
+    static QString getObjectPath();
 
     void handleKeyEvent(QKeyEvent *ke);
 

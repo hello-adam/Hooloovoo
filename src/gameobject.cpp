@@ -56,7 +56,7 @@ GameObject::~GameObject()
 void GameObject::setPixmapFile(QString fileName)
 {
     m_pixmapFileName = fileName;
-    if (!m_pixmap.load(GameCore::getInstance()->getPicturePath() + fileName))
+    if (!m_pixmap.load(GameCore::getPicturePath() + fileName))
     {
         m_pixmap = QPixmap(42, 42);
         m_pixmap.fill(Qt::darkBlue);
@@ -265,7 +265,7 @@ void GameObject::launchEditorDialog()
 
 void GameObject::saveObject(QString fileName)
 {
-    QFile *file = new QFile(GameCore::getInstance()->getObjectPath() + fileName);
+    QFile *file = new QFile(GameCore::getObjectPath() + fileName);
 
     file->open(QFile::WriteOnly | QFile::Truncate);
 
