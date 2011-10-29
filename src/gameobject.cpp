@@ -164,6 +164,7 @@ Component* GameObject::addComponent(QString name)
     if (component)
     {
         m_components.push_back(component);
+        emit componentAdded(component);
         return component;
     }
 
@@ -177,6 +178,7 @@ bool GameObject::removeComponent(QString name)
         if (c->objectName() == name)
         {
             m_components.removeAll(c);
+            emit componentRemoved(c);
             delete c;
             return true;
         }

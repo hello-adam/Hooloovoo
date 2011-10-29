@@ -10,11 +10,13 @@ PhysicsComponent::PhysicsComponent(GameObject *parentObject) :
 
     this->setObjectName("Physics Component");
     m_isDynamic = false;
+    m_staticRotation = false;
     m_density = 1.0f;
     m_friction = 0.03f;
     m_vx = 0;
     m_vy = 0;
     m_vangle = 0;
+    m_linearDamping = 0;
 
     connect (PhysicsManager::getInstance(), SIGNAL(stepTaken()),
              this, SLOT(updateParent()));
@@ -40,7 +42,7 @@ PhysicsComponent::~PhysicsComponent()
 QSet<QString> PhysicsComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "isDynamic" << "xVelocity" << "yVelocity" << "angularVelocity" << "density" << "friction";
+    properties << "isDynamic" << "staticRotation" << "xVelocity" << "yVelocity" << "angularVelocity" << "density" << "friction" << "linearDamping";
     return properties;
 }
 
@@ -81,7 +83,9 @@ void PhysicsComponent::instantiate()
 
     m_body->CreateFixture(&fixture);
 
-    //m_body->SetAngularVelocity(m_vangle);
+    m_body->SetAngularVelocity(m_vangle);
+    m_body->SetFixedRotation(m_staticRotation);
+    m_body->SetLinearDamping(m_linearDamping);
     m_body->SetLinearVelocity(b2Vec2(m_vx, m_vy));
 }
 

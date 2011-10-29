@@ -36,6 +36,8 @@ private:
 signals:
 
 public slots:
+    void checkForAddedPhysicsComponent(Component* c);
+    void checkForRemovecPhysicsComponent(Component* c);
 
 };
 

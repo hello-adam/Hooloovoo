@@ -52,6 +52,8 @@ signals:
     void sendX(double x);
     void sendY(double y);
     void sendRotation(double degrees);
+    void componentAdded(Component*);
+    void componentRemoved(Component*);
 
 private slots:
     void slotXChanged() {emit sendX(x());}

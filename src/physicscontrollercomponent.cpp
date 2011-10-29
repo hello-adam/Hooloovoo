@@ -18,6 +18,11 @@ PhysicsControllerComponent::PhysicsControllerComponent(GameObject *parentObject)
             break;
         }
     }
+
+    connect(parentObject, SIGNAL(componentAdded(Component*)),
+            this, SLOT(checkForAddedPhysicsComponent(Component*)));
+    connect(parentObject, SIGNAL(componentRemoved(Component*)),
+            this, SLOT(checkForRemovecPhysicsComponent(Component*)));
 }
 
 PhysicsControllerComponent::~PhysicsControllerComponent()
@@ -97,4 +102,23 @@ void PhysicsControllerComponent::keyReleaseEvent(QKeyEvent *ke)
     {
         m_physicsComponent->getBody()->SetLinearVelocity(b2Vec2(0, m_physicsComponent->getBody()->GetLinearVelocity().y));
     }
+}
+
+
+void PhysicsControllerComponent::checkForAddedPhysicsComponent(Component* c)
+{
+    if (m_physicsComponent)
+        return;
+
+    if (qobject_cast<PhysicsComponent*>(c))
+        m_physicsComponent = qobject_cast<PhysicsComponent*>(c);
+}
+
+void PhysicsControllerComponent::checkForRemovecPhysicsComponent(Component* c)
+{
+    if (!m_physicsComponent)
+        return;
+
+    if (qobject_cast<PhysicsComponent*>(c))
+        m_physicsComponent = 0;
 }
