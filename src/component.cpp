@@ -2,7 +2,7 @@
 #include "gameobject.h"
 
 Component::Component(GameObject *parentObject) :
-    QObject(parentObject),
+    //QObject(parentObject),
     m_parentObject(parentObject)
 {
 }

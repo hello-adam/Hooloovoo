@@ -20,13 +20,17 @@ GameObjectEditDialog::GameObjectEditDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connect(ui->pb_AddComponent, SIGNAL(clicked()), this, SLOT(addComponent()));
-    connect(ui->pb_RemoveComponent, SIGNAL(clicked()), this, SLOT(removeComponent()));
+    m_unusedComponents = new ComponentListWidget(this);
+    m_objectComponents = new ComponentListWidget(this);
+    ui->UnusedComponentLayout->addWidget(m_unusedComponents);
+    ui->ObjectComponentLayout->addWidget(m_objectComponents);
 }
 
 GameObjectEditDialog::~GameObjectEditDialog()
 {
     delete ui;
+    delete m_unusedComponents;
+    delete m_objectComponents;
 }
 
 bool GameObjectEditDialog::editObject(GameObject *object)
@@ -35,7 +39,9 @@ bool GameObjectEditDialog::editObject(GameObject *object)
 
     //add the game object to the stacked widget
     ui->stackedWidget->addWidget(getObjectEditWidget(object, object->getEditProperties()));
-    ui->comboBox->addItem(object->objectName());
+    m_stackedWidgetLookup.insert(object->objectName(), ui->stackedWidget->count()-1);
+    m_objectComponents->addItem(object->objectName());
+    m_objectComponents->item(0)->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     QList<Component*> components = object->getComponents();
 
@@ -43,12 +49,28 @@ bool GameObjectEditDialog::editObject(GameObject *object)
     foreach (Component* component, components)
     {
         ui->stackedWidget->addWidget(getObjectEditWidget(component, component->getEditProperties()));
-        ui->comboBox->addItem(component->objectName());
+        m_stackedWidgetLookup.insert(component->objectName(), ui->stackedWidget->count()-1);
+        m_objectComponents->addItem(component->objectName());
     }
 
     //populate the add component combobox
     ComponentFactory factory;
-    ui->cb_AddComponent->addItems(factory.availableComponents());
+    QStringList unused = factory.availableComponents();
+    QList<QListWidgetItem*> used = m_objectComponents->findItems(".*", Qt::MatchRegExp);
+    foreach(QListWidgetItem* item, used)
+    {
+        unused.removeAll(item->text());
+    }
+
+    m_unusedComponents->addItems(unused);
+
+
+    connect(m_unusedComponents, SIGNAL(itemAdded(QString)),
+            this, SLOT(componentRemoved(QString)));
+    connect(m_objectComponents, SIGNAL(itemAdded(QString)),
+            this, SLOT(componentAdded(QString)));
+    connect(m_objectComponents, SIGNAL(currentRowChanged(int)),
+            ui->stackedWidget, SLOT(setCurrentIndex(int)));
 
     if (!this->exec())
     {
@@ -86,7 +108,7 @@ QWidget* GameObjectEditDialog::getObjectEditWidget(QObject* object, QSet<QString
             }
             else if (editProperties.contains(name))
             {
-                m_editWidgets.push_back(new PropertyEditWidget(this));
+                m_editWidgets.push_back(new PropertyEditWidget(groupBox));
                 m_editWidgets.back()->setProperty(property, object);
                 formLayout->addRow(name, m_editWidgets.back());
             }
@@ -96,29 +118,57 @@ QWidget* GameObjectEditDialog::getObjectEditWidget(QObject* object, QSet<QString
     return groupBox;
 }
 
-void GameObjectEditDialog::addComponent()
+void GameObjectEditDialog::componentAdded(QString componentName)
 {
-    if (m_object)
-    {
-        Component* component = m_object->addComponent(ui->cb_AddComponent->currentText());
+    Component* component = 0;
+    QListWidgetItem* item = 0;
 
-        if (component)
-        {
-            ui->stackedWidget->addWidget(getObjectEditWidget(component, component->getEditProperties()));
-            ui->comboBox->addItem(component->objectName());
-        }
+    if (m_objectComponents->findItems(componentName, Qt::MatchExactly).isEmpty())
+        return;
+
+    item = m_objectComponents->findItems(componentName, Qt::MatchExactly).at(0);
+
+    if (m_object)
+        component = m_object->addComponent(componentName);
+
+    if (component)
+    {
+        ui->stackedWidget->insertWidget(m_objectComponents->row(item),
+                                        getObjectEditWidget(component, component->getEditProperties()));
+        m_stackedWidgetLookup.insert(componentName, m_objectComponents->row(item));
+    }
+    else
+    {
+        qDebug() << "Failure Adding!";
+//        m_objectComponents->removeItemWidget(item);
+//        m_unusedComponents->addItem(componentName);
     }
 }
 
-void GameObjectEditDialog::removeComponent()
+void GameObjectEditDialog::componentRemoved(QString componentName)
 {
-    if (m_object && ui->comboBox->currentIndex() > 0)
+    QListWidgetItem* item = 0;
+    if (m_unusedComponents->findItems(componentName, Qt::MatchExactly).isEmpty())
+        return;
+    item = m_unusedComponents->findItems(componentName, Qt::MatchExactly).at(0);
+
+    if (m_object)
     {
-        if (m_object->removeComponent(ui->comboBox->currentText()))
+        if (m_object->removeComponent(componentName))
         {
-            ui->stackedWidget->removeWidget(ui->stackedWidget->widget(ui->comboBox->currentIndex()));
-            ui->comboBox->removeItem(ui->comboBox->currentIndex());
-            ui->comboBox->setCurrentIndex(0);
+            QWidget* componentWidget = ui->stackedWidget->widget(m_stackedWidgetLookup.value(componentName));
+            ui->stackedWidget->removeWidget(componentWidget);
+            //make sure that the component's edit widgets will not get written
+            foreach (QObject* child, componentWidget->children())
+                m_editWidgets.removeAll(qobject_cast<PropertyEditWidget*>(child));
+            delete componentWidget;
+            m_stackedWidgetLookup.remove(componentName);
+        }
+        else
+        {
+            qDebug() << "Failure Removing!";
+//            m_unusedComponents->removeItemWidget(item);
+//            m_objectComponents->addItem(componentName);
         }
     }
 }

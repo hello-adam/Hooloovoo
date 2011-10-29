@@ -176,7 +176,7 @@ bool GameObject::removeComponent(QString name)
     {
         if (c->objectName() == name)
         {
-            m_components.removeOne(c);
+            m_components.removeAll(c);
             delete c;
             return true;
         }

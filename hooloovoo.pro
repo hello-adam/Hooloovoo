@@ -26,7 +26,8 @@ HEADERS += \
     src/propertyeditwidget.h \
     src/physicscomponent.h \
     src/physicsmanager.h \
-    src/physicscontrollercomponent.h
+    src/physicscontrollercomponent.h \
+    src/componentlistwidget.h
 
 SOURCES += \
     src/mainwindow.cpp \
@@ -44,7 +45,8 @@ SOURCES += \
     src/propertyeditwidget.cpp \
     src/physicscomponent.cpp \
     src/physicsmanager.cpp \
-    src/physicscontrollercomponent.cpp
+    src/physicscontrollercomponent.cpp \
+    src/componentlistwidget.cpp
 
 FORMS += \
     src/mainwindow.ui \

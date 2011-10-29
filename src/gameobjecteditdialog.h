@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "gameobject.h"
+#include "componentlistwidget.h"
 class PropertyEditWidget;
 
 namespace Ui {
@@ -26,9 +27,14 @@ private:
 
     QWidget* getObjectEditWidget(QObject* object, QSet<QString> editProperties);
 
+    ComponentListWidget* m_unusedComponents;
+    ComponentListWidget* m_objectComponents;
+
+    QHash<QString, int> m_stackedWidgetLookup;
+
 private slots:
-    void addComponent();
-    void removeComponent();
+    void componentAdded(QString componentName);
+    void componentRemoved(QString componentName);
 };
 
 #endif // GAMEOBJECTEDITDIALOG_H
