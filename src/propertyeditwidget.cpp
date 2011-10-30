@@ -90,7 +90,7 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
         m_spinBox->setMaximum(999999999);
         m_spinBox->setMinimum(-999999999);
         m_spinBox->setValue(value.toInt());
-        ui->horizontalLayout->addWidget(m_doubleSpinBox);
+        ui->horizontalLayout->addWidget(m_spinBox);
         break;
     case QVariant::Bool:
         m_checkBox = new QCheckBox(this);
