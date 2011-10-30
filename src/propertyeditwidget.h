@@ -8,6 +8,7 @@
 #include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QSharedPointer>
 #include <QToolButton>
 #include <QMetaProperty>
@@ -37,6 +38,7 @@ private:
     QSpinBox* m_spinBox;
     QDoubleSpinBox* m_doubleSpinBox;
     QCheckBox* m_checkBox;
+    QComboBox* m_comboBox;
     QToolButton* m_toolButton;
 
     QStringList m_fileExtensions;

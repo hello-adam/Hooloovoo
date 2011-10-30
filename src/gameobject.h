@@ -10,7 +10,7 @@
 class GameObject : public QGraphicsObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString pixmapName READ getPixmapFile WRITE setPixmapFile)
+    Q_PROPERTY(QString pixmapFileName READ getPixmapFile WRITE setPixmapFile)
 
 public:
     GameObject(QGraphicsItem  *parent = 0);

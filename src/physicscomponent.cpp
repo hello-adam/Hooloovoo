@@ -9,7 +9,9 @@ PhysicsComponent::PhysicsComponent(GameObject *parentObject) :
     m_body = 0;
 
     this->setObjectName("Physics Component");
-    m_isDynamic = false;
+    qRegisterMetaType<PhysicsComponent::BodyType>("BodyType");
+
+    m_type = PhysicsComponent::Static;
     m_staticRotation = false;
     m_density = 1.0f;
     m_friction = 0.03f;
@@ -42,7 +44,7 @@ PhysicsComponent::~PhysicsComponent()
 QSet<QString> PhysicsComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "isDynamic" << "staticRotation" << "xVelocity" << "yVelocity" << "angularVelocity" << "density" << "friction" << "linearDamping";
+    properties << "physicsType" << "staticRotation" << "xVelocity" << "yVelocity" << "angularVelocity" << "density" << "friction" << "linearDamping";
     return properties;
 }
 
@@ -64,9 +66,17 @@ void PhysicsComponent::instantiate()
     }
 
     b2BodyDef bodyDef;
-    if (m_isDynamic)
+    if (m_type == PhysicsComponent::Static)
+    {
+        bodyDef.type = b2_staticBody;
+    }
+    else if (m_type == PhysicsComponent::Dynamic)
     {
         bodyDef.type = b2_dynamicBody;
+    }
+    else if (m_type == PhysicsComponent::Kinematic)
+    {
+        bodyDef.type = b2_kinematicBody;
     }
     bodyDef.position.Set(m_parentObject->pos().x()/20.0f, m_parentObject->pos().y()/-20.0f);
     bodyDef.angle = -(m_parentObject->rotation() * (2 * 3.14159)) / 360.0;

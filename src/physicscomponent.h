@@ -4,11 +4,13 @@
 #include "component.h"
 class GameObject;
 #include <Box2D/Box2D.h>
+#include <QDebug>
 
 class PhysicsComponent : public Component
 {
     Q_OBJECT
-    Q_PROPERTY(bool isDynamic READ getIsDynamic WRITE setIsDynamic)
+    Q_PROPERTY(BodyType physicsType READ getBodyType WRITE setBodyType)
+    Q_ENUMS(BodyType)
     Q_PROPERTY(bool staticRotation READ getStaticRotation WRITE setStaticRotation)
     Q_PROPERTY(double density READ getDensity WRITE setDensity)
     Q_PROPERTY(double xVelocity READ getVX WRITE setVX)
@@ -19,6 +21,8 @@ class PhysicsComponent : public Component
 
 
 public:
+    enum BodyType { Static, Dynamic, Kinematic};
+
     explicit PhysicsComponent(GameObject *parentObject);
     ~PhysicsComponent();
 
@@ -27,7 +31,7 @@ public:
     void prepareForSerialization();
     void instantiate();
 
-    bool getIsDynamic() {return m_isDynamic;}
+    BodyType getBodyType() {return m_type;}
     bool getStaticRotation() {return m_staticRotation;}
     double getDensity() {return m_density;}
     double getVX() {return m_vx;}
@@ -47,7 +51,7 @@ private:
     double m_angle;
 
     //these are independent properties, so they are saved
-    bool m_isDynamic;
+    BodyType m_type;
     bool m_staticRotation;
     double m_density;
     double m_vx;
@@ -65,7 +69,7 @@ public slots:
     void setY(double y);
     void setAngle(double degrees);
 
-    void setIsDynamic(bool dynamic) {m_isDynamic = dynamic; this->instantiate();}
+    void setBodyType(BodyType type) {m_type = type; this->instantiate();}
     void setStaticRotation(bool staticRotation) {m_staticRotation = staticRotation; this->instantiate();}
     void setDensity(double density) {m_density = density; this->instantiate();}
     void setVX(double vx) {m_vx = vx; this->instantiate();}
@@ -76,5 +80,7 @@ public slots:
 
     void updateParent();
 };
+
+Q_DECLARE_METATYPE(PhysicsComponent::BodyType)
 
 #endif // PHYSICSCOMPONENT_H

@@ -1,6 +1,7 @@
 #include "propertyeditwidget.h"
 #include "ui_propertyeditwidget.h"
 #include "gamefiledialog.h"
+#include <QDebug>
 
 
 PropertyEditWidget::PropertyEditWidget(QWidget *parent) :
@@ -13,6 +14,7 @@ PropertyEditWidget::PropertyEditWidget(QWidget *parent) :
     m_doubleSpinBox = 0;
     m_spinBox = 0;
     m_checkBox = 0;
+    m_comboBox = 0;
     m_toolButton = new QToolButton();
     m_toolButton->setText("...");
     connect(m_toolButton, SIGNAL(clicked()), this, SLOT(getStringFromFile()));
@@ -35,6 +37,8 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
         m_spinBox->deleteLater();
     if (m_checkBox)
         m_checkBox->deleteLater();
+    if (m_comboBox)
+        m_comboBox->deleteLater();
 
     m_fileExtensions.clear();
     m_fileDirectory.clear();
@@ -44,12 +48,30 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
 
     QVariant value = property.read(object);
 
+    if (property.isEnumType())
+    {
+        m_comboBox = new QComboBox(this);
+        QMetaEnum enumerator = property.enumerator();
+        for (int i=0; i<enumerator.keyCount(); i++)
+        {
+            m_comboBox->addItem(enumerator.key(i));
+        }
+        int index = m_comboBox->findText(enumerator.valueToKey(*reinterpret_cast<const int *>(value.constData())));
+        if (index == -1)
+        {
+            qDebug() << "Error reading enum";
+        }
+        m_comboBox->setCurrentIndex(index);
+        ui->horizontalLayout->addWidget(m_comboBox);
+        return true;
+    }
+
     switch (value.type())
     {
     case QVariant::String:
         m_lineEdit = new QLineEdit(value.toString(), this);
         ui->horizontalLayout->addWidget(m_lineEdit);
-        if (QString(property.name()).contains("pixmap"))
+        if (QString(property.name()).contains("pixmap", Qt::CaseInsensitive))
         {
             m_fileExtensions << "*.png" << "*.bmp";
             m_fileDirectory = "pics";
@@ -94,6 +116,11 @@ bool PropertyEditWidget::writeProperty()
         value.setValue(m_spinBox->value());
     else if (m_checkBox)
         value.setValue(m_checkBox->isChecked());
+    else if (m_comboBox)
+    {
+        QMetaEnum enumerator = m_property.enumerator();
+        value.setValue(enumerator.keyToValue(m_comboBox->currentText().toStdString().c_str()));
+    }
     else
         return false;
 

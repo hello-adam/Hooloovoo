@@ -24,10 +24,21 @@ QDomElement Component::serialize(QDomDocument *document)
         {
             QVariant value = property.read(this);
 
-            QDomElement prop = document->createElement(name);
-            prop.setAttribute("type", value.type());
-            prop.setAttribute("value", value.toString());
-            componentElement.appendChild(prop);
+            if (property.isEnumType())
+            {
+                QDomElement prop = document->createElement(name);
+                prop.setAttribute("type", value.type());
+                QVariant intValue = *reinterpret_cast<const int *>(value.constData());
+                prop.setAttribute("value", intValue.toString());
+                componentElement.appendChild(prop);
+            }
+            else
+            {
+                QDomElement prop = document->createElement(name);
+                prop.setAttribute("type", value.type());
+                prop.setAttribute("value", value.toString());
+                componentElement.appendChild(prop);
+            }
         }
     }
     return componentElement;
@@ -45,7 +56,13 @@ bool Component::deserialize(const QDomElement &objectElement)
         {
             QVariant value;
             value.setValue(prop.attribute("value"));
-            if (value.convert((QVariant::Type)prop.attribute("type").toInt()))
+
+            if (property.isEnumType())
+            {
+                value.convert(QVariant::Int);
+                property.write(this, value);
+            }
+            else if (value.convert((QVariant::Type)prop.attribute("type").toInt()))
             {
                 property.write(this, value);
             }
