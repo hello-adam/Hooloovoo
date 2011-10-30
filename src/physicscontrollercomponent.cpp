@@ -40,6 +40,8 @@ void PhysicsControllerComponent::keyPressEvent(QKeyEvent *ke)
 {
     if (!m_physicsComponent)
         return;
+    if (!m_physicsComponent->getBody())
+        return;
 
     if (m_pressedKeys.contains(ke->key()))
         return;
@@ -52,7 +54,6 @@ void PhysicsControllerComponent::keyPressEvent(QKeyEvent *ke)
     {
         hasContact = true;
     }
-
 
     if (ke->key() == Qt::Key_W)
     {
@@ -73,6 +74,8 @@ void PhysicsControllerComponent::keyPressEvent(QKeyEvent *ke)
 void PhysicsControllerComponent::keyReleaseEvent(QKeyEvent *ke)
 {
     if (!m_physicsComponent)
+        return;
+    if (!m_physicsComponent->getBody())
         return;
 
     if (!m_pressedKeys.contains(ke->key()))
