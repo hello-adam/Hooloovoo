@@ -27,7 +27,8 @@ HEADERS += \
     src/physicscomponent.h \
     src/physicsmanager.h \
     src/physicscontrollercomponent.h \
-    src/componentlistwidget.h
+    src/componentlistwidget.h \
+    src/spawncomponent.h
 
 SOURCES += \
     src/mainwindow.cpp \
@@ -46,7 +47,8 @@ SOURCES += \
     src/physicscomponent.cpp \
     src/physicsmanager.cpp \
     src/physicscontrollercomponent.cpp \
-    src/componentlistwidget.cpp
+    src/componentlistwidget.cpp \
+    src/spawncomponent.cpp
 
 FORMS += \
     src/mainwindow.ui \
