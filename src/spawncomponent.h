@@ -23,7 +23,7 @@ private:
     int m_elapsed;
 
 public slots:
-    void reactToTimer(int timeElapsed);
+    void reactToTimerTick();
 
     void setObjectFile(QString file) {m_objectFileName = file;}
     void setInterval(int interval) {m_interval = interval;}

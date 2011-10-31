@@ -9,11 +9,13 @@ SpawnComponent::SpawnComponent(GameObject *parentObject) :
     m_objectFileName = "";
     m_interval = 0;
     m_elapsed = 0;
+
+    connect(GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
 }
 
-void SpawnComponent::reactToTimer(int timeElapsed)
+void SpawnComponent::reactToTimerTick()
 {
-    m_elapsed += timeElapsed;
+    m_elapsed += 1;
 
     if (m_elapsed > m_interval)
     {
