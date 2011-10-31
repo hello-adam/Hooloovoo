@@ -40,13 +40,14 @@ private:
     GraphicsScene* m_scene;
     explicit GameCore(QObject *parent = 0);
     static GameCore *m_instance;
+    QTimer m_gameTimer;
 
     bool m_isPaused;
     void pause();
     void unpause();
 
 signals:
-    void triggerRepaint();
+    void timerTick();
 
 public slots:
     void togglePaused();

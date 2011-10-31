@@ -1,4 +1,5 @@
 #include "physicsmanager.h"
+#include "gamecore.h"
 
 PhysicsManager* PhysicsManager::m_instance;
 
@@ -11,8 +12,6 @@ PhysicsManager::PhysicsManager(QObject *parent) :
 
     m_timer = new QTimer();
     m_timer->setInterval(1000.0 / 60.0);
-
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(takeStep()));
 }
 
 PhysicsManager::~PhysicsManager()

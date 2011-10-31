@@ -17,7 +17,11 @@ GameCore::GameCore(QObject *parent) :
 {
     m_scene = 0;
 
+    m_gameTimer.setInterval(1000.0 / 60.0);
     this->pause();
+
+    connect(&m_gameTimer, SIGNAL(timeout()), this, SIGNAL(timerTick()));
+    connect(this, SIGNAL(timerTick()), PhysicsManager::getInstance(), SLOT(takeStep()));
 }
 
 GameCore* GameCore::getInstance()
@@ -227,6 +231,7 @@ void GameCore::handleKeyEvent(QKeyEvent *ke)
 
 void GameCore::pause()
 {
+    m_gameTimer.stop();
     PhysicsManager::getInstance()->pause();
     if (m_scene)
         m_scene->pause();
@@ -235,6 +240,7 @@ void GameCore::pause()
 
 void GameCore::unpause()
 {
+    m_gameTimer.start();
     PhysicsManager::getInstance()->start();
     if (m_scene)
         m_scene->unpause();
