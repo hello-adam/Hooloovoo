@@ -5,6 +5,7 @@
 #include "physicscontrollercomponent.h"
 #include "backgroundcomponent.h"
 #include "spawncomponent.h"
+#include "animationcomponent.h"
 
 ComponentFactory::ComponentFactory()
 {
@@ -27,6 +28,11 @@ Component* ComponentFactory::createComponent(GameObject* parentObject, QString n
     {
         SpawnComponent* spawn = new SpawnComponent(parentObject);
         return spawn;
+    }
+    else if (name == "Animation Component")
+    {
+        AnimationComponent* anim = new AnimationComponent(parentObject);
+        return anim;
     }
     else
         return 0;
@@ -55,6 +61,12 @@ Component* ComponentFactory::createComponent(GameObject* parentObject, const QDo
         spawn->deserialize(specs);
         return spawn;
     }
+    else if (name == "Animation Component")
+    {
+        AnimationComponent* anim = new AnimationComponent(parentObject);
+        anim->deserialize(specs);
+        return anim;
+    }
     else
         return 0;
 }
@@ -62,6 +74,6 @@ Component* ComponentFactory::createComponent(GameObject* parentObject, const QDo
 QStringList ComponentFactory::availableComponents()
 {
     QStringList available;
-    available << "Physics Component" << "Physics Controller Component" << "Spawn Component";
+    available << "Physics Component" << "Physics Controller Component" << "Spawn Component" << "Animation Component";
     return available;
 }

@@ -15,7 +15,7 @@ public:
     bool deserialize(const QDomElement & specs);
     QDomElement serialize(QDomDocument *doc);
 
-    virtual QSet<QString> getEditProperties() = 0;
+    virtual QSet<QString> getEditProperties() {return QSet<QString>();}
     virtual void prepareForSerialization() {}
     virtual void keyPressEvent(QKeyEvent* ke) {}
     virtual void keyReleaseEvent(QKeyEvent* ke) {}
