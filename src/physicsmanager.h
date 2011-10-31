@@ -23,7 +23,6 @@ private:
     static PhysicsManager* m_instance;
 
     b2World *m_world;
-    QTimer *m_timer;
     b2Body *m_worldBounds;
 
     double m_gravity;
