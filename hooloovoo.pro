@@ -17,8 +17,6 @@ HEADERS += \
     src/gamecore.h \
     src/component.h \
     src/componentfactory.h \
-    src/backgroundcomponent.h \
-    src/backgroundmanager.h \
     src/graphicsscene.h \
     src/graphicsview.h \
     src/gamefiledialog.h \
@@ -38,8 +36,6 @@ SOURCES += \
     src/component.cpp \
     src/main.cpp \
     src/componentfactory.cpp \
-    src/backgroundcomponent.cpp \
-    src/backgroundmanager.cpp \
     src/graphicsscene.cpp \
     src/graphicsview.cpp \
     src/gamefiledialog.cpp \
@@ -59,5 +55,9 @@ FORMS += \
     src/propertyeditwidget.ui
 
 OTHER_FILES +=
+
+
+
+
 
 

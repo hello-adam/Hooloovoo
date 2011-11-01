@@ -3,7 +3,6 @@
 #include "gameobject.h"
 #include "physicscomponent.h"
 #include "physicscontrollercomponent.h"
-#include "backgroundcomponent.h"
 #include "spawncomponent.h"
 #include "animationcomponent.h"
 
