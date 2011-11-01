@@ -34,11 +34,7 @@ private:
     QMetaProperty m_property;
     QObject* m_object;
 
-    QLineEdit* m_lineEdit;
-    QSpinBox* m_spinBox;
-    QDoubleSpinBox* m_doubleSpinBox;
-    QCheckBox* m_checkBox;
-    QComboBox* m_comboBox;
+    QWidget* m_editWidget;
     QToolButton* m_toolButton;
 
     QStringList m_fileExtensions;

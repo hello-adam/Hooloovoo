@@ -10,11 +10,7 @@ PropertyEditWidget::PropertyEditWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_lineEdit = 0;
-    m_doubleSpinBox = 0;
-    m_spinBox = 0;
-    m_checkBox = 0;
-    m_comboBox = 0;
+    m_editWidget = 0;
     m_toolButton = new QToolButton();
     m_toolButton->setText("...");
     connect(m_toolButton, SIGNAL(clicked()), this, SLOT(getStringFromFile()));
@@ -22,23 +18,17 @@ PropertyEditWidget::PropertyEditWidget(QWidget *parent) :
 
 PropertyEditWidget::~PropertyEditWidget()
 {
+    if (m_editWidget)
+        delete m_editWidget;
     if (m_toolButton)
-        m_toolButton->deleteLater();
+        delete m_toolButton;
     delete ui;
 }
 
 bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
 {
-    if (m_lineEdit)
-        m_lineEdit->deleteLater();
-    if (m_doubleSpinBox)
-        m_doubleSpinBox->deleteLater();
-    if (m_spinBox)
-        m_spinBox->deleteLater();
-    if (m_checkBox)
-        m_checkBox->deleteLater();
-    if (m_comboBox)
-        m_comboBox->deleteLater();
+    if (m_editWidget)
+        delete m_editWidget;
 
     m_fileExtensions.clear();
     m_fileDirectory.clear();
@@ -50,76 +40,84 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
 
     if (property.isEnumType())
     {
-        m_comboBox = new QComboBox(this);
+        QComboBox *comboBox = new QComboBox(this);
+        m_editWidget = comboBox;
         QMetaEnum enumerator = property.enumerator();
         for (int i=0; i<enumerator.keyCount(); i++)
         {
-            m_comboBox->addItem(enumerator.key(i));
+            comboBox->addItem(enumerator.key(i));
         }
-        int index = m_comboBox->findText(enumerator.valueToKey(*reinterpret_cast<const int *>(value.constData())));
+        int index = comboBox->findText(enumerator.valueToKey(*reinterpret_cast<const int *>(value.constData())));
         if (index == -1)
         {
             qDebug() << "Error reading enum";
         }
-        m_comboBox->setCurrentIndex(index);
-        ui->horizontalLayout->addWidget(m_comboBox);
+        comboBox->setCurrentIndex(index);
+        ui->horizontalLayout->addWidget(comboBox);
         return true;
     }
 
-    switch (value.type())
+    if (value.type() == QVariant::String)
     {
-    case QVariant::String:
-        m_lineEdit = new QLineEdit(value.toString(), this);
-        ui->horizontalLayout->addWidget(m_lineEdit);
+        QLineEdit *lineEdit = new QLineEdit(value.toString(), this);
+        m_editWidget = lineEdit;
+        ui->horizontalLayout->addWidget(lineEdit);
         if (QString(property.name()).contains("pixmap", Qt::CaseInsensitive))
         {
             m_fileExtensions << "*.png" << "*.bmp";
             m_fileDirectory = "pics";
             ui->horizontalLayout->addWidget(m_toolButton);
         }
-        break;
-    case QVariant::Double:
-        m_doubleSpinBox = new QDoubleSpinBox(this);
-        m_doubleSpinBox->setMaximum(999999999);
-        m_doubleSpinBox->setMinimum(-999999999);
-        m_doubleSpinBox->setValue(value.toDouble());
-        ui->horizontalLayout->addWidget(m_doubleSpinBox);
-        break;
-    case QVariant::Int:
-        m_spinBox = new QSpinBox(this);
-        m_spinBox->setMaximum(999999999);
-        m_spinBox->setMinimum(-999999999);
-        m_spinBox->setValue(value.toInt());
-        ui->horizontalLayout->addWidget(m_spinBox);
-        break;
-    case QVariant::Bool:
-        m_checkBox = new QCheckBox(this);
-        m_checkBox->setChecked(value.toBool());
-        ui->horizontalLayout->addWidget(m_checkBox);
-        break;
-    default:
-        return false;
+        return true;
+     }
+    else if (value.type() == QVariant::Double)
+    {
+        QDoubleSpinBox *doubleSpinBox = new QDoubleSpinBox(this);
+        m_editWidget = doubleSpinBox;
+        doubleSpinBox->setMaximum(999999999);
+        doubleSpinBox->setMinimum(-999999999);
+        doubleSpinBox->setValue(value.toDouble());
+        ui->horizontalLayout->addWidget(doubleSpinBox);
+        return true;
+    }
+    else if (value.type() == QVariant::Int)
+    {
+        QSpinBox *spinBox = new QSpinBox(this);
+        m_editWidget = spinBox;
+        spinBox->setMaximum(999999999);
+        spinBox->setMinimum(-999999999);
+        spinBox->setValue(value.toInt());
+        ui->horizontalLayout->addWidget(spinBox);
+        return true;
+    }
+    else if (value.type() == QVariant::Bool)
+    {
+        QCheckBox *checkBox = new QCheckBox(this);
+        m_editWidget = checkBox;
+        checkBox->setChecked(value.toBool());
+        ui->horizontalLayout->addWidget(checkBox);
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 bool PropertyEditWidget::writeProperty()
 {
     QVariant value;
 
-    if (m_lineEdit)
-        value.setValue(m_lineEdit->text());
-    else if (m_doubleSpinBox)
-        value.setValue(m_doubleSpinBox->value());
-    else if (m_spinBox)
-        value.setValue(m_spinBox->value());
-    else if (m_checkBox)
-        value.setValue(m_checkBox->isChecked());
-    else if (m_comboBox)
+    if (qobject_cast<QLineEdit*>(m_editWidget))
+        value.setValue(qobject_cast<QLineEdit*>(m_editWidget)->text());
+    else if (qobject_cast<QDoubleSpinBox*>(m_editWidget))
+        value.setValue(qobject_cast<QDoubleSpinBox*>(m_editWidget)->value());
+    else if (qobject_cast<QSpinBox*>(m_editWidget))
+        value.setValue(qobject_cast<QSpinBox*>(m_editWidget)->value());
+    else if (qobject_cast<QCheckBox*>(m_editWidget))
+        value.setValue(qobject_cast<QCheckBox*>(m_editWidget)->isChecked());
+    else if (qobject_cast<QComboBox*>(m_editWidget))
     {
         QMetaEnum enumerator = m_property.enumerator();
-        value.setValue(enumerator.keyToValue(m_comboBox->currentText().toStdString().c_str()));
+        value.setValue(enumerator.keyToValue(qobject_cast<QComboBox*>(m_editWidget)->currentText().toStdString().c_str()));
     }
     else
         return false;
@@ -136,8 +134,8 @@ void PropertyEditWidget::getStringFromFile()
 
     if (dlg->exec())
     {
-        if (m_lineEdit)
-            m_lineEdit->setText(dlg->getFileName());
+        if (qobject_cast<QLineEdit*>(m_editWidget))
+            qobject_cast<QLineEdit*>(m_editWidget)->setText(dlg->getFileName());
     }
 
     delete dlg;
