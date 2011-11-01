@@ -15,6 +15,10 @@ PropertyEditWidget::PropertyEditWidget(QWidget *parent) :
     m_toolButton = new QToolButton();
     m_toolButton->setText("...");
     connect(m_toolButton, SIGNAL(clicked()), this, SLOT(getStringFromFile()));
+
+    m_removeButton = new QToolButton();
+    m_removeButton->setText("Remove");
+    connect(m_removeButton, SIGNAL(clicked()), this, SLOT(removeItemFromList()));
 }
 
 PropertyEditWidget::~PropertyEditWidget()
@@ -111,6 +115,7 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
             m_fileDirectory = "pics";
             ui->horizontalLayout->addWidget(m_toolButton);
             m_toolButton->setText("Add");
+            ui->horizontalLayout->addWidget(m_removeButton);
         }
         return true;
     }
@@ -168,4 +173,14 @@ void PropertyEditWidget::getStringFromFile()
     }
 
     delete dlg;
+}
+
+void PropertyEditWidget::removeItemFromList()
+{
+    if (qobject_cast<QListWidget*>(m_editWidget))
+    {
+        QListWidget* listWidget = qobject_cast<QListWidget*>(m_editWidget);
+        qDebug() << "Removing Item: " << listWidget->currentItem()->text();
+        delete listWidget->currentItem();
+    }
 }

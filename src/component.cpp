@@ -32,6 +32,22 @@ QDomElement Component::serialize(QDomDocument *document)
                 prop.setAttribute("value", intValue.toString());
                 componentElement.appendChild(prop);
             }
+            else if (value.type() == QVariant::StringList)
+            {
+                QDomElement prop = document->createElement(name);
+
+                QStringList stringList = value.toStringList();
+                foreach(QString s, stringList)
+                {
+                    QDomElement child = document->createElement("listitem");
+                    child.setAttribute("value", s);
+                    prop.appendChild(child);
+                }
+
+                prop.setAttribute("type", value.type());
+                prop.setAttribute("count", stringList.count());
+                componentElement.appendChild(prop);
+            }
             else
             {
                 QDomElement prop = document->createElement(name);
@@ -66,6 +82,21 @@ bool Component::deserialize(const QDomElement &objectElement)
             {
                 property.write(this, value);
             }
+        }
+        else if (prop.hasAttribute("type") && prop.hasAttribute("count"))
+        {
+            QVariant value;
+            QStringList stringList;
+
+            QDomElement child = prop.firstChildElement("listitem");
+            while (!child.isNull())
+            {
+                stringList << child.attribute("value");
+                child = child.nextSiblingElement("listitem");
+            }
+
+            value.setValue(stringList);
+            property.write(this, value);
         }
     }
 

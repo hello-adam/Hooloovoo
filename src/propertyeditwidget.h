@@ -36,12 +36,14 @@ private:
 
     QWidget* m_editWidget;
     QToolButton* m_toolButton;
+    QToolButton* m_removeButton;
 
     QStringList m_fileExtensions;
     QString m_fileDirectory;
 
 private slots:
     void getStringFromFile();
+    void removeItemFromList();
 };
 
 #endif // PROPERTYEDITWIDGET_H

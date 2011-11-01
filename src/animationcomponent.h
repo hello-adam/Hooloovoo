@@ -26,11 +26,15 @@ private:
     int m_timeStep;
     QStringList m_files;
     AnimationTrigger m_trigger;
+    int m_currentFrame;
+    int m_elapsedTime;
 
 public slots:
     void setTimeStep(int timeStep) {m_timeStep = timeStep;}
     void setTrigger(AnimationTrigger trigger) {m_trigger = trigger;}
     void setFiles(QStringList files) {m_files = files;}
+
+    void reactToTimerTick();
 };
 
 Q_DECLARE_METATYPE(AnimationComponent::AnimationTrigger)
