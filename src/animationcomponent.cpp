@@ -7,7 +7,7 @@ AnimationComponent::AnimationComponent(GameObject *parentObject) :
 
     m_timeStep = 60;
     m_trigger = AnimationComponent::Constant;
-    m_files = QList<QVariant>();
+    m_files = QStringList();
 }
 
 QSet<QString> AnimationComponent::getEditProperties()

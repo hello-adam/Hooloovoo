@@ -2,6 +2,7 @@
 #include "ui_propertyeditwidget.h"
 #include "gamefiledialog.h"
 #include <QDebug>
+#include <QListWidget>
 
 
 PropertyEditWidget::PropertyEditWidget(QWidget *parent) :
@@ -98,6 +99,21 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
         ui->horizontalLayout->addWidget(checkBox);
         return true;
     }
+    else if (value.type() == QVariant::StringList)
+    {
+        QListWidget *listWidget = new QListWidget(this);
+        m_editWidget = listWidget;
+        listWidget->addItems(value.toStringList());
+        ui->horizontalLayout->addWidget(listWidget);
+        if (QString(property.name()).contains("pixmap", Qt::CaseInsensitive))
+        {
+            m_fileExtensions << "*.png" << "*.bmp";
+            m_fileDirectory = "pics";
+            ui->horizontalLayout->addWidget(m_toolButton);
+            m_toolButton->setText("Add");
+        }
+        return true;
+    }
 
     return false;
 }
@@ -119,6 +135,17 @@ bool PropertyEditWidget::writeProperty()
         QMetaEnum enumerator = m_property.enumerator();
         value.setValue(enumerator.keyToValue(qobject_cast<QComboBox*>(m_editWidget)->currentText().toStdString().c_str()));
     }
+    else if (qobject_cast<QListWidget*>(m_editWidget))
+    {
+        QList<QListWidgetItem*> allItems = qobject_cast<QListWidget*>(m_editWidget)->findItems(QString("*"), Qt::MatchWrap | Qt::MatchWildcard);
+        QStringList allStrings;
+        foreach (QListWidgetItem *item, allItems)
+        {
+            allStrings.push_back(item->text());
+        }
+
+        value.setValue(allStrings);
+    }
     else
         return false;
 
@@ -136,6 +163,8 @@ void PropertyEditWidget::getStringFromFile()
     {
         if (qobject_cast<QLineEdit*>(m_editWidget))
             qobject_cast<QLineEdit*>(m_editWidget)->setText(dlg->getFileName());
+        else if (qobject_cast<QListWidget*>(m_editWidget))
+            qobject_cast<QListWidget*>(m_editWidget)->addItem(dlg->getFileName());
     }
 
     delete dlg;
