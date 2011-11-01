@@ -52,6 +52,8 @@ signals:
     void sendX(double x);
     void sendY(double y);
     void sendRotation(double degrees);
+    void sendLocalEvent(QString);
+    void sendGlobalEvent(QString);
     void componentAdded(Component*);
     void componentRemoved(Component*);
 

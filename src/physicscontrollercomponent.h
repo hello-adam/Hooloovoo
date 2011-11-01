@@ -34,6 +34,7 @@ private:
     QSet<int> m_pressedKeys;
 
 signals:
+    void sendLocalEvent(QString);
 
 public slots:
     void checkForAddedPhysicsComponent(Component* c);

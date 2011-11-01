@@ -11,22 +11,39 @@ SpawnComponent::SpawnComponent(GameObject *parentObject) :
     m_elapsed = 0;
 
     connect(GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
-}
-
-void SpawnComponent::reactToTimerTick()
-{
-    m_elapsed += 1;
-
-    if (m_elapsed > m_interval)
-    {
-        GameCore::getInstance()->addObjectToScene(m_objectFileName, m_parentObject->pos());
-        m_elapsed = 0;
-    }
+    connect(parentObject, SIGNAL(sendLocalEvent(QString)), this, SLOT(reactToTrigger(QString)));
 }
 
 QSet<QString> SpawnComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "objectFile" << "spawnInterval";
+    properties << "objectFile" << "spawnInterval" << "spawnTrigger";
     return properties;
+}
+
+void SpawnComponent::spawn()
+{
+    GameCore::getInstance()->addObjectToScene(m_objectFileName, m_parentObject->pos());
+}
+
+void SpawnComponent::reactToTimerTick()
+{
+    if (m_interval < 0)
+        return;
+
+    m_elapsed += 1;
+
+    if (m_elapsed > m_interval)
+    {
+        spawn();
+        m_elapsed = 0;
+    }
+}
+
+void SpawnComponent::reactToTrigger(QString trigger)
+{
+    if (trigger == m_trigger)
+    {
+        spawn();
+    }
 }

@@ -23,6 +23,9 @@ PhysicsControllerComponent::PhysicsControllerComponent(GameObject *parentObject)
             this, SLOT(checkForAddedPhysicsComponent(Component*)));
     connect(parentObject, SIGNAL(componentRemoved(Component*)),
             this, SLOT(checkForRemovecPhysicsComponent(Component*)));
+
+    connect(this, SIGNAL(sendLocalEvent(QString)),
+            parentObject, SIGNAL(sendLocalEvent(QString)));
 }
 
 PhysicsControllerComponent::~PhysicsControllerComponent()
@@ -38,6 +41,11 @@ QSet<QString> PhysicsControllerComponent::getEditProperties()
 
 void PhysicsControllerComponent::keyPressEvent(QKeyEvent *ke)
 {
+    if (ke->key() == Qt::Key_J)
+    {
+        emit sendLocalEvent("Spawn Object");
+    }
+
     if (!m_physicsComponent)
         return;
     if (!m_physicsComponent->getBody())
