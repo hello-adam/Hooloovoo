@@ -73,6 +73,12 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
             m_fileDirectory = "pics";
             ui->horizontalLayout->addWidget(m_toolButton);
         }
+        else if (QString(property.name()).contains("object", Qt::CaseInsensitive))
+        {
+            m_fileExtensions << "*.gameobject";
+            m_fileDirectory = "objects";
+            ui->horizontalLayout->addWidget(m_toolButton);
+        }
         return true;
      }
     else if (value.type() == QVariant::Double)
