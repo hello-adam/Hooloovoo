@@ -68,9 +68,6 @@ edittable component from the menu on the right.</string>
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="spinBox"/>
-     </item>
-     <item>
       <widget class="QDialogButtonBox" name="buttonBox">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
