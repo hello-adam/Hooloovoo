@@ -9,6 +9,7 @@ SpawnComponent::SpawnComponent(GameObject *parentObject) :
     m_objectFileName = "";
     m_interval = 0;
     m_elapsed = 0;
+    m_offset = QPointF(0, 0);
 
     connect(GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
     connect(parentObject, SIGNAL(sendLocalEvent(QString)), this, SLOT(reactToTrigger(QString)));
@@ -17,13 +18,13 @@ SpawnComponent::SpawnComponent(GameObject *parentObject) :
 QSet<QString> SpawnComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "objectFile" << "spawnInterval" << "spawnTrigger";
+    properties << "objectFile" << "spawnInterval" << "spawnTrigger" << "xOffset" << "yOffset";
     return properties;
 }
 
 void SpawnComponent::spawn()
 {
-    GameCore::getInstance()->addObjectToScene(m_objectFileName, m_parentObject->pos());
+    GameCore::getInstance()->addObjectToScene(m_objectFileName, m_parentObject->pos() + m_offset);
 }
 
 void SpawnComponent::reactToTimerTick()
