@@ -25,6 +25,10 @@ public:
 
 protected:
     GameObject* m_parentObject;
+
+signals:
+    void sendLocalEvent(QString);
+    void sendGlobalEvent(QString);
 };
 
 #endif // COMPONENT_H

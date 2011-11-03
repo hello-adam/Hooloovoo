@@ -5,6 +5,10 @@ Component::Component(GameObject *parentObject) :
     //QObject(parentObject),
     m_parentObject(parentObject)
 {
+    connect(this, SIGNAL(sendLocalEvent(QString)),
+            parentObject, SIGNAL(sendLocalEvent(QString)));
+    connect(this, SIGNAL(sendGlobalEvent(QString)),
+            parentObject, SIGNAL(sendGlobalEvent(QString)));
 }
 
 QDomElement Component::serialize(QDomDocument *document)
