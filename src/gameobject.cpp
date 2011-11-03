@@ -155,7 +155,8 @@ Component* GameObject::addComponent(QString name)
     {
         if (c->objectName() == name)
         {
-            return 0;
+            if (!c->allowMultipleComponents())
+                return 0;
         }
     }
 
@@ -171,17 +172,14 @@ Component* GameObject::addComponent(QString name)
     return 0;
 }
 
-bool GameObject::removeComponent(QString name)
+bool GameObject::removeComponent(Component *component)
 {
-    foreach(Component* c, m_components)
+    if (m_components.contains(component))
     {
-        if (c->objectName() == name)
-        {
-            m_components.removeAll(c);
-            emit componentRemoved(c);
-            delete c;
-            return true;
-        }
+        m_components.removeAll(component);
+        emit componentRemoved(component);
+        delete component;
+        return true;
     }
 
     return false;

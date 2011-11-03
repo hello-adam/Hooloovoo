@@ -27,6 +27,7 @@ public:
     ~PhysicsComponent();
 
     QSet<QString> getEditProperties();
+    bool allowMultipleComponents() {return false;}
 
     void prepareForSerialization();
     void instantiate();

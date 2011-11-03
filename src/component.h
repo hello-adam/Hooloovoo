@@ -15,10 +15,13 @@ public:
     bool deserialize(const QDomElement & specs);
     QDomElement serialize(QDomDocument *doc);
 
+    GameObject* getParentObject() {return m_parentObject;}
+
     virtual QSet<QString> getEditProperties() {return QSet<QString>();}
     virtual void prepareForSerialization() {}
     virtual void keyPressEvent(QKeyEvent* ke) {}
     virtual void keyReleaseEvent(QKeyEvent* ke) {}
+    virtual bool allowMultipleComponents() {return true;}
 
 protected:
     GameObject* m_parentObject;

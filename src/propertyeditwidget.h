@@ -27,7 +27,6 @@ public:
     ~PropertyEditWidget();
 
     bool setProperty(QMetaProperty property, QObject* object);
-    bool writeProperty();
 
 private:
     Ui::PropertyEditWidget *ui;
@@ -44,6 +43,9 @@ private:
 private slots:
     void getStringFromFile();
     void removeItemFromList();
+
+public slots:
+    void writeProperty();
 };
 
 #endif // PROPERTYEDITWIDGET_H

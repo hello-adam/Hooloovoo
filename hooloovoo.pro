@@ -27,7 +27,9 @@ HEADERS += \
     src/physicscontrollercomponent.h \
     src/componentlistwidget.h \
     src/spawncomponent.h \
-    src/animationcomponent.h
+    src/animationcomponent.h \
+    src/inputcomponent.h \
+    src/componenteditwidget.h
 
 SOURCES += \
     src/mainwindow.cpp \
@@ -46,15 +48,23 @@ SOURCES += \
     src/physicscontrollercomponent.cpp \
     src/componentlistwidget.cpp \
     src/spawncomponent.cpp \
-    src/animationcomponent.cpp
+    src/animationcomponent.cpp \
+    src/inputcomponent.cpp \
+    src/componenteditwidget.cpp
 
 FORMS += \
     src/mainwindow.ui \
     src/gamefiledialog.ui \
     src/gameobjecteditdialog.ui \
-    src/propertyeditwidget.ui
+    src/propertyeditwidget.ui \
+    src/componenteditwidget.ui
 
 OTHER_FILES +=
+
+
+
+
+
 
 
 

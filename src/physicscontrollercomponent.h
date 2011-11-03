@@ -16,6 +16,7 @@ public:
     ~PhysicsControllerComponent();
 
     QSet<QString> getEditProperties();
+    bool allowMultipleComponents() {return false;}
 
     void setJumpImpulse(double impulse) {m_jumpImpulse = impulse;}
     double getJumpImpulse() {return m_jumpImpulse;}

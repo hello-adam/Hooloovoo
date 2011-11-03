@@ -30,7 +30,7 @@ public:
     double height() {return m_pixmap.height()*scale();}
 
     Component* addComponent(QString name);
-    bool removeComponent(QString name);
+    bool removeComponent(Component* component);
     QList<Component*> getComponents() {return m_components;}
 
     QDomElement serialize(QDomDocument *document);

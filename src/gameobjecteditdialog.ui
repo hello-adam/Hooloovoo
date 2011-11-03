@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>477</width>
-    <height>313</height>
+    <width>589</width>
+    <height>344</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,29 +17,68 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <layout class="QVBoxLayout" name="UnusedComponentLayout">
-       <item>
-        <widget class="QLabel" name="lb_Available">
-         <property name="text">
-          <string>Unused Components:</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <widget class="QWidget" name="widget" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>230</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>230</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="margin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QListWidget" name="lw_components">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_AddSelected">
+            <property name="text">
+             <string>Add Selected</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="ObjectComponentLayout">
-       <item>
-        <widget class="QLabel" name="lb_Current">
-         <property name="text">
-          <string>Object Components:</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="QStackedWidget" name="stackedWidget">
+      <widget class="QStackedWidget" name="sw_ComponentEditor">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -58,15 +97,6 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Drag and drop components from one side to the
-other in order to add or remove them.  Select the
-edittable component from the menu on the right.</string>
-       </property>
-      </widget>
-     </item>
      <item>
       <widget class="QDialogButtonBox" name="buttonBox">
        <property name="orientation">
@@ -91,7 +121,7 @@ edittable component from the menu on the right.</string>
    <hints>
     <hint type="sourcelabel">
      <x>257</x>
-     <y>290</y>
+     <y>297</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -107,11 +137,27 @@ edittable component from the menu on the right.</string>
    <hints>
     <hint type="sourcelabel">
      <x>325</x>
-     <y>290</y>
+     <y>297</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lw_components</sender>
+   <signal>currentRowChanged(int)</signal>
+   <receiver>sw_ComponentEditor</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>121</x>
+     <y>137</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>363</x>
+     <y>106</y>
     </hint>
    </hints>
   </connection>

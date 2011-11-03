@@ -114,7 +114,7 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
         QListWidget *listWidget = new QListWidget(this);
         m_editWidget = listWidget;
         listWidget->addItems(value.toStringList());
-        ui->horizontalLayout->addWidget(listWidget);
+        ui->verticalLayout->insertWidget(0,listWidget);
         if (QString(property.name()).contains("pixmap", Qt::CaseInsensitive))
         {
             m_fileExtensions << "*.png" << "*.bmp";
@@ -129,7 +129,7 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
     return false;
 }
 
-bool PropertyEditWidget::writeProperty()
+void PropertyEditWidget::writeProperty()
 {
     QVariant value;
 
@@ -158,9 +158,9 @@ bool PropertyEditWidget::writeProperty()
         value.setValue(allStrings);
     }
     else
-        return false;
+        return;
 
-    return m_property.write(m_object, value);
+    m_property.write(m_object, value);
 }
 
 void PropertyEditWidget::getStringFromFile()

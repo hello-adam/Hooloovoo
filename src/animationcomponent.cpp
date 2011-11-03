@@ -5,6 +5,7 @@ AnimationComponent::AnimationComponent(GameObject *parentObject) :
     Component(parentObject)
 {
     this->setObjectName("Animation Component");
+    qRegisterMetaType<AnimationComponent::AnimationTrigger>("AnimationTrigger");
 
     m_timeStep = 60;
     m_trigger = AnimationComponent::Constant;
