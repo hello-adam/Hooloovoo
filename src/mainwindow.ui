@@ -58,7 +58,7 @@
   </action>
   <action name="action_Set_Size">
    <property name="text">
-    <string>&amp;Set Size</string>
+    <string>&amp;Edit Scene</string>
    </property>
   </action>
  </widget>
