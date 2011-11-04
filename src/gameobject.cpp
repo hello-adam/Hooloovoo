@@ -20,6 +20,9 @@ GameObject::GameObject(QGraphicsItem * parent) :
     m_pixmap = QPixmap(42, 42);
     m_pixmap.fill(Qt::darkBlue);
     m_pixmapFileName = "";
+    m_visibleInGame = true;
+
+    m_paused = false;
 
     this->setFlag(QGraphicsItem::ItemIsFocusable, true);
     this->setPaused(true);
@@ -130,7 +133,11 @@ void GameObject::setPaused(bool pause)
 {
     if (pause)
     {
+        m_paused = true;
         this->setFlag(QGraphicsItem::ItemIsMovable, true);
+
+        if (!m_visibleInGame)
+            this->setVisible(true);
 
         connect(this, SIGNAL(xChanged()),
                 this, SLOT(slotXChanged()));
@@ -141,7 +148,11 @@ void GameObject::setPaused(bool pause)
     }
     else
     {
+        m_paused = false;
         this->setFlag(QGraphicsItem::ItemIsMovable, false);
+
+        if (!m_visibleInGame)
+            this->setVisible(false);
 
         disconnect(this, SIGNAL(xChanged()),
                 this, SLOT(slotXChanged()));
@@ -255,7 +266,7 @@ bool GameObject::deserialize(const QDomElement &objectElement)
 QSet<QString> GameObject::getEditProperties()
 {
     QSet<QString> set;
-    set << "x" << "y" << "z" << "opacity" << "pixmapFileName" << "scale" << "rotation";
+    set << "x" << "y" << "z" << "opacity" << "pixmapFileName" << "scale" << "rotation" << "visibleInGame";
     return set;
 }
 

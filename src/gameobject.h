@@ -11,6 +11,7 @@ class GameObject : public QGraphicsObject
 {
     Q_OBJECT
     Q_PROPERTY(QString pixmapFileName READ getPixmapFile WRITE setPixmapFile)
+    Q_PROPERTY(bool visibleInGame READ getVisibleInGame WRITE setVisibleInGame)
 
 public:
     GameObject(QGraphicsItem  *parent = 0);
@@ -18,6 +19,8 @@ public:
 
     void setPixmapFile(QString fileName);
     QString getPixmapFile() {return m_pixmapFileName;}
+    void setVisibleInGame(bool visibleInGame) {m_visibleInGame = visibleInGame;}
+    bool getVisibleInGame() {return m_visibleInGame;}
 
     void paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
     QRectF boundingRect() const;
@@ -47,6 +50,8 @@ private:
     QUuid m_uid;
     QString m_pixmapFileName;
     QPixmap m_pixmap;
+    bool m_visibleInGame;
+    bool m_paused;
 
 signals:
     void sendX(double x);
