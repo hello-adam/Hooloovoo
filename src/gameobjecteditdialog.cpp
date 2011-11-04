@@ -122,7 +122,7 @@ QWidget* GameObjectEditDialog::getObjectEditWidget(QObject* object, QSet<QString
             {
                 PropertyEditWidget* editWidget = new PropertyEditWidget(this);
                 editWidget->setProperty(property, object);
-                connect(this, SIGNAL(accepted()), editWidget, SLOT(deleteLater()));
+                connect(this, SIGNAL(accepted()), editWidget, SLOT(writeProperty()));
                 formLayout->addRow(name, editWidget);
             }
         }
