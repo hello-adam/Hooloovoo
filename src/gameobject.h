@@ -61,6 +61,7 @@ private slots:
     void slotXChanged() {emit sendX(x());}
     void slotYChanged() {emit sendY(y());}
     void slotRotationChanged() {emit sendRotation(rotation());}
+    void checkLocalEvent(QString trigger);
 
 public slots:
     void launchEditorDialog();

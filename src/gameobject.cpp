@@ -26,6 +26,9 @@ GameObject::GameObject(QGraphicsItem * parent) :
 
     this->setAcceptHoverEvents(true);
     this->setAcceptedMouseButtons(Qt::RightButton | Qt::LeftButton);
+
+    connect(this, SIGNAL(sendLocalEvent(QString)),
+            this, SLOT(checkLocalEvent(QString)));
 }
 
 GameObject::~GameObject()
@@ -281,6 +284,14 @@ void GameObject::saveObject(QString fileName)
 
     file->close();
     delete file;
+}
+
+void GameObject::checkLocalEvent(QString trigger)
+{
+    if (trigger == "Destroy")
+    {
+        this->deleteLater();
+    }
 }
 
 void GameObject::launchSaveDialog()
