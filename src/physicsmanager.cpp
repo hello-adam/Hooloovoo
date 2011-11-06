@@ -9,10 +9,13 @@ PhysicsManager::PhysicsManager(QObject *parent) :
     m_worldBounds = 0;
     m_gravity = -10;
     m_world = new b2World(b2Vec2(0.0f, m_gravity));
+    m_contactListener = new ContactListener();
+    m_world->SetContactListener(m_contactListener);
 }
 
 PhysicsManager::~PhysicsManager()
 {
+    m_contactListener->deleteLater();
 }
 
 

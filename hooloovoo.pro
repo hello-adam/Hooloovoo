@@ -29,7 +29,8 @@ HEADERS += \
     src/spawncomponent.h \
     src/animationcomponent.h \
     src/inputcomponent.h \
-    src/componenteditwidget.h
+    src/componenteditwidget.h \
+    src/contactlistener.h
 
 SOURCES += \
     src/mainwindow.cpp \
@@ -50,7 +51,8 @@ SOURCES += \
     src/spawncomponent.cpp \
     src/animationcomponent.cpp \
     src/inputcomponent.cpp \
-    src/componenteditwidget.cpp
+    src/componenteditwidget.cpp \
+    src/contactlistener.cpp
 
 FORMS += \
     src/mainwindow.ui \
@@ -60,6 +62,8 @@ FORMS += \
     src/componenteditwidget.ui
 
 OTHER_FILES +=
+
+
 
 
 

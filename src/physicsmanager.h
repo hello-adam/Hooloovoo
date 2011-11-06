@@ -5,6 +5,7 @@
 #include <Box2D/Box2D.h>
 #include <QTimer>
 #include "physicscomponent.h"
+#include "contactlistener.h"
 
 class PhysicsManager : public QObject
 {
@@ -24,7 +25,7 @@ private:
 
     b2World *m_world;
     b2Body *m_worldBounds;
-
+    ContactListener *m_contactListener;
     double m_gravity;
 
 public slots:
