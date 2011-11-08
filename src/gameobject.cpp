@@ -21,6 +21,8 @@ GameObject::GameObject(QGraphicsItem * parent) :
     m_pixmap.fill(Qt::darkBlue);
     m_pixmapFileName = "";
     m_visibleInGame = true;
+    m_tag = "";
+    m_defaultColor = QColor(0, 0, 128);
 
     m_paused = false;
 
@@ -65,7 +67,7 @@ void GameObject::setPixmapFile(QString fileName)
     if (!m_pixmap.load(GameCore::getPicturePath() + fileName))
     {
         m_pixmap = QPixmap(42, 42);
-        m_pixmap.fill(Qt::darkBlue);
+        m_pixmap.fill(m_defaultColor);
         m_pixmapFileName = "";
     }
 }
@@ -212,13 +214,39 @@ QDomElement GameObject::serialize(QDomDocument *document)
         {
             QVariant value = property.read(this);
 
-            QDomElement prop = document->createElement(name);
-            prop.setAttribute("type", value.type());
-            prop.setAttribute("value", value.toString());
-            objectElement.appendChild(prop);
+            if (property.isEnumType())
+            {
+                QDomElement prop = document->createElement(name);
+                prop.setAttribute("type", value.type());
+                QVariant intValue = *reinterpret_cast<const int *>(value.constData());
+                prop.setAttribute("value", intValue.toString());
+                objectElement.appendChild(prop);
+            }
+            else if (value.type() == QVariant::StringList)
+            {
+                QDomElement prop = document->createElement(name);
+
+                QStringList stringList = value.toStringList();
+                foreach(QString s, stringList)
+                {
+                    QDomElement child = document->createElement("listitem");
+                    child.setAttribute("value", s);
+                    prop.appendChild(child);
+                }
+
+                prop.setAttribute("type", value.type());
+                prop.setAttribute("count", stringList.count());
+                objectElement.appendChild(prop);
+            }
+            else
+            {
+                QDomElement prop = document->createElement(name);
+                prop.setAttribute("type", value.type());
+                prop.setAttribute("value", value.toString());
+                objectElement.appendChild(prop);
+            }
         }
     }
-
     //serialize components
     foreach(Component* c, m_components)
     {
@@ -240,10 +268,31 @@ bool GameObject::deserialize(const QDomElement &objectElement)
         {
             QVariant value;
             value.setValue(prop.attribute("value"));
-            if (value.convert((QVariant::Type)prop.attribute("type").toInt()))
+
+            if (property.isEnumType())
+            {
+                value.convert(QVariant::Int);
+                property.write(this, value);
+            }
+            else if (value.convert((QVariant::Type)prop.attribute("type").toInt()))
             {
                 property.write(this, value);
             }
+        }
+        else if (prop.hasAttribute("type") && prop.hasAttribute("count"))
+        {
+            QVariant value;
+            QStringList stringList;
+
+            QDomElement child = prop.firstChildElement("listitem");
+            while (!child.isNull())
+            {
+                stringList << child.attribute("value");
+                child = child.nextSiblingElement("listitem");
+            }
+
+            value.setValue(stringList);
+            property.write(this, value);
         }
     }
 
@@ -266,7 +315,7 @@ bool GameObject::deserialize(const QDomElement &objectElement)
 QSet<QString> GameObject::getEditProperties()
 {
     QSet<QString> set;
-    set << "x" << "y" << "z" << "opacity" << "pixmapFileName" << "scale" << "rotation" << "visibleInGame" << "tag";
+    set << "x" << "y" << "z" << "opacity" << "pixmapFileName" << "scale" << "rotation" << "visibleInGame" << "tag" <<"defaultColor";
     return set;
 }
 

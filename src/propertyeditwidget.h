@@ -43,6 +43,7 @@ private:
 private slots:
     void getStringFromFile();
     void removeItemFromList();
+    void colorDialog();
 
 public slots:
     void writeProperty();

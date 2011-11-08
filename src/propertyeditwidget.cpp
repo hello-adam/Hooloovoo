@@ -3,6 +3,8 @@
 #include "gamefiledialog.h"
 #include <QDebug>
 #include <QListWidget>
+#include <QPalette>
+#include <QColorDialog>
 
 
 PropertyEditWidget::PropertyEditWidget(QWidget *parent) :
@@ -14,7 +16,6 @@ PropertyEditWidget::PropertyEditWidget(QWidget *parent) :
     m_editWidget = 0;
     m_toolButton = new QToolButton();
     m_toolButton->setText("...");
-    connect(m_toolButton, SIGNAL(clicked()), this, SLOT(getStringFromFile()));
 
     m_removeButton = new QToolButton();
     m_removeButton->setText("Remove");
@@ -72,12 +73,16 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
             m_fileExtensions << "*.png" << "*.bmp";
             m_fileDirectory = "pics";
             ui->horizontalLayout->addWidget(m_toolButton);
+
+            connect(m_toolButton, SIGNAL(clicked()), this, SLOT(getStringFromFile()));
         }
         else if (QString(property.name()).contains("object", Qt::CaseInsensitive))
         {
             m_fileExtensions << "*.gameobject";
             m_fileDirectory = "objects";
             ui->horizontalLayout->addWidget(m_toolButton);
+
+            connect(m_toolButton, SIGNAL(clicked()), this, SLOT(getStringFromFile()));
         }
         return true;
      }
@@ -122,8 +127,19 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
             ui->horizontalLayout->addWidget(m_toolButton);
             m_toolButton->setText("Add");
             ui->horizontalLayout->addWidget(m_removeButton);
+
+            connect(m_toolButton, SIGNAL(clicked()), this, SLOT(getStringFromFile()));
         }
         return true;
+    }
+    else if (value.type() == QVariant::Color)
+    {
+        QColor color = value.value<QColor>();
+        m_toolButton->setPalette(QPalette(color));
+        m_editWidget = 0;
+        ui->horizontalLayout->addWidget(m_toolButton);
+        m_toolButton->setText("Select Color");
+        connect(m_toolButton, SIGNAL(clicked()), this, SLOT(colorDialog()));
     }
 
     return false;
@@ -132,6 +148,13 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
 void PropertyEditWidget::writeProperty()
 {
     QVariant value;
+
+    if (m_toolButton->text() == "Select Color")
+    {
+        value = m_toolButton->palette().color(QPalette::Button);
+        m_property.write(m_object, value);
+        return;
+    }
 
     if (qobject_cast<QLineEdit*>(m_editWidget))
         value.setValue(qobject_cast<QLineEdit*>(m_editWidget)->text());
@@ -188,5 +211,16 @@ void PropertyEditWidget::removeItemFromList()
         QListWidget* listWidget = qobject_cast<QListWidget*>(m_editWidget);
         qDebug() << "Removing Item: " << listWidget->currentItem()->text();
         delete listWidget->currentItem();
+    }
+}
+
+void PropertyEditWidget::colorDialog()
+{
+    QColorDialog dlg;
+    dlg.setCurrentColor(m_toolButton->palette().color(QPalette::Button));
+
+    if (dlg.exec())
+    {
+        m_toolButton->setPalette(QPalette(dlg.selectedColor()));
     }
 }

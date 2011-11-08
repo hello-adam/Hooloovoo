@@ -12,6 +12,7 @@ class GameObject : public QGraphicsObject
     Q_OBJECT
     Q_PROPERTY(QString pixmapFileName READ getPixmapFile WRITE setPixmapFile)
     Q_PROPERTY(QString tag READ getTag WRITE setTag)
+    Q_PROPERTY(QColor defaultColor READ getDefaultColor WRITE setDefaultColor)
     Q_PROPERTY(bool visibleInGame READ getVisibleInGame WRITE setVisibleInGame)
 
 public:
@@ -24,6 +25,8 @@ public:
     bool getVisibleInGame() {return m_visibleInGame;}
     void setTag(QString tag) {m_tag = tag;}
     QString getTag() {return m_tag;}
+    void setDefaultColor(QColor color) {m_defaultColor = color; setPixmapFile(m_pixmapFileName);}
+    QColor getDefaultColor() {return m_defaultColor;}
 
     void paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
     QRectF boundingRect() const;
@@ -56,6 +59,7 @@ private:
     bool m_visibleInGame;
     bool m_paused;
     QString m_tag;
+    QColor m_defaultColor;
 
 signals:
     void sendX(double x);
