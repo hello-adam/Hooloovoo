@@ -53,18 +53,21 @@ void PhysicsControllerComponent::keyPressEvent(QKeyEvent *ke)
 
     m_pressedKeys.insert(ke->key());
 
-    bool hasContact = false;
-    b2ContactEdge* edge = m_physicsComponent->getBody()->GetContactList();
-    if (edge)
-    {
-        hasContact = true;
-    }
+    qDebug() << (int)m_physicsComponent->getContactCondition();
 
     if (ke->key() == Qt::Key_W)
     {
-        if (hasContact)
+        if (m_physicsComponent->getContactCondition() & ContactBottom)
         {
             m_physicsComponent->getBody()->ApplyLinearImpulse(b2Vec2(0, m_jumpImpulse), m_physicsComponent->getBody()->GetPosition());
+        }
+        else if (m_physicsComponent->getContactCondition() & ContactLeft)
+        {
+            m_physicsComponent->getBody()->ApplyLinearImpulse(b2Vec2(m_jumpImpulse, m_jumpImpulse), m_physicsComponent->getBody()->GetPosition());
+        }
+        else if (m_physicsComponent->getContactCondition() & ContactRight)
+        {
+            m_physicsComponent->getBody()->ApplyLinearImpulse(b2Vec2(-1*m_jumpImpulse, m_jumpImpulse), m_physicsComponent->getBody()->GetPosition());
         }
     }
     else if (ke->key() == Qt::Key_A)

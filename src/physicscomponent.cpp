@@ -13,6 +13,7 @@ PhysicsComponent::PhysicsComponent(GameObject *parentObject) :
 
     m_type = PhysicsComponent::Static;
     m_staticRotation = false;
+    m_isSensor = false;
     m_density = 1.0f;
     m_friction = 0.03f;
     m_vx = 0;
@@ -37,14 +38,22 @@ PhysicsComponent::~PhysicsComponent()
 {
     if (m_body)
     {
-        PhysicsManager::getInstance()->getWorld()->DestroyBody(m_body);
+        PhysicsManager::getInstance()->removeBody(m_body);
+    }
+
+    QList<PhysicsComponent*> components = m_contacts.keys();
+
+    foreach (PhysicsComponent* component, components)
+    {
+        if (component)
+            component->leaveContact(this);
     }
 }
 
 QSet<QString> PhysicsComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "physicsType" << "staticRotation" << "xVelocity" << "yVelocity" << "angularVelocity" << "density" << "friction" << "linearDamping";
+    properties << "physicsType" << "staticRotation" << "xVelocity" << "yVelocity" << "angularVelocity" << "density" << "friction" << "linearDamping" << "isSensor";
     return properties;
 }
 
@@ -62,7 +71,7 @@ void PhysicsComponent::instantiate()
 {
     if (m_body)
     {
-        PhysicsManager::getInstance()->getWorld()->DestroyBody(m_body);
+        PhysicsManager::getInstance()->removeBody(m_body);
     }
 
     b2BodyDef bodyDef;
@@ -81,8 +90,6 @@ void PhysicsComponent::instantiate()
     bodyDef.position.Set(m_parentObject->pos().x()/20.0f, m_parentObject->pos().y()/-20.0f);
     bodyDef.angle = -(m_parentObject->rotation() * (2 * 3.14159)) / 360.0;
 
-    m_body = PhysicsManager::getInstance()->getWorld()->CreateBody(&bodyDef);
-
     b2PolygonShape shape;
     shape.SetAsBox(m_parentObject->width()/40.0f, m_parentObject->height()/40.0f);
 
@@ -90,8 +97,9 @@ void PhysicsComponent::instantiate()
     fixture.shape = &shape;
     fixture.friction = m_friction;
     fixture.density = m_density;
+    fixture.isSensor = m_isSensor;
 
-    m_body->CreateFixture(&fixture);
+    m_body = PhysicsManager::getInstance()->addBody(&bodyDef, &fixture, this);
 
     m_body->SetAngularVelocity(m_vangle);
     m_body->SetFixedRotation(m_staticRotation);
@@ -108,6 +116,18 @@ void PhysicsComponent::updateParent()
         m_parentObject->setPos(position.x*20.0f, position.y*-20.0f);
         m_parentObject->setRotation(-(angle * 360.0) / (2 * 3.14159));
     }
+}
+
+ContactType PhysicsComponent::getContactCondition()
+{
+    ContactType type = ContactUnknown;
+
+    foreach(ContactType t, m_contacts.values())
+    {
+        type = type | t;
+    }
+
+    return type;
 }
 
 void PhysicsComponent::setX(double x)

@@ -14,10 +14,14 @@ public:
     static PhysicsManager* getInstance();
     ~PhysicsManager();
 
-    b2World* getWorld() {return m_world;}
-
     void setGravity(double gravity) {m_gravity = gravity;  m_world->SetGravity(b2Vec2(0, m_gravity));}
     double getGravity() {return m_gravity;}
+
+    b2Body* addBody(b2BodyDef* bodyDef, b2FixtureDef* fixtureDef, PhysicsComponent* component);
+    bool removeBody(b2Body* body);
+
+    PhysicsComponent* getComponent(b2Body* body) {return m_bodyToComponent.value(body);}
+    PhysicsComponent* getComponent(b2Fixture* fixture) {return m_fixtureToComponent.value(fixture);}
 
 private:
     PhysicsManager(QObject* parent = 0);
@@ -27,6 +31,8 @@ private:
     b2Body *m_worldBounds;
     ContactListener *m_contactListener;
     double m_gravity;
+    QHash<b2Body*, PhysicsComponent*> m_bodyToComponent;
+    QHash<b2Fixture*, PhysicsComponent*> m_fixtureToComponent;
 
 public slots:
     void start();

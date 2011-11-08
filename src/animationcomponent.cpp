@@ -12,6 +12,7 @@ AnimationComponent::AnimationComponent(GameObject *parentObject) :
     m_files = QStringList();
     m_elapsedTime = 0;
     m_currentFrame = 0;
+    m_completeTrigger = "";
 
     connect(GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
 }
@@ -19,7 +20,7 @@ AnimationComponent::AnimationComponent(GameObject *parentObject) :
 QSet<QString> AnimationComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "timeStep" << "pixmapFiles" << "animationTrigger";
+    properties << "timeStep" << "pixmapFiles" << "animationTrigger" <<"completeTrigger";
     return properties;
 }
 
@@ -33,9 +34,15 @@ void AnimationComponent::reactToTimerTick()
     if (m_elapsedTime >= m_timeStep)
     {
         if (m_currentFrame >= m_files.count())
+        {
             m_currentFrame = 0;
+            if (!m_completeTrigger.isEmpty())
+                emit sendLocalEvent(m_completeTrigger);
+        }
 
         m_parentObject->setPixmapFile(m_files.at(m_currentFrame));
+
+        this->getParentObject()->update();
 
         m_currentFrame++;
         m_elapsedTime = 0;

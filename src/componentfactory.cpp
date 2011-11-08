@@ -6,6 +6,7 @@
 #include "spawncomponent.h"
 #include "animationcomponent.h"
 #include "inputcomponent.h"
+#include "contactcomponent.h"
 
 ComponentFactory::ComponentFactory()
 {
@@ -38,6 +39,11 @@ Component* ComponentFactory::createComponent(GameObject* parentObject, QString n
     {
         InputComponent* input = new InputComponent(parentObject);
         return input;
+    }
+    else if (name == "Contact Component")
+    {
+        ContactComponent* contact = new ContactComponent(parentObject);
+        return contact;
     }
     else
         return 0;
@@ -78,6 +84,12 @@ Component* ComponentFactory::createComponent(GameObject* parentObject, const QDo
         input->deserialize(specs);
         return input;
     }
+    else if (name == "Contact Component")
+    {
+        ContactComponent* contact = new ContactComponent(parentObject);
+        contact->deserialize(specs);
+        return contact;
+    }
     else
         return 0;
 }
@@ -85,6 +97,6 @@ Component* ComponentFactory::createComponent(GameObject* parentObject, const QDo
 QStringList ComponentFactory::availableComponents()
 {
     QStringList available;
-    available << "Physics Component" << "Physics Controller Component" << "Spawn Component" << "Animation Component" << "Input Component";
+    available << "Physics Component" << "Physics Controller Component" << "Spawn Component" << "Animation Component" << "Input Component" <<"Contact Component";
     return available;
 }

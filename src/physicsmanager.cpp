@@ -1,5 +1,6 @@
 #include "physicsmanager.h"
 #include "gamecore.h"
+#include <QDebug>
 
 PhysicsManager* PhysicsManager::m_instance;
 
@@ -27,6 +28,28 @@ PhysicsManager* PhysicsManager::getInstance()
     return m_instance;
 }
 
+b2Body* PhysicsManager::addBody(b2BodyDef *bodyDef, b2FixtureDef *fixtureDef, PhysicsComponent *component)
+{
+    b2Body* body = m_world->CreateBody(bodyDef);
+    m_bodyToComponent.insert(body, component);
+
+    b2Fixture* fixture = body->CreateFixture(fixtureDef);
+    m_fixtureToComponent.insert(fixture, component);
+
+    return body;
+}
+
+bool PhysicsManager::removeBody(b2Body *body)
+{
+    if (!m_bodyToComponent.keys().contains(body))
+        return false;
+
+    m_fixtureToComponent.remove(body->GetFixtureList());
+
+    m_world->DestroyBody(body);
+    m_bodyToComponent.remove(body);
+    return true;
+}
 
 void PhysicsManager::start()
 {

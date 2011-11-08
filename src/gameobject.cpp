@@ -266,7 +266,7 @@ bool GameObject::deserialize(const QDomElement &objectElement)
 QSet<QString> GameObject::getEditProperties()
 {
     QSet<QString> set;
-    set << "x" << "y" << "z" << "opacity" << "pixmapFileName" << "scale" << "rotation" << "visibleInGame";
+    set << "x" << "y" << "z" << "opacity" << "pixmapFileName" << "scale" << "rotation" << "visibleInGame" << "tag";
     return set;
 }
 

@@ -9,6 +9,7 @@ class AnimationComponent : public Component
     Q_PROPERTY(int timeStep READ getTimeStep WRITE setTimeStep)
     Q_PROPERTY(AnimationTrigger animationTrigger READ getTrigger WRITE setTrigger)
     Q_ENUMS(AnimationTrigger)
+    Q_PROPERTY(QString completeTrigger READ getCompleteTrigger WRITE setCompleteTrigger)
     Q_PROPERTY(QStringList pixmapFiles READ getFiles WRITE setFiles)
 
 public:
@@ -21,9 +22,11 @@ public:
     int getTimeStep() {return m_timeStep;}
     AnimationTrigger getTrigger() {return m_trigger;}
     QStringList getFiles() {return m_files;}
+    QString getCompleteTrigger() {return m_completeTrigger;}
 
 private:
     int m_timeStep;
+    QString m_completeTrigger;
     QStringList m_files;
     AnimationTrigger m_trigger;
     int m_currentFrame;
@@ -31,6 +34,7 @@ private:
 
 public slots:
     void setTimeStep(int timeStep) {m_timeStep = timeStep;}
+    void setCompleteTrigger(QString trigger) {m_completeTrigger = trigger;}
     void setTrigger(AnimationTrigger trigger) {m_trigger = trigger;}
     void setFiles(QStringList files) {m_files = files;}
 

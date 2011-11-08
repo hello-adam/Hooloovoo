@@ -11,6 +11,7 @@ class GameObject : public QGraphicsObject
 {
     Q_OBJECT
     Q_PROPERTY(QString pixmapFileName READ getPixmapFile WRITE setPixmapFile)
+    Q_PROPERTY(QString tag READ getTag WRITE setTag)
     Q_PROPERTY(bool visibleInGame READ getVisibleInGame WRITE setVisibleInGame)
 
 public:
@@ -21,6 +22,8 @@ public:
     QString getPixmapFile() {return m_pixmapFileName;}
     void setVisibleInGame(bool visibleInGame) {m_visibleInGame = visibleInGame;}
     bool getVisibleInGame() {return m_visibleInGame;}
+    void setTag(QString tag) {m_tag = tag;}
+    QString getTag() {return m_tag;}
 
     void paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
     QRectF boundingRect() const;
@@ -52,6 +55,7 @@ private:
     QPixmap m_pixmap;
     bool m_visibleInGame;
     bool m_paused;
+    QString m_tag;
 
 signals:
     void sendX(double x);
@@ -72,6 +76,7 @@ public slots:
     void launchEditorDialog();
     void saveObject(QString fileName);
     void launchSaveDialog();
+    void emitLocalEvent(QString trigger) {emit sendLocalEvent(trigger);}
 };
 
 #endif // GAMEOBJECT_H
