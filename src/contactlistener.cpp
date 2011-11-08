@@ -13,7 +13,6 @@ void ContactListener::BeginContact(b2Contact *contact)
     qDebug() << "New Contact";
     PhysicsManager* manager = PhysicsManager::getInstance();
 
-    const b2Manifold* manifold = contact->GetManifold();
     b2WorldManifold worldManifold;
     contact->GetWorldManifold(&worldManifold);
 
@@ -21,8 +20,8 @@ void ContactListener::BeginContact(b2Contact *contact)
     b2Fixture* fixtureB = contact->GetFixtureB();
     PhysicsComponent* componentA = manager->getComponent(fixtureA);
     PhysicsComponent* componentB = manager->getComponent(fixtureB);
-    float32 x = manifold->localNormal.x;
-    float32 y = manifold->localNormal.y;
+    float32 x = worldManifold.normal.x;
+    float32 y = worldManifold.normal.y;
     ContactType typeA = ContactUnknown;
     ContactType typeB = ContactUnknown;
 
