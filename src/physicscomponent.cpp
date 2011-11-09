@@ -90,54 +90,8 @@ void PhysicsComponent::instantiate()
     bodyDef.position.Set(m_parentObject->pos().x()/20.0f, m_parentObject->pos().y()/-20.0f);
     bodyDef.angle = -(m_parentObject->rotation() * (2 * 3.14159)) / 360.0;
 
-
-    //Split up the bounding polygon into smaller polygons if there are too many points (this currently only works for convex polygons)
-    QPolygonF polygonVector = (QPolygonF(m_parentObject->getBoundPoly()));
-    int count = polygonVector.count();
-    QList<QPolygonF> tesselation;
-    if (count > 8)
-    {
-        int leftOver = 0;
-        int mainSize = 2;
-        int tesselations = 2;
-        while (leftOver < 3)
-        {
-            mainSize++;
-            leftOver = count%mainSize;
-            if (leftOver == 0)
-            {
-                leftOver = mainSize;
-                tesselations = count/mainSize;
-            }
-            else
-            {
-                tesselations = count/mainSize + 1;
-            }
-        }
-
-        for (int i=0; i<tesselations-1; i++)
-        {
-            QPolygonF polygon;
-            for (int j=0; j<=mainSize; j++)
-            {
-                polygon.push_back(polygonVector.at(i*mainSize+j));
-            }
-            tesselation.push_back(polygon);
-        }
-        QPolygonF lastPart;
-        for (int j=0; j<leftOver; j++)
-        {
-            lastPart.push_back(polygonVector.at((tesselations-1)*mainSize+j));
-        }
-        lastPart.push_back(polygonVector.at(0));
-        tesselation.push_back(lastPart);
-    }
-    else
-    {
-        tesselation.push_back(polygonVector);
-    }
-
     //Create all of the necessary fixture definitions
+    QList<QPolygonF> tesselation = m_parentObject->getTessellation();
     b2FixtureDef* fixtureDefs = new b2FixtureDef[tesselation.count()];
     double centerX = m_parentObject->width()/2.0;
     double centerY = m_parentObject->height()/2.0;

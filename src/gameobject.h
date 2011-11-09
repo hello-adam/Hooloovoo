@@ -28,7 +28,7 @@ public:
     QString getTag() {return m_tag;}
     void setDefaultColor(QColor color) {m_defaultColor = color; setPixmapFile(m_pixmapFileName);}
     QColor getDefaultColor() {return m_defaultColor;}
-    QPolygon getBoundPoly() { if (m_boundPoly.isEmpty()) createBoundPoly(); return m_boundPoly;}
+    QList<QPolygonF> getTessellation() { if (m_tessellation.isEmpty()) createTesselation(); return m_tessellation;}
 
     void paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
     QRectF boundingRect() const;
@@ -64,9 +64,9 @@ private:
     bool m_paused;
     QString m_tag;
     QColor m_defaultColor;
-    QPolygon m_boundPoly;
+    QList<QPolygonF> m_tessellation;
 
-    void createBoundPoly();
+    void createTesselation();
     QVector<QPoint> grahamScan(QList<QPoint> points, int minYIndex);
 
 signals:

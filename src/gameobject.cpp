@@ -17,6 +17,7 @@ GameObject::GameObject(QGraphicsItem * parent) :
 {
     setObjectName("Game Object");
 
+
     m_visibleInGame = true;
     m_tag = "";
     m_defaultColor = QColor(0, 0, 128);
@@ -79,7 +80,7 @@ void GameObject::setTemporaryPixmapFile(QString fileName)
     }
 }
 
-void GameObject::createBoundPoly()
+void GameObject::createTesselation()
 {
     if (m_pixmap.isNull())
         return;
@@ -117,7 +118,58 @@ void GameObject::createBoundPoly()
     {
         reversed.push_back(original.at(i));
     }
-    m_boundPoly = QPolygon(reversed);
+
+    //Split up the bounding polygon into smaller polygons if there are too many points (this currently only works for convex polygons)
+    QPolygonF polygonVector(reversed);
+    int count = polygonVector.count();
+    QList<QPolygonF> tessellation;
+    if (count > 8)
+    {
+        int leftOver = 0;
+        int mainSize = 2;
+        int tesselations = 2;
+        while (leftOver < 3)
+        {
+            mainSize++;
+            leftOver = count%mainSize;
+            if (leftOver == 0)
+            {
+                leftOver = mainSize;
+                tesselations = count/mainSize;
+            }
+            else
+            {
+                tesselations = count/mainSize + 1;
+            }
+        }
+
+        QPointF center = QPointF(m_pixmap.width()/2, m_pixmap.height()/2);
+
+        for (int i=0; i<tesselations-1; i++)
+        {
+            QPolygonF polygon;
+            for (int j=0; j<=mainSize; j++)
+            {
+                polygon.push_back(polygonVector.at(i*mainSize+j));
+            }
+            polygon.push_back(center);
+            tessellation.push_back(polygon);
+        }
+        QPolygonF lastPart;
+        for (int j=0; j<leftOver; j++)
+        {
+            lastPart.push_back(polygonVector.at((tesselations-1)*mainSize+j));
+        }
+        lastPart.push_back(polygonVector.at(0));
+        lastPart.push_back(center);
+        tessellation.push_back(lastPart);
+    }
+    else
+    {
+        tessellation.push_back(polygonVector);
+    }
+
+    m_tessellation = tessellation;
 }
 
 QVector<QPoint> GameObject::grahamScan(QList<QPoint> points, int minYIndex)
@@ -162,6 +214,10 @@ QVector<QPoint> GameObject::grahamScan(QList<QPoint> points, int minYIndex)
         while ((top.x()-oneFromTop.x())*(next.y()-oneFromTop.y()) - (top.y()-oneFromTop.y())*(next.x()-oneFromTop.x()) <= 0)
         {
                hull.pop_back();
+
+               if (hull.count() < 2)
+                   break;
+
                top = hull.at(hull.count()-1);
                oneFromTop = hull.at(hull.count()-2);
         }
@@ -176,7 +232,14 @@ void GameObject::paint (QPainter * painter, const QStyleOptionGraphicsItem * opt
     painter->setRenderHint(QPainter::SmoothPixmapTransform);
     painter->setOpacity(this->opacity());
     painter->drawPixmap(boundingRect().toRect(), m_pixmap);
-    painter->setPen(Qt::red);
+
+    //Enable this code in order to see the object's tesselation
+//    QList<QPolygonF> tessellation = getTessellation();
+//    painter->setPen(Qt::red);
+//    foreach (QPolygonF poly, tessellation)
+//    {
+//        painter->drawPolygon(poly.translated(m_pixmap.width()/-2, m_pixmap.height()/-2));
+//    }
 }
 
 QRectF GameObject::boundingRect() const
