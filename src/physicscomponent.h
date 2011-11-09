@@ -80,15 +80,15 @@ public slots:
     void setY(double y);
     void setAngle(double degrees);
 
-    void setBodyType(BodyType type) {m_type = type; this->instantiate();}
-    void setStaticRotation(bool staticRotation) {m_staticRotation = staticRotation; this->instantiate();}
-    void setSensor(bool sensor) {m_isSensor = sensor; this->instantiate();}
-    void setDensity(double density) {m_density = density; this->instantiate();}
-    void setVX(double vx) {m_vx = vx; this->instantiate();}
-    void setVY(double vy) {m_vy = vy; this->instantiate();}
-    void setVAngle(double vAngle) {m_vangle = vAngle; this->instantiate();}
-    void setFriction(double friction) {m_friction = friction; this->instantiate();}
-    void setLinearDamping(double damping) {if (damping < 0 || damping > 10) damping = INFINITY;  m_linearDamping = damping; this->instantiate();}
+    void setBodyType(BodyType type) {m_type = type;}
+    void setStaticRotation(bool staticRotation) {m_staticRotation = staticRotation;}
+    void setSensor(bool sensor) {m_isSensor = sensor;}
+    void setDensity(double density) {m_density = density;}
+    void setVX(double vx) {m_vx = vx;}
+    void setVY(double vy) {m_vy = vy;}
+    void setVAngle(double vAngle) {m_vangle = vAngle;}
+    void setFriction(double friction) {m_friction = friction;}
+    void setLinearDamping(double damping) {if (damping < 0 || damping > 10) damping = INFINITY;  m_linearDamping = damping;}
 
     void updateParent();
 };

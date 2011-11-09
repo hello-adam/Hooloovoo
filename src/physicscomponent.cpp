@@ -90,16 +90,77 @@ void PhysicsComponent::instantiate()
     bodyDef.position.Set(m_parentObject->pos().x()/20.0f, m_parentObject->pos().y()/-20.0f);
     bodyDef.angle = -(m_parentObject->rotation() * (2 * 3.14159)) / 360.0;
 
-    b2PolygonShape shape;
-    shape.SetAsBox(m_parentObject->width()/40.0f, m_parentObject->height()/40.0f);
 
-    b2FixtureDef fixture;
-    fixture.shape = &shape;
-    fixture.friction = m_friction;
-    fixture.density = m_density;
-    fixture.isSensor = m_isSensor;
+    //Split up the bounding polygon into smaller polygons if there are too many points (this currently only works for convex polygons)
+    QPolygonF polygonVector = (QPolygonF(m_parentObject->getBoundPoly()));
+    int count = polygonVector.count();
+    QList<QPolygonF> tesselation;
+    if (count > 8)
+    {
+        int leftOver = 0;
+        int mainSize = 2;
+        int tesselations = 2;
+        while (leftOver < 3)
+        {
+            mainSize++;
+            leftOver = count%mainSize;
+            if (leftOver == 0)
+            {
+                leftOver = mainSize;
+                tesselations = count/mainSize;
+            }
+            else
+            {
+                tesselations = count/mainSize + 1;
+            }
+        }
 
-    m_body = PhysicsManager::getInstance()->addBody(&bodyDef, &fixture, this);
+        for (int i=0; i<tesselations-1; i++)
+        {
+            QPolygonF polygon;
+            for (int j=0; j<=mainSize; j++)
+            {
+                polygon.push_back(polygonVector.at(i*mainSize+j));
+            }
+            tesselation.push_back(polygon);
+        }
+        QPolygonF lastPart;
+        for (int j=0; j<leftOver; j++)
+        {
+            lastPart.push_back(polygonVector.at((tesselations-1)*mainSize+j));
+        }
+        lastPart.push_back(polygonVector.at(0));
+        tesselation.push_back(lastPart);
+    }
+    else
+    {
+        tesselation.push_back(polygonVector);
+    }
+
+    //Create all of the necessary fixture definitions
+    b2FixtureDef* fixtureDefs = new b2FixtureDef[tesselation.count()];
+    double centerX = m_parentObject->width()/2.0;
+    double centerY = m_parentObject->height()/2.0;
+    QList<b2PolygonShape*> shapes;
+    for(int j=0; j<tesselation.count(); j++)
+    {
+        b2Vec2 *vertices = new b2Vec2[tesselation.at(j).count()];
+        for (int i=0; i<tesselation.at(j).count(); i++)
+        {
+            vertices[i] = b2Vec2((tesselation.at(j).at(i).x()*m_parentObject->scale() - centerX)/20.0f, -1*(tesselation.at(j).at(i).y()*m_parentObject->scale() - centerY)/20.0f);
+        }
+        shapes.push_back(new b2PolygonShape());
+        shapes.back()->Set(vertices, tesselation.at(j).count());
+
+        b2FixtureDef fixture;
+        fixture.shape = shapes.back();
+        fixture.friction = m_friction;
+        fixture.density = m_density;
+        fixture.isSensor = m_isSensor;
+        fixtureDefs[j] = fixture;
+    }
+    m_body = PhysicsManager::getInstance()->addBody(&bodyDef, fixtureDefs, tesselation.count(), this);
+    qDeleteAll(shapes);
 
     m_body->SetAngularVelocity(m_vangle);
     m_body->SetFixedRotation(m_staticRotation);

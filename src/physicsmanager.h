@@ -17,7 +17,7 @@ public:
     void setGravity(double gravity) {m_gravity = gravity;  m_world->SetGravity(b2Vec2(0, m_gravity));}
     double getGravity() {return m_gravity;}
 
-    b2Body* addBody(b2BodyDef* bodyDef, b2FixtureDef* fixtureDef, PhysicsComponent* component);
+    b2Body* addBody(b2BodyDef* bodyDef, b2FixtureDef fixtureDef[], int fixtureCount, PhysicsComponent* component);
     bool removeBody(b2Body* body);
 
     PhysicsComponent* getComponent(b2Body* body) {return m_bodyToComponent.value(body);}

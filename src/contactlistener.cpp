@@ -10,7 +10,6 @@ ContactListener::ContactListener(QObject *parent) :
 
 void ContactListener::BeginContact(b2Contact *contact)
 {
-    qDebug() << "New Contact";
     PhysicsManager* manager = PhysicsManager::getInstance();
 
     b2WorldManifold worldManifold;
@@ -54,7 +53,6 @@ void ContactListener::BeginContact(b2Contact *contact)
 
 void ContactListener::EndContact(b2Contact *contact)
 {
-    qDebug() << "End of Contact";
     PhysicsManager* manager = PhysicsManager::getInstance();
 
     b2Fixture* fixtureA = contact->GetFixtureA();

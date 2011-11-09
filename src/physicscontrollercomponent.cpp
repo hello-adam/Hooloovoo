@@ -53,8 +53,6 @@ void PhysicsControllerComponent::keyPressEvent(QKeyEvent *ke)
 
     m_pressedKeys.insert(ke->key());
 
-    qDebug() << (int)m_physicsComponent->getContactCondition();
-
     if (ke->key() == Qt::Key_W)
     {
         if (m_physicsComponent->getContactCondition() & ContactBottom)

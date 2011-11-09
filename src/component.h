@@ -22,6 +22,7 @@ public:
     virtual void keyPressEvent(QKeyEvent* ke) {}
     virtual void keyReleaseEvent(QKeyEvent* ke) {}
     virtual bool allowMultipleComponents() {return true;}
+    virtual void instantiate() {};
 
 protected:
     GameObject* m_parentObject;

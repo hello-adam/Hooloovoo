@@ -40,7 +40,7 @@ void AnimationComponent::reactToTimerTick()
                 emit sendLocalEvent(m_completeTrigger);
         }
 
-        m_parentObject->setPixmapFile(m_files.at(m_currentFrame));
+        m_parentObject->setTemporaryPixmapFile(m_files.at(m_currentFrame));
 
         this->getParentObject()->update();
 

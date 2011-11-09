@@ -17,12 +17,10 @@ GameObject::GameObject(QGraphicsItem * parent) :
 {
     setObjectName("Game Object");
 
-    m_pixmap = QPixmap(42, 42);
-    m_pixmap.fill(Qt::darkBlue);
-    m_pixmapFileName = "";
     m_visibleInGame = true;
     m_tag = "";
     m_defaultColor = QColor(0, 0, 128);
+    this->setPixmapFile("");
 
     m_paused = false;
 
@@ -72,11 +70,113 @@ void GameObject::setPixmapFile(QString fileName)
     }
 }
 
+void GameObject::setTemporaryPixmapFile(QString fileName)
+{
+    if (!m_pixmap.load(GameCore::getPicturePath() + fileName))
+    {
+        m_pixmap = QPixmap(42, 42);
+        m_pixmap.fill(m_defaultColor);
+    }
+}
+
+void GameObject::createBoundPoly()
+{
+    if (m_pixmap.isNull())
+        return;
+
+    QList<QPoint> outlinePoints;
+    QImage image = m_pixmap.toImage();
+
+    for(int y=0; y<image.height(); y++)
+    {
+        for (int x=0; x<image.width(); x++)
+        {
+            if (qAlpha(image.pixel(x, y)) > 0)
+            {
+                if (x>0 && x+1<image.width() && y>0 && y+1<image.height())
+                {
+                    if (qAlpha(image.pixel(x-1, y)) == 0
+                            || qAlpha(image.pixel(x+1, y)) == 0
+                            || qAlpha(image.pixel(x, y-1)) == 0
+                            || qAlpha(image.pixel(x+1, y+1)) == 0)
+                    {
+                        outlinePoints.push_back(QPoint(x, y));
+                    }
+                }
+                else
+                {
+                    outlinePoints.push_back(QPoint(x, y));
+                }
+            }
+        }
+    }
+
+    QVector<QPoint> original = grahamScan(outlinePoints, 0);
+    QVector<QPoint> reversed;
+    for (int i=original.count()-1; i>=0; i--)
+    {
+        reversed.push_back(original.at(i));
+    }
+    m_boundPoly = QPolygon(reversed);
+}
+
+QVector<QPoint> GameObject::grahamScan(QList<QPoint> points, int minYIndex)
+{
+    if (minYIndex >= points.count() || minYIndex < 0)
+        return QVector<QPoint>();
+
+    QPoint minY = points.takeAt(minYIndex);
+
+    //sort by polar angle around minY
+    QMap<double, QPoint> pointsByCosine;
+    foreach(QPoint point, points)
+    {
+        QPoint diff = point - minY;
+        double cosine = -1.0*diff.x() / sqrt(diff.x()*diff.x() + diff.y()*diff.y());
+        if (pointsByCosine.value(cosine, QPoint()).isNull())
+        {
+            pointsByCosine.insert(cosine, point);
+        }
+        else
+        {
+            QPoint otherDiff = pointsByCosine.value(cosine, QPoint()) - minY;
+            if (otherDiff.manhattanLength() < diff.manhattanLength())
+            {
+                pointsByCosine.remove(cosine);
+                pointsByCosine.insert(cosine, point);
+            }
+        }
+    }
+    points = pointsByCosine.values();
+
+    QVector<QPoint> hull;
+    hull << minY;
+    hull << points.takeFirst();
+
+    while (!points.isEmpty())
+    {
+        QPoint next = points.takeFirst();
+        QPoint top = hull.at(hull.count()-1);
+        QPoint oneFromTop = hull.at(hull.count()-2);
+
+        while ((top.x()-oneFromTop.x())*(next.y()-oneFromTop.y()) - (top.y()-oneFromTop.y())*(next.x()-oneFromTop.x()) <= 0)
+        {
+               hull.pop_back();
+               top = hull.at(hull.count()-1);
+               oneFromTop = hull.at(hull.count()-2);
+        }
+        hull.push_back(next);
+    }
+
+    return hull;
+}
+
 void GameObject::paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
     painter->setRenderHint(QPainter::SmoothPixmapTransform);
     painter->setOpacity(this->opacity());
     painter->drawPixmap(boundingRect().toRect(), m_pixmap);
+    painter->setPen(Qt::red);
 }
 
 QRectF GameObject::boundingRect() const

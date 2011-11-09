@@ -20,6 +20,7 @@ public:
     ~GameObject();
 
     void setPixmapFile(QString fileName);
+    void setTemporaryPixmapFile(QString fileName);
     QString getPixmapFile() {return m_pixmapFileName;}
     void setVisibleInGame(bool visibleInGame) {m_visibleInGame = visibleInGame;}
     bool getVisibleInGame() {return m_visibleInGame;}
@@ -27,6 +28,7 @@ public:
     QString getTag() {return m_tag;}
     void setDefaultColor(QColor color) {m_defaultColor = color; setPixmapFile(m_pixmapFileName);}
     QColor getDefaultColor() {return m_defaultColor;}
+    QPolygon getBoundPoly() { if (m_boundPoly.isEmpty()) createBoundPoly(); return m_boundPoly;}
 
     void paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
     QRectF boundingRect() const;
@@ -47,6 +49,8 @@ public:
 
     void distributeKeyEvent(QKeyEvent *event);
 
+    bool polarLessThan(const QPoint &a, const QPoint &b);
+
 
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
@@ -60,6 +64,10 @@ private:
     bool m_paused;
     QString m_tag;
     QColor m_defaultColor;
+    QPolygon m_boundPoly;
+
+    void createBoundPoly();
+    QVector<QPoint> grahamScan(QList<QPoint> points, int minYIndex);
 
 signals:
     void sendX(double x);

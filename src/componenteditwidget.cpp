@@ -60,4 +60,5 @@ void ComponentEditWidget::saveChanges()
     {
         edit->writeProperty();
     }
+    m_component->instantiate();
 }
