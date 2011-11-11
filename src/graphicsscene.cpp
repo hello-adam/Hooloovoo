@@ -53,7 +53,7 @@ void GraphicsScene::drawForeground(QPainter *painter, const QRectF &rect)
         painter->setBrush(Qt::black);
         painter->setFont(QFont("Consolas", 24));
         painter->drawText(
-                    QRectF(this->views().at(0)->mapToScene(this->views().at(0)->width()/2 - 80, this->views().at(0)->width()/2 - 10), QSizeF(160, 20)),
+                    QRectF(this->views().at(0)->mapToScene(this->views().at(0)->width()/2 - 80, this->views().at(0)->height()/2 - 12), QSizeF(160, 25)),
                     "PAUSED", QTextOption(Qt::AlignHCenter | Qt::AlignVCenter));
     }
 }
@@ -93,14 +93,6 @@ void GraphicsScene::keyPressEvent(QKeyEvent *event)
 void GraphicsScene::keyReleaseEvent(QKeyEvent *event)
 {
     GameCore::getInstance()->handleKeyEvent(event);
-}
-
-void GraphicsScene::distributeKeyEvent(QKeyEvent *event)
-{
-    foreach(GameObject* go, m_gameObjects)
-    {
-        go->distributeKeyEvent(event);
-    }
 }
 
 void GraphicsScene::clearAll()

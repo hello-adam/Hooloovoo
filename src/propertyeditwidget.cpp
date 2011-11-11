@@ -5,7 +5,7 @@
 #include <QListWidget>
 #include <QPalette>
 #include <QColorDialog>
-
+#include "editwidgets/pointedit.h"
 
 PropertyEditWidget::PropertyEditWidget(QWidget *parent) :
     QWidget(parent),
@@ -141,6 +141,13 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
         m_toolButton->setText("Select Color");
         connect(m_toolButton, SIGNAL(clicked()), this, SLOT(colorDialog()));
     }
+    else if (value.type() == QVariant::PointF)
+    {
+        PointEdit *pointEdit = new PointEdit(value.toPointF(), this);
+        m_editWidget = pointEdit;
+        ui->horizontalLayout->addWidget(pointEdit);
+        return true;
+    }
 
     return false;
 }
@@ -164,6 +171,8 @@ void PropertyEditWidget::writeProperty()
         value.setValue(qobject_cast<QSpinBox*>(m_editWidget)->value());
     else if (qobject_cast<QCheckBox*>(m_editWidget))
         value.setValue(qobject_cast<QCheckBox*>(m_editWidget)->isChecked());
+    else if (qobject_cast<PointEdit*>(m_editWidget))
+        value.setValue(qobject_cast<PointEdit*>(m_editWidget)->getPoint());
     else if (qobject_cast<QComboBox*>(m_editWidget))
     {
         QMetaEnum enumerator = m_property.enumerator();

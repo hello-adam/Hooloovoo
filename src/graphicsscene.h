@@ -17,8 +17,6 @@ public:
     void pause();
     void unpause();
 
-    void distributeKeyEvent(QKeyEvent *event);
-
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect);
     void drawForeground(QPainter *painter, const QRectF &rect);

@@ -31,7 +31,9 @@ HEADERS += \
     src/inputcomponent.h \
     src/componenteditwidget.h \
     src/contactlistener.h \
-    src/contactcomponent.h
+    src/contactcomponent.h \
+    src/inputreceiver.h \
+    src/editwidgets/pointedit.h
 
 SOURCES += \
     src/mainwindow.cpp \
@@ -54,16 +56,24 @@ SOURCES += \
     src/inputcomponent.cpp \
     src/componenteditwidget.cpp \
     src/contactlistener.cpp \
-    src/contactcomponent.cpp
+    src/contactcomponent.cpp \
+    src/inputreceiver.cpp \
+    src/editwidgets/pointedit.cpp
 
 FORMS += \
     src/mainwindow.ui \
     src/gamefiledialog.ui \
     src/gameobjecteditdialog.ui \
     src/propertyeditwidget.ui \
-    src/componenteditwidget.ui
+    src/componenteditwidget.ui \
+    src/editwidgets/pointedit.ui
 
 OTHER_FILES +=
+
+
+
+
+
 
 
 

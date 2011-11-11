@@ -276,24 +276,6 @@ void GameObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     delete saveAction;
 }
 
-void GameObject::distributeKeyEvent(QKeyEvent *event)
-{
-    if (event->type() == QKeyEvent::KeyPress)
-    {
-        foreach(Component* c, m_components)
-        {
-            c->keyPressEvent(event);
-        }
-    }
-    else if (event->type() == QKeyEvent::KeyRelease)
-    {
-        foreach(Component* c, m_components)
-        {
-            c->keyReleaseEvent(event);
-        }
-    }
-}
-
 void GameObject::setPaused(bool pause)
 {
     if (pause)

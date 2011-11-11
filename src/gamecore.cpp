@@ -34,6 +34,7 @@ GameCore* GameCore::getInstance()
 
 GameCore::~GameCore()
 {
+    qDeleteAll(m_inputReceivers);
 }
 
 void GameCore::initializeGameDirectoriesAndData()
@@ -218,14 +219,22 @@ void GameCore::loadGame(QString fileName)
 
 void GameCore::handleKeyEvent(QKeyEvent *ke)
 {
+    if (ke->isAutoRepeat())
+    {
+        ke->ignore();
+        return;
+    }
+
     if (ke->key() == Qt::Key_Space && ke->type() == QKeyEvent::KeyPress)
     {
         this->togglePaused();
     }
     else
     {
-        if (m_scene)
-            m_scene->distributeKeyEvent(ke);
+        foreach(InputReceiver* receiver, m_inputReceivers)
+        {
+            receiver->handleKeyEvent(ke);
+        }
     }
 }
 

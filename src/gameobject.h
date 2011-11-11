@@ -47,8 +47,6 @@ public:
     QDomElement serialize(QDomDocument *document);
     bool deserialize(const QDomElement &objectElement);
 
-    void distributeKeyEvent(QKeyEvent *event);
-
     bool polarLessThan(const QPoint &a, const QPoint &b);
 
 
@@ -88,7 +86,7 @@ public slots:
     void launchEditorDialog();
     void saveObject(QString fileName);
     void launchSaveDialog();
-    void emitLocalEvent(QString trigger) {emit sendLocalEvent(trigger);}
+    void emitLocalEvent(QString trigger) {if (!trigger.isEmpty()) emit sendLocalEvent(trigger);}
 };
 
 #endif // GAMEOBJECT_H

@@ -8,6 +8,7 @@
 #include "gameobject.h"
 #include "componentfactory.h"
 #include "physicsmanager.h"
+#include "inputreceiver.h"
 
 class GameCore : public QObject
 {
@@ -36,11 +37,16 @@ public:
 
     void handleKeyEvent(QKeyEvent *ke);
 
+    void addInputReceiver(InputReceiver* receiver) {m_inputReceivers.push_back(receiver);}
+    void removeInputReceiver(InputReceiver* receiver) {m_inputReceivers.removeAll(receiver);}
+
 private:
     GraphicsScene* m_scene;
     explicit GameCore(QObject *parent = 0);
     static GameCore *m_instance;
     QTimer m_gameTimer;
+
+    QList<InputReceiver*> m_inputReceivers;
 
     bool m_isPaused;
     void pause();
