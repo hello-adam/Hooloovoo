@@ -52,7 +52,7 @@ signals:
 
 public slots:
     void checkForAddedPhysicsComponent(Component* c);
-    void checkForRemovecPhysicsComponent(Component* c);
+    void checkForRemovedPhysicsComponent(Component* c);
 
     void reactToLocalEvent(QString trigger);
     void reactToTimerTick();

@@ -130,6 +130,9 @@ bool Component::deserialize(const QDomElement &objectElement)
 
 void Component::checkForPropertyChange(QString trigger)
 {
+
+    qDebug() << trigger;
+
     if (trigger.startsWith("Property"))
     {
         QStringList command = trigger.split(' ');
@@ -143,7 +146,8 @@ void Component::checkForPropertyChange(QString trigger)
     }
     else if (trigger.startsWith(m_tag)  && !m_tag.isEmpty())
     {
-        QStringList command = trigger.mid(m_tag.count()+1).split(' ', QString::SkipEmptyParts);
+        QStringList command = trigger.mid(m_tag.count()).split(' ', QString::SkipEmptyParts);
+        qDebug() << "CHecking" << command;
         if (command.count() > 2)
         {
             if (this->metaObject()->indexOfProperty(command.at(1).toStdString().c_str()) >= 0)

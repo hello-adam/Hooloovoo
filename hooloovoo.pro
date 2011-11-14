@@ -33,7 +33,8 @@ HEADERS += \
     src/contactlistener.h \
     src/contactcomponent.h \
     src/inputreceiver.h \
-    src/editwidgets/pointedit.h
+    src/editwidgets/pointedit.h \
+    src/timercomponent.h
 
 SOURCES += \
     src/mainwindow.cpp \
@@ -58,7 +59,8 @@ SOURCES += \
     src/contactlistener.cpp \
     src/contactcomponent.cpp \
     src/inputreceiver.cpp \
-    src/editwidgets/pointedit.cpp
+    src/editwidgets/pointedit.cpp \
+    src/timercomponent.cpp
 
 FORMS += \
     src/mainwindow.ui \
@@ -69,6 +71,8 @@ FORMS += \
     src/editwidgets/pointedit.ui
 
 OTHER_FILES +=
+
+
 
 
 

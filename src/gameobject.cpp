@@ -450,6 +450,7 @@ bool GameObject::deserialize(const QDomElement &objectElement)
         if (c)
         {
             m_components.push_back(c);
+            emit componentAdded(c);
         }
         component = component.nextSiblingElement("component");
     }

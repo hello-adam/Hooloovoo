@@ -7,7 +7,7 @@ SpawnComponent::SpawnComponent(GameObject *parentObject) :
     this->setObjectName("Spawn Component");
 
     m_objectFileName = "";
-    m_interval = 120;
+    m_interval = -1;
     m_elapsed = 0;
     m_offset = QPointF(0, 0);
 

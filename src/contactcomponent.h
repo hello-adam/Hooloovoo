@@ -36,7 +36,7 @@ public slots:
 
     void reactToContact(GameObject* contactObject);
     void checkForAddedPhysicsComponent(Component* c);
-    void checkForRemovecPhysicsComponent(Component* c);
+    void checkForRemovedPhysicsComponent(Component* c);
 };
 
 #endif // CONTACTCOMPONENT_H

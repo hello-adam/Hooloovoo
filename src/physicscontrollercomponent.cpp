@@ -28,7 +28,7 @@ PhysicsControllerComponent::PhysicsControllerComponent(GameObject *parentObject)
     connect(parentObject, SIGNAL(componentAdded(Component*)),
             this, SLOT(checkForAddedPhysicsComponent(Component*)));
     connect(parentObject, SIGNAL(componentRemoved(Component*)),
-            this, SLOT(checkForRemovecPhysicsComponent(Component*)));
+            this, SLOT(checkForRemovedPhysicsComponent(Component*)));
 
     connect(parentObject, SIGNAL(sendLocalEvent(QString)),
             this, SLOT(reactToLocalEvent(QString)));
@@ -54,7 +54,7 @@ void PhysicsControllerComponent::checkForAddedPhysicsComponent(Component* c)
         m_physicsComponent = qobject_cast<PhysicsComponent*>(c);
 }
 
-void PhysicsControllerComponent::checkForRemovecPhysicsComponent(Component* c)
+void PhysicsControllerComponent::checkForRemovedPhysicsComponent(Component* c)
 {
     if (!m_physicsComponent)
         return;

@@ -24,25 +24,28 @@ void ContactListener::BeginContact(b2Contact *contact)
     PhysicsComponent::ContactType typeA = PhysicsComponent::ContactIrrelevant;
     PhysicsComponent::ContactType typeB = PhysicsComponent::ContactIrrelevant;
 
-    if (x<0)
+    if (!(fixtureA->IsSensor() || fixtureB->IsSensor()))
     {
-        typeA = typeA | PhysicsComponent::ContactLeft;
-        typeB = typeB | PhysicsComponent::ContactRight;
-    }
-    if (x>0)
-    {
-        typeA = typeA | PhysicsComponent::ContactRight;
-        typeB = typeB | PhysicsComponent::ContactLeft;
-    }
-    if (y<0)
-    {
-        typeA = typeA | PhysicsComponent::ContactBottom;
-        typeB = typeB | PhysicsComponent::ContactTop;
-    }
-    if (y>0)
-    {
-        typeA = typeA | PhysicsComponent::ContactTop;
-        typeB = typeB | PhysicsComponent::ContactBottom;
+        if (x<0)
+        {
+            typeA = typeA | PhysicsComponent::ContactLeft;
+            typeB = typeB | PhysicsComponent::ContactRight;
+        }
+        if (x>0)
+        {
+            typeA = typeA | PhysicsComponent::ContactRight;
+            typeB = typeB | PhysicsComponent::ContactLeft;
+        }
+        if (y<0)
+        {
+            typeA = typeA | PhysicsComponent::ContactBottom;
+            typeB = typeB | PhysicsComponent::ContactTop;
+        }
+        if (y>0)
+        {
+            typeA = typeA | PhysicsComponent::ContactTop;
+            typeB = typeB | PhysicsComponent::ContactBottom;
+        }
     }
 
     if (componentA)

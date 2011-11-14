@@ -21,7 +21,7 @@ ContactComponent::ContactComponent(GameObject *parentObject) :
     connect(parentObject, SIGNAL(componentAdded(Component*)),
             this, SLOT(checkForAddedPhysicsComponent(Component*)));
     connect(parentObject, SIGNAL(componentRemoved(Component*)),
-            this, SLOT(checkForRemovecPhysicsComponent(Component*)));
+            this, SLOT(checkForRemovedPhysicsComponent(Component*)));
 
     if (m_physicsComponent)
         connect(m_physicsComponent, SIGNAL(enteringContact(GameObject*)), this, SLOT(reactToContact(GameObject*)));
@@ -58,7 +58,7 @@ void ContactComponent::checkForAddedPhysicsComponent(Component* c)
         connect(m_physicsComponent, SIGNAL(enteringContact(GameObject*)), this, SLOT(reactToContact(GameObject*)));
 }
 
-void ContactComponent::checkForRemovecPhysicsComponent(Component* c)
+void ContactComponent::checkForRemovedPhysicsComponent(Component* c)
 {
     if (!m_physicsComponent)
         return;

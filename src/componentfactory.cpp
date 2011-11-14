@@ -7,6 +7,7 @@
 #include "animationcomponent.h"
 #include "inputcomponent.h"
 #include "contactcomponent.h"
+#include "timercomponent.h"
 
 ComponentFactory::ComponentFactory()
 {
@@ -44,6 +45,11 @@ Component* ComponentFactory::createComponent(GameObject* parentObject, QString n
     {
         ContactComponent* contact = new ContactComponent(parentObject);
         return contact;
+    }
+    else if (name == "Timer Component")
+    {
+        TimerComponent* timer = new TimerComponent(parentObject);
+        return timer;
     }
     else
         return 0;
@@ -90,6 +96,12 @@ Component* ComponentFactory::createComponent(GameObject* parentObject, const QDo
         contact->deserialize(specs);
         return contact;
     }
+    else if (name == "Timer Component")
+    {
+        TimerComponent* timer = new TimerComponent(parentObject);
+        timer->deserialize(specs);
+        return timer;
+    }
     else
         return 0;
 }
@@ -97,6 +109,6 @@ Component* ComponentFactory::createComponent(GameObject* parentObject, const QDo
 QStringList ComponentFactory::availableComponents()
 {
     QStringList available;
-    available << "Physics Component" << "Physics Controller Component" << "Spawn Component" << "Animation Component" << "Input Component" <<"Contact Component";
+    available << "Physics Component" << "Physics Controller Component" << "Spawn Component" << "Animation Component" << "Input Component" <<"Contact Component" << "Timer Component";
     return available;
 }
