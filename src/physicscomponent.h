@@ -21,9 +21,17 @@ class PhysicsComponent : public Component
     Q_PROPERTY(double friction READ getFriction WRITE setFriction)
     Q_PROPERTY(double linearDamping READ getLinearDamping WRITE setLinearDamping)
 
+    Q_ENUMS(ContactType)
+
 
 public:
     enum BodyType { Static, Dynamic, Kinematic };
+    enum ContactType {  ContactTop = 1,
+                        ContactBottom = 2,
+                        ContactLeft = 4,
+                        ContactRight = 8,
+                        ContactIrrelevant = 16};
+
 
     explicit PhysicsComponent(GameObject *parentObject);
     ~PhysicsComponent();
@@ -92,6 +100,10 @@ public slots:
 
     void updateParent();
 };
+
+
+inline PhysicsComponent::ContactType operator|( PhysicsComponent::ContactType lhs, PhysicsComponent::ContactType rhs ) {return PhysicsComponent::ContactType( int(lhs) | int(rhs) );}
+inline PhysicsComponent::ContactType operator&( PhysicsComponent::ContactType lhs, PhysicsComponent::ContactType rhs ) {return PhysicsComponent::ContactType( int(lhs) & int(rhs) );}
 
 Q_DECLARE_METATYPE(PhysicsComponent::BodyType)
 

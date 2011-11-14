@@ -21,28 +21,28 @@ void ContactListener::BeginContact(b2Contact *contact)
     PhysicsComponent* componentB = manager->getComponent(fixtureB);
     float32 x = worldManifold.normal.x;
     float32 y = worldManifold.normal.y;
-    ContactType typeA = ContactUnknown;
-    ContactType typeB = ContactUnknown;
+    PhysicsComponent::ContactType typeA = PhysicsComponent::ContactIrrelevant;
+    PhysicsComponent::ContactType typeB = PhysicsComponent::ContactIrrelevant;
 
     if (x<0)
     {
-        typeA = typeA | ContactLeft;
-        typeB = typeB | ContactRight;
+        typeA = typeA | PhysicsComponent::ContactLeft;
+        typeB = typeB | PhysicsComponent::ContactRight;
     }
     if (x>0)
     {
-        typeA = typeA | ContactRight;
-        typeB = typeB | ContactLeft;
+        typeA = typeA | PhysicsComponent::ContactRight;
+        typeB = typeB | PhysicsComponent::ContactLeft;
     }
     if (y<0)
     {
-        typeA = typeA | ContactBottom;
-        typeB = typeB | ContactTop;
+        typeA = typeA | PhysicsComponent::ContactBottom;
+        typeB = typeB | PhysicsComponent::ContactTop;
     }
     if (y>0)
     {
-        typeA = typeA | ContactTop;
-        typeB = typeB | ContactBottom;
+        typeA = typeA | PhysicsComponent::ContactTop;
+        typeB = typeB | PhysicsComponent::ContactBottom;
     }
 
     if (componentA)

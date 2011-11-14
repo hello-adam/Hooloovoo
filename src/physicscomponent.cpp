@@ -10,6 +10,7 @@ PhysicsComponent::PhysicsComponent(GameObject *parentObject) :
 
     this->setObjectName("Physics Component");
     qRegisterMetaType<PhysicsComponent::BodyType>("BodyType");
+    qRegisterMetaType<PhysicsComponent::ContactType>("ContactType");
 
     m_type = PhysicsComponent::Static;
     m_staticRotation = false;
@@ -133,9 +134,9 @@ void PhysicsComponent::updateParent()
     }
 }
 
-ContactType PhysicsComponent::getContactCondition()
+PhysicsComponent::ContactType PhysicsComponent::getContactCondition()
 {
-    ContactType type = ContactUnknown;
+    ContactType type = PhysicsComponent::ContactIrrelevant;
 
     foreach(ContactType t, m_contacts.values())
     {

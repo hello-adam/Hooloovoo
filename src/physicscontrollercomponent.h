@@ -4,6 +4,7 @@
 #include "component.h"
 #include "physicscomponent.h"
 #include "gameobject.h"
+#include "contactlistener.h"
 
 class PhysicsControllerComponent : public Component
 {
@@ -12,8 +13,7 @@ class PhysicsControllerComponent : public Component
     Q_PROPERTY(QString releaseTrigger READ getReleaseTrigger WRITE setReleaseTrigger)
     Q_PROPERTY(PhysicsControlType controlType READ getControlType WRITE setControlType)
     Q_ENUMS(PhysicsControlType)
-//    Q_PROPERTY(ContactType requiredContact READ getRequiredContact WRITE setRequiredContact)
-//    Q_ENUMS(ContactType)
+    Q_PROPERTY(PhysicsComponent::ContactType requiredContact READ getRequiredContact WRITE setRequiredContact)
     Q_PROPERTY(QPointF value READ getValue WRITE setValue)
 
 public:
@@ -36,6 +36,9 @@ public:
     void setControlType(PhysicsControlType type) {m_controlType = type;}
     PhysicsControlType getControlType() {return m_controlType;}
 
+    void setRequiredContact(PhysicsComponent::ContactType type) {m_requiredContact = type;}
+    PhysicsComponent::ContactType getRequiredContact() {return m_requiredContact;}
+
 private:
     PhysicsComponent* m_physicsComponent;
 
@@ -43,6 +46,7 @@ private:
     QString m_releaseTrigger;
     QPointF m_value;
     PhysicsControlType m_controlType;
+    PhysicsComponent::ContactType m_requiredContact;
 
 signals:
 
@@ -55,6 +59,5 @@ public slots:
 };
 
 Q_DECLARE_METATYPE(PhysicsControllerComponent::PhysicsControlType)
-Q_DECLARE_METATYPE(ContactType)
 
 #endif // PHYSICSCONTROLLERCOMPONENT_H

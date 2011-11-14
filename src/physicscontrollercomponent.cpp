@@ -11,6 +11,7 @@ PhysicsControllerComponent::PhysicsControllerComponent(GameObject *parentObject)
     m_engageTrigger = "";
     m_releaseTrigger = "";
     m_controlType = PhysicsControllerComponent::ConstantVelocity;
+    m_requiredContact = PhysicsComponent::ContactIrrelevant;
 
     qRegisterMetaType<PhysicsControllerComponent::PhysicsControlType>("PhysicsControlType");
 
@@ -40,7 +41,7 @@ PhysicsControllerComponent::~PhysicsControllerComponent()
 QSet<QString> PhysicsControllerComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "engageTrigger" << "releaseTrigger" << "controlType" << "value";
+    properties << "engageTrigger" << "releaseTrigger" << "controlType" << "value" << "requiredContact";
     return properties;
 }
 
@@ -69,7 +70,7 @@ void PhysicsControllerComponent::reactToLocalEvent(QString trigger)
     if (!m_physicsComponent->getBody())
         return;
 
-    if (trigger == m_engageTrigger)
+    if (trigger == m_engageTrigger && m_physicsComponent->getContactCondition() & m_requiredContact)
     {
         if (m_controlType == PhysicsControllerComponent::Impulse)
         {

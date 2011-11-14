@@ -52,6 +52,14 @@ QDomElement Component::serialize(QDomDocument *document)
                 prop.setAttribute("count", stringList.count());
                 componentElement.appendChild(prop);
             }
+            else if (value.type() == QVariant::PointF)
+            {
+                QDomElement prop = document->createElement(name);
+                prop.setAttribute("type", value.type());
+                prop.setAttribute("x", value.toPointF().x());
+                prop.setAttribute("y", value.toPointF().y());
+                componentElement.appendChild(prop);
+            }
             else
             {
                 QDomElement prop = document->createElement(name);
@@ -86,6 +94,15 @@ bool Component::deserialize(const QDomElement &objectElement)
             {
                 property.write(this, value);
             }
+        }
+        else if (prop.hasAttribute("x") && prop.hasAttribute("y"))
+        {
+            QVariant value;
+            QPointF point;
+            point.setX(prop.attribute("x", "0").toDouble());
+            point.setY(prop.attribute("y", "0").toDouble());
+            value.setValue(point);
+            property.write(this, value);
         }
         else if (prop.hasAttribute("type") && prop.hasAttribute("count"))
         {
