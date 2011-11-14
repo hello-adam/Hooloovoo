@@ -497,6 +497,18 @@ void GameObject::checkLocalEvent(QString trigger)
     {
         this->deleteLater();
     }
+
+    if (trigger.startsWith("Property"))
+    {
+        QStringList command = trigger.split(' ');
+        if (command.count() > 2)
+        {
+            if (this->getEditProperties().contains(command.at(1)))
+            {
+                this->setProperty(command.at(1).toStdString().c_str(), QVariant(command.at(2)));
+            }
+        }
+    }
 }
 
 void GameObject::launchSaveDialog()

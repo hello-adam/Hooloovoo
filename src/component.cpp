@@ -5,10 +5,14 @@ Component::Component(GameObject *parentObject) :
     //QObject(parentObject),
     m_parentObject(parentObject)
 {
+    m_tag = "";
+
     connect(this, SIGNAL(sendLocalEvent(QString)),
             parentObject, SIGNAL(sendLocalEvent(QString)));
     connect(this, SIGNAL(sendGlobalEvent(QString)),
             parentObject, SIGNAL(sendGlobalEvent(QString)));
+    connect(parentObject, SIGNAL(sendLocalEvent(QString)),
+            this, SLOT(checkForPropertyChange(QString)));
 }
 
 QDomElement Component::serialize(QDomDocument *document)
@@ -122,4 +126,30 @@ bool Component::deserialize(const QDomElement &objectElement)
     }
 
     return true;
+}
+
+void Component::checkForPropertyChange(QString trigger)
+{
+    if (trigger.startsWith("Property"))
+    {
+        QStringList command = trigger.split(' ');
+        if (command.count() > 2)
+        {
+            if (this->metaObject()->indexOfProperty(command.at(1).toStdString().c_str()) >= 0)
+            {
+                this->setProperty(command.at(1).toStdString().c_str(), QVariant(command.at(2)));
+            }
+        }
+    }
+    else if (trigger.startsWith(m_tag)  && !m_tag.isEmpty())
+    {
+        QStringList command = trigger.mid(m_tag.count()+1).split(' ', QString::SkipEmptyParts);
+        if (command.count() > 2)
+        {
+            if (this->metaObject()->indexOfProperty(command.at(1).toStdString().c_str()) >= 0)
+            {
+                this->setProperty(command.at(1).toStdString().c_str(), QVariant(command.at(2)));
+            }
+        }
+    }
 }

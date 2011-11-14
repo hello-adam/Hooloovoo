@@ -125,6 +125,6 @@ void PhysicsControllerComponent::reactToTimerTick()
     }
     else if (m_controlType == PhysicsControllerComponent::ConstantAcceleration)
     {
-        body->ApplyForceToCenter(b2Vec2(netValue.x(), netValue.y()));
+        body->ApplyForceToCenter(b2Vec2(netValue.x()*body->GetMass(), netValue.y()*body->GetMass()));
     }
 }

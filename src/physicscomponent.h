@@ -20,6 +20,9 @@ class PhysicsComponent : public Component
     Q_PROPERTY(double angularVelocity READ getVAngle WRITE setVAngle)
     Q_PROPERTY(double friction READ getFriction WRITE setFriction)
     Q_PROPERTY(double linearDamping READ getLinearDamping WRITE setLinearDamping)
+    Q_PROPERTY(double x READ getX WRITE setX)
+    Q_PROPERTY(double y READ getY WRITE setY)
+    Q_PROPERTY(double rotation READ getAngle WRITE setAngle)
 
     Q_ENUMS(ContactType)
 
@@ -52,6 +55,9 @@ public:
     double getFriction() {return m_friction;}
     double getLinearDamping() {return m_linearDamping;}
     b2Body* getBody() {return m_body;}
+    double getX() {return m_x;}
+    double getY() {return m_y;}
+    double getAngle() {return m_angle;}
 
     void enterContact(PhysicsComponent* contact, ContactType type) {m_contacts.insert(contact, type);  if (contact) emit enteringContact(contact->getParentObject());}
     void leaveContact(PhysicsComponent* contact) {m_contacts.remove(contact);  if (contact) emit leavingContact(contact->getParentObject());}
@@ -77,6 +83,9 @@ private:
     double m_friction;
     double m_linearDamping;
 
+    QStringList m_delayedPropertyAlterations;
+    void dealWithDelayedPropertyAlterations();
+
 signals:
 //    void xChanged(double x);
 //    void yChanged(double y);
@@ -99,6 +108,7 @@ public slots:
     void setLinearDamping(double damping) {if (damping < 0 || damping > 10) damping = INFINITY;  m_linearDamping = damping;}
 
     void updateParent();
+    void checkForPropertyChange(QString trigger);
 };
 
 

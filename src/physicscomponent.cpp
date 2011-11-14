@@ -125,6 +125,8 @@ void PhysicsComponent::instantiate()
 
 void PhysicsComponent::updateParent()
 {
+    dealWithDelayedPropertyAlterations();
+
     if (m_body)
     {
         b2Vec2 position = m_body->GetPosition();
@@ -132,6 +134,33 @@ void PhysicsComponent::updateParent()
         m_parentObject->setPos(position.x*20.0f, position.y*-20.0f);
         m_parentObject->setRotation(-(angle * 360.0) / (2 * 3.14159));
     }
+}
+
+//some of these will be happening during the physics step, and the body can not be altered until the step is finished so property changes will wait until the step is done
+void PhysicsComponent::checkForPropertyChange(QString trigger)
+{
+    if (trigger.startsWith("Property"))
+    {
+        QStringList command = trigger.split(' ');
+        if (command.count() > 2)
+        {
+            if (this->metaObject()->indexOfProperty(command.at(1).toStdString().c_str()) >= 0)
+            {
+                m_delayedPropertyAlterations.push_back(trigger);
+            }
+        }
+    }
+}
+
+void PhysicsComponent::dealWithDelayedPropertyAlterations()
+{
+    foreach (QString string, m_delayedPropertyAlterations)
+    {
+        QStringList command = string.split(' ');
+        this->setProperty(command.at(1).toStdString().c_str(), QVariant(command.at(2)));
+    }
+
+    m_delayedPropertyAlterations.clear();
 }
 
 PhysicsComponent::ContactType PhysicsComponent::getContactCondition()
