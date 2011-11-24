@@ -37,9 +37,10 @@ private:
     bool m_isInitiated;
     int m_currentStep;
 
+    void reactToTrigger(QString trigger);
+
 public slots:
     void reactToTimerTick();
-    void reactToTrigger(QString trigger);
 };
 
 #endif // TIMERCOMPONENT_H

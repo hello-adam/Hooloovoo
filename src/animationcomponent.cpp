@@ -37,7 +37,7 @@ void AnimationComponent::reactToTimerTick()
         {
             m_currentFrame = 0;
             if (!m_completeTrigger.isEmpty())
-                emit sendLocalEvent(m_completeTrigger);
+                emit sendLocalTrigger(m_completeTrigger);
         }
 
         m_parentObject->setTemporaryPixmapFile(m_files.at(m_currentFrame));

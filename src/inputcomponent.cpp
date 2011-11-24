@@ -44,11 +44,11 @@ void InputComponent::keyPressEvent(QKeyEvent *ke)
     {
         if (m_type == InputComponent::Local)
         {
-            emit sendLocalEvent(m_trigger);
+            emit sendLocalTrigger(m_trigger);
         }
         else if (m_type == InputComponent::Global)
         {
-            emit sendGlobalEvent(m_trigger);
+            emit sendGlobalTrigger(m_trigger);
         }
     }
 }
@@ -61,11 +61,11 @@ void InputComponent::keyReleaseEvent(QKeyEvent *ke)
     {
         if (m_type == InputComponent::Local)
         {
-            emit sendLocalEvent(m_releaseTrigger);
+            emit sendLocalTrigger(m_releaseTrigger);
         }
         else if (m_type == InputComponent::Global)
         {
-            emit sendGlobalEvent(m_releaseTrigger);
+            emit sendGlobalTrigger(m_releaseTrigger);
         }
     }
 

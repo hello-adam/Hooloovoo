@@ -31,12 +31,15 @@ protected:
     GameObject* m_parentObject;
     QString m_tag;
 
+    virtual void reactToTrigger(QString trigger) {}
+    virtual void reactToPropertyTrigger(QStringList args);
+
 signals:
-    void sendLocalEvent(QString);
-    void sendGlobalEvent(QString);
+    void sendLocalTrigger(QString);
+    void sendGlobalTrigger(QString);
 
 public slots:
-    virtual void checkForPropertyChange(QString trigger);
+    virtual void checkTrigger(QString trigger);
 };
 
 #endif // COMPONENT_H

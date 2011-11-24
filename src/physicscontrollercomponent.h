@@ -48,13 +48,14 @@ private:
     PhysicsControlType m_controlType;
     PhysicsComponent::ContactType m_requiredContact;
 
+    void reactToTrigger(QString trigger);
+
 signals:
 
 public slots:
     void checkForAddedPhysicsComponent(Component* c);
     void checkForRemovedPhysicsComponent(Component* c);
 
-    void reactToLocalEvent(QString trigger);
     void reactToTimerTick();
 };
 

@@ -6,6 +6,8 @@
 #include <QPalette>
 #include <QColorDialog>
 #include "editwidgets/pointedit.h"
+#include "editwidgets/triggerlineedit.h"
+#include "component.h"
 
 PropertyEditWidget::PropertyEditWidget(QWidget *parent) :
     QWidget(parent),
@@ -13,6 +15,7 @@ PropertyEditWidget::PropertyEditWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    m_object = 0;
     m_editWidget = 0;
     m_toolButton = new QToolButton();
     m_toolButton->setText("...");
@@ -62,8 +65,7 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
         ui->horizontalLayout->addWidget(comboBox);
         return true;
     }
-
-    if (value.type() == QVariant::String)
+    else if (value.type() == QVariant::String && !QString(property.name()).endsWith("trigger", Qt::CaseInsensitive))
     {
         QLineEdit *lineEdit = new QLineEdit(value.toString(), this);
         m_editWidget = lineEdit;
@@ -85,7 +87,17 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
             connect(m_toolButton, SIGNAL(clicked()), this, SLOT(getStringFromFile()));
         }
         return true;
-     }
+    }
+    else if (value.type() == QVariant::String && QString(property.name()).endsWith("trigger", Qt::CaseInsensitive))
+    {
+        TriggerLineEdit *triggerEdit;
+        triggerEdit = new TriggerLineEdit();
+        triggerEdit->setTriggerText(value.toString());
+        m_editWidget = triggerEdit;
+        ui->horizontalLayout->addWidget(triggerEdit);
+
+        return true;
+    }
     else if (value.type() == QVariant::Double)
     {
         QDoubleSpinBox *doubleSpinBox = new QDoubleSpinBox(this);
@@ -152,27 +164,31 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
     return false;
 }
 
-void PropertyEditWidget::writeProperty()
+QVariant PropertyEditWidget::getValue()
 {
     QVariant value;
 
     if (m_toolButton->text() == "Select Color")
-    {
         value = m_toolButton->palette().color(QPalette::Button);
-        m_property.write(m_object, value);
-        return;
-    }
 
-    if (qobject_cast<QLineEdit*>(m_editWidget))
+    else if (qobject_cast<QLineEdit*>(m_editWidget))
         value.setValue(qobject_cast<QLineEdit*>(m_editWidget)->text());
+
     else if (qobject_cast<QDoubleSpinBox*>(m_editWidget))
         value.setValue(qobject_cast<QDoubleSpinBox*>(m_editWidget)->value());
+
     else if (qobject_cast<QSpinBox*>(m_editWidget))
         value.setValue(qobject_cast<QSpinBox*>(m_editWidget)->value());
+
     else if (qobject_cast<QCheckBox*>(m_editWidget))
         value.setValue(qobject_cast<QCheckBox*>(m_editWidget)->isChecked());
+
     else if (qobject_cast<PointEdit*>(m_editWidget))
         value.setValue(qobject_cast<PointEdit*>(m_editWidget)->getPoint());
+
+    else if (qobject_cast<TriggerLineEdit*>(m_editWidget))
+        value.setValue(qobject_cast<TriggerLineEdit*>(m_editWidget)->getTriggerText());
+
     else if (qobject_cast<QComboBox*>(m_editWidget))
     {
         QMetaEnum enumerator = m_property.enumerator();
@@ -190,9 +206,14 @@ void PropertyEditWidget::writeProperty()
         value.setValue(allStrings);
     }
     else
-        return;
+        return QVariant();
 
-    m_property.write(m_object, value);
+    return value;
+}
+
+void PropertyEditWidget::writeProperty()
+{
+    m_property.write(m_object, getValue());
 }
 
 void PropertyEditWidget::getStringFromFile()

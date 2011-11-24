@@ -71,8 +71,8 @@ signals:
     void sendX(double x);
     void sendY(double y);
     void sendRotation(double degrees);
-    void sendLocalEvent(QString);
-    void sendGlobalEvent(QString);
+    void sendLocalTrigger(QString);
+    void sendGlobalTrigger(QString);
     void componentAdded(Component*);
     void componentRemoved(Component*);
 
@@ -80,13 +80,13 @@ private slots:
     void slotXChanged() {emit sendX(x());}
     void slotYChanged() {emit sendY(y());}
     void slotRotationChanged() {emit sendRotation(rotation());}
-    void checkLocalEvent(QString trigger);
+    void checkLocalTrigger(QString trigger);
 
 public slots:
     void launchEditorDialog();
     void saveObject(QString fileName);
     void launchSaveDialog();
-    void emitLocalEvent(QString trigger) {if (!trigger.isEmpty()) emit sendLocalEvent(trigger);}
+    void emitLocalTrigger(QString trigger) {if (!trigger.isEmpty()) emit sendLocalTrigger(trigger);}
 };
 
 #endif // GAMEOBJECT_H

@@ -12,7 +12,6 @@ SpawnComponent::SpawnComponent(GameObject *parentObject) :
     m_offset = QPointF(0, 0);
 
     connect(GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
-    connect(parentObject, SIGNAL(sendLocalEvent(QString)), this, SLOT(reactToTrigger(QString)));
 }
 
 QSet<QString> SpawnComponent::getEditProperties()

@@ -7,12 +7,12 @@ Component::Component(GameObject *parentObject) :
 {
     m_tag = "";
 
-    connect(this, SIGNAL(sendLocalEvent(QString)),
-            parentObject, SIGNAL(sendLocalEvent(QString)));
-    connect(this, SIGNAL(sendGlobalEvent(QString)),
-            parentObject, SIGNAL(sendGlobalEvent(QString)));
-    connect(parentObject, SIGNAL(sendLocalEvent(QString)),
-            this, SLOT(checkForPropertyChange(QString)));
+    connect(this, SIGNAL(sendLocalTrigger(QString)),
+            parentObject, SIGNAL(sendLocalTrigger(QString)));
+    connect(this, SIGNAL(sendGlobalTrigger(QString)),
+            parentObject, SIGNAL(sendGlobalTrigger(QString)));
+    connect(parentObject, SIGNAL(sendLocalTrigger(QString)),
+            this, SLOT(checkTrigger(QString)));
 }
 
 QDomElement Component::serialize(QDomDocument *document)
@@ -128,31 +128,47 @@ bool Component::deserialize(const QDomElement &objectElement)
     return true;
 }
 
-void Component::checkForPropertyChange(QString trigger)
+void Component::checkTrigger(QString trigger)
 {
-
-    qDebug() << trigger;
-
-    if (trigger.startsWith("Property"))
+    if (trigger.contains(QRegExp("Tag(.*)")))
     {
-        QStringList command = trigger.split(' ');
-        if (command.count() > 2)
-        {
-            if (this->metaObject()->indexOfProperty(command.at(1).toStdString().c_str()) >= 0)
-            {
-                this->setProperty(command.at(1).toStdString().c_str(), QVariant(command.at(2)));
-            }
-        }
+        int start = trigger.indexOf("Tag(")+4;
+        int end = trigger.indexOf(")", start);
+        QString tag = trigger.mid(start, end-start);
+
+        trigger.remove("Tag(" + tag + ")");
+
+        if (m_tag != tag)
+            return;
     }
-    else if (trigger.startsWith(m_tag)  && !m_tag.isEmpty())
+
+    if (trigger.contains(QRegExp("Property(.*)")))
     {
-        QStringList command = trigger.mid(m_tag.count()).split(' ', QString::SkipEmptyParts);
-        qDebug() << "CHecking" << command;
-        if (command.count() > 2)
+        int start = trigger.indexOf("Property(")+9;
+        int end = trigger.indexOf(")", start);
+        QString argString = trigger.mid(start, end-start);
+        QStringList args = argString.split(',', QString::KeepEmptyParts);
+
+        trigger.remove("Property(" + argString + ")");
+
+        reactToPropertyTrigger(args);
+    }
+
+    if (!trigger.isEmpty())
+        reactToTrigger(trigger);
+}
+
+void Component::reactToPropertyTrigger(QStringList args)
+{
+    qDebug() << args;
+
+    if (args.count() == 3)
+    {
+        if (args.at(0) == this->objectName())
         {
-            if (this->metaObject()->indexOfProperty(command.at(1).toStdString().c_str()) >= 0)
+            if (this->metaObject()->indexOfProperty(args.at(1).toStdString().c_str()) >= 0)
             {
-                this->setProperty(command.at(1).toStdString().c_str(), QVariant(command.at(2)));
+                this->setProperty(args.at(1).toStdString().c_str(), QVariant(args.at(2)));
             }
         }
     }

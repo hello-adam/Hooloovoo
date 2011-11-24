@@ -27,6 +27,7 @@ public:
     ~PropertyEditWidget();
 
     bool setProperty(QMetaProperty property, QObject* object);
+    QVariant getValue();
 
 private:
     Ui::PropertyEditWidget *ui;

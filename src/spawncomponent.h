@@ -31,10 +31,10 @@ private:
     QPointF m_offset;
 
     void spawn();
+    void reactToTrigger(QString trigger);
 
 public slots:
     void reactToTimerTick();
-    void reactToTrigger(QString trigger);
 
     void setObjectFile(QString file) {m_objectFileName = file;}
     void setInterval(int interval) {m_interval = interval;}

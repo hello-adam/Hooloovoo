@@ -34,7 +34,9 @@ HEADERS += \
     src/contactcomponent.h \
     src/inputreceiver.h \
     src/editwidgets/pointedit.h \
-    src/timercomponent.h
+    src/timercomponent.h \
+    src/editwidgets/triggeredit.h \
+    src/editwidgets/triggerlineedit.h
 
 SOURCES += \
     src/mainwindow.cpp \
@@ -60,7 +62,9 @@ SOURCES += \
     src/contactcomponent.cpp \
     src/inputreceiver.cpp \
     src/editwidgets/pointedit.cpp \
-    src/timercomponent.cpp
+    src/timercomponent.cpp \
+    src/editwidgets/triggeredit.cpp \
+    src/editwidgets/triggerlineedit.cpp
 
 FORMS += \
     src/mainwindow.ui \
@@ -68,9 +72,19 @@ FORMS += \
     src/gameobjecteditdialog.ui \
     src/propertyeditwidget.ui \
     src/componenteditwidget.ui \
-    src/editwidgets/pointedit.ui
+    src/editwidgets/pointedit.ui \
+    src/editwidgets/triggerlineedit.ui \
+    src/editwidgets/triggeredit.ui
 
 OTHER_FILES +=
+
+
+
+
+
+
+
+
 
 
 

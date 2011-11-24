@@ -83,8 +83,10 @@ private:
     double m_friction;
     double m_linearDamping;
 
-    QStringList m_delayedPropertyAlterations;
+    QList<QStringList> m_delayedPropertyAlterations;
     void dealWithDelayedPropertyAlterations();
+
+    void reactToPropertyTrigger(QStringList args);
 
 signals:
 //    void xChanged(double x);
@@ -108,7 +110,6 @@ public slots:
     void setLinearDamping(double damping) {if (damping < 0 || damping > 10) damping = INFINITY;  m_linearDamping = damping;}
 
     void updateParent();
-    void checkForPropertyChange(QString trigger);
 };
 
 

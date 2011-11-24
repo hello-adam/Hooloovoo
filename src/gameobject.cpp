@@ -31,8 +31,8 @@ GameObject::GameObject(QGraphicsItem * parent) :
     this->setAcceptHoverEvents(true);
     this->setAcceptedMouseButtons(Qt::RightButton | Qt::LeftButton);
 
-    connect(this, SIGNAL(sendLocalEvent(QString)),
-            this, SLOT(checkLocalEvent(QString)));
+    connect(this, SIGNAL(sendLocalTrigger(QString)),
+            this, SLOT(checkLocalTrigger(QString)));
 }
 
 GameObject::~GameObject()
@@ -492,24 +492,43 @@ void GameObject::saveObject(QString fileName)
     delete file;
 }
 
-void GameObject::checkLocalEvent(QString trigger)
+void GameObject::checkLocalTrigger(QString trigger)
 {
-    if (trigger == "Destroy")
+    if (trigger.contains(QRegExp("Tag(.*)")))
     {
-        this->deleteLater();
+        int start = trigger.indexOf("Tag(")+4;
+        int end = trigger.indexOf(")", start);
+        QString tag = trigger.mid(start, end-start);
+
+        trigger.remove("Tag(" + tag + ")");
+
+        if (m_tag != tag)
+            return;
     }
 
-    if (trigger.startsWith("Property"))
+    if (trigger.contains(QRegExp("Property(.*)")))
     {
-        QStringList command = trigger.split(' ');
-        if (command.count() > 2)
+        int start = trigger.indexOf("Property(")+9;
+        int end = trigger.indexOf(")", start);
+        QString argString = trigger.mid(start, end-start);
+        QStringList args = argString.split(',', QString::KeepEmptyParts);
+
+        trigger.remove("Property(" + argString + ")");
+
+        if (args.count() == 3)
         {
-            if (this->getEditProperties().contains(command.at(1)))
+            if (args.at(0) == this->objectName())
             {
-                this->setProperty(command.at(1).toStdString().c_str(), QVariant(command.at(2)));
+                if (this->metaObject()->indexOfProperty(args.at(1).toStdString().c_str()) >= 0)
+                {
+                    this->setProperty(args.at(1).toStdString().c_str(), QVariant(args.at(2)));
+                }
             }
         }
     }
+
+    if (trigger == "Destroy")
+        this->deleteLater();
 }
 
 void GameObject::launchSaveDialog()

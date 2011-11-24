@@ -137,27 +137,25 @@ void PhysicsComponent::updateParent()
 }
 
 //some of these will be happening during the physics step, and the body can not be altered until the step is finished so property changes will wait until the step is done
-void PhysicsComponent::checkForPropertyChange(QString trigger)
+void PhysicsComponent::reactToPropertyTrigger(QStringList args)
 {
-    if (trigger.startsWith("Property"))
-    {
-        QStringList command = trigger.split(' ');
-        if (command.count() > 2)
-        {
-            if (this->metaObject()->indexOfProperty(command.at(1).toStdString().c_str()) >= 0)
-            {
-                m_delayedPropertyAlterations.push_back(trigger);
-            }
-        }
-    }
+    m_delayedPropertyAlterations.push_back(args);
 }
 
 void PhysicsComponent::dealWithDelayedPropertyAlterations()
 {
-    foreach (QString string, m_delayedPropertyAlterations)
+    foreach (QStringList args, m_delayedPropertyAlterations)
     {
-        QStringList command = string.split(' ');
-        this->setProperty(command.at(1).toStdString().c_str(), QVariant(command.at(2)));
+        if (args.count() == 3)
+        {
+            if (args.at(0) == this->objectName())
+            {
+                if (this->metaObject()->indexOfProperty(args.at(1).toStdString().c_str()) >= 0)
+                {
+                    this->setProperty(args.at(1).toStdString().c_str(), QVariant(args.at(2)));
+                }
+            }
+        }
     }
 
     m_delayedPropertyAlterations.clear();
