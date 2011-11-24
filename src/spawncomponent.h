@@ -8,7 +8,7 @@ class SpawnComponent : public Component
     Q_OBJECT
     Q_PROPERTY(QString objectFile READ getObjectFile WRITE setObjectFile)
     Q_PROPERTY(int spawnInterval READ getInterval WRITE setInterval)
-    Q_PROPERTY(QString spawnTrigger READ getTrigger WRITE setTrigger)
+    Q_PROPERTY(QString triggerToSpawn READ getTrigger WRITE setTrigger)
     Q_PROPERTY(double xOffset READ getXOffset WRITE setXOffset)
     Q_PROPERTY(double yOffset READ getYOffset WRITE setYOffset)
 

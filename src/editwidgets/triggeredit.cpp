@@ -16,6 +16,7 @@ TriggerEdit::TriggerEdit(QWidget *parent) :
     m_propertyEditWidget = 0;
 
     ComponentFactory factory;
+    ui->cb_ComponentType->addItem("<No Component Edit>");
     ui->cb_ComponentType->addItem("Game Object");
     ui->cb_ComponentType->addItems(factory.availableComponents());
 

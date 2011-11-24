@@ -65,38 +65,52 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
         ui->horizontalLayout->addWidget(comboBox);
         return true;
     }
-    else if (value.type() == QVariant::String && !QString(property.name()).endsWith("trigger", Qt::CaseInsensitive))
+    else if (value.type() == QVariant::String)
     {
-        QLineEdit *lineEdit = new QLineEdit(value.toString(), this);
-        m_editWidget = lineEdit;
-        ui->horizontalLayout->addWidget(lineEdit);
-        if (QString(property.name()).contains("pixmap", Qt::CaseInsensitive))
+        if (QString(property.name()).endsWith("trigger", Qt::CaseInsensitive))
         {
-            m_fileExtensions << "*.png" << "*.bmp";
-            m_fileDirectory = "pics";
-            ui->horizontalLayout->addWidget(m_toolButton);
+            TriggerLineEdit *triggerEdit;
+            triggerEdit = new TriggerLineEdit();
+            triggerEdit->setTriggerText(value.toString());
+            m_editWidget = triggerEdit;
+            ui->horizontalLayout->addWidget(triggerEdit);
 
-            connect(m_toolButton, SIGNAL(clicked()), this, SLOT(getStringFromFile()));
+            return true;
         }
-        else if (QString(property.name()).contains("object", Qt::CaseInsensitive))
+        else if ((QString(property.name()).startsWith("triggerTo", Qt::CaseInsensitive)))
         {
-            m_fileExtensions << "*.gameobject";
-            m_fileDirectory = "objects";
-            ui->horizontalLayout->addWidget(m_toolButton);
+            TriggerLineEdit *triggerEdit;
+            triggerEdit = new TriggerLineEdit();
+            triggerEdit->setTriggerText(value.toString());
+            triggerEdit->setAdvancedEditButton(false);
+            m_editWidget = triggerEdit;
+            ui->horizontalLayout->addWidget(triggerEdit);
 
-            connect(m_toolButton, SIGNAL(clicked()), this, SLOT(getStringFromFile()));
+            return true;
         }
-        return true;
-    }
-    else if (value.type() == QVariant::String && QString(property.name()).endsWith("trigger", Qt::CaseInsensitive))
-    {
-        TriggerLineEdit *triggerEdit;
-        triggerEdit = new TriggerLineEdit();
-        triggerEdit->setTriggerText(value.toString());
-        m_editWidget = triggerEdit;
-        ui->horizontalLayout->addWidget(triggerEdit);
+        else
+        {
+            QLineEdit *lineEdit = new QLineEdit(value.toString(), this);
+            m_editWidget = lineEdit;
+            ui->horizontalLayout->addWidget(lineEdit);
+            if (QString(property.name()).contains("pixmap", Qt::CaseInsensitive))
+            {
+                m_fileExtensions << "*.png" << "*.bmp";
+                m_fileDirectory = "pics";
+                ui->horizontalLayout->addWidget(m_toolButton);
 
-        return true;
+                connect(m_toolButton, SIGNAL(clicked()), this, SLOT(getStringFromFile()));
+            }
+            else if (QString(property.name()).contains("object", Qt::CaseInsensitive))
+            {
+                m_fileExtensions << "*.gameobject";
+                m_fileDirectory = "objects";
+                ui->horizontalLayout->addWidget(m_toolButton);
+
+                connect(m_toolButton, SIGNAL(clicked()), this, SLOT(getStringFromFile()));
+            }
+            return true;
+        }
     }
     else if (value.type() == QVariant::Double)
     {

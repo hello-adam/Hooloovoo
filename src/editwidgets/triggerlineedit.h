@@ -18,6 +18,8 @@ public:
     QString getTriggerText();
     void setTriggerText(QString text);
 
+    void setAdvancedEditButton(bool enable);
+
 private:
     Ui::TriggerLineEdit *ui;
 

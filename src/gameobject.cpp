@@ -63,12 +63,17 @@ GameObject::~GameObject()
 void GameObject::setPixmapFile(QString fileName)
 {
     m_pixmapFileName = fileName;
+
+    m_tessellation.clear();
+
     if (!m_pixmap.load(GameCore::getPicturePath() + fileName))
     {
         m_pixmap = QPixmap(42, 42);
         m_pixmap.fill(m_defaultColor);
         m_pixmapFileName = "";
     }
+
+    createTesselation();
 }
 
 void GameObject::setTemporaryPixmapFile(QString fileName)
@@ -234,12 +239,12 @@ void GameObject::paint (QPainter * painter, const QStyleOptionGraphicsItem * opt
     painter->drawPixmap(boundingRect().toRect(), m_pixmap);
 
     //Enable this code in order to see the object's tesselation
-//    QList<QPolygonF> tessellation = getTessellation();
-//    painter->setPen(Qt::red);
-//    foreach (QPolygonF poly, tessellation)
-//    {
-//        painter->drawPolygon(poly.translated(m_pixmap.width()/-2, m_pixmap.height()/-2));
-//    }
+    QList<QPolygonF> tessellation = getTessellation();
+    painter->setPen(Qt::red);
+    foreach (QPolygonF poly, tessellation)
+    {
+        painter->drawPolygon(poly.translated(m_pixmap.width()/-2, m_pixmap.height()/-2));
+    }
 }
 
 QRectF GameObject::boundingRect() const

@@ -38,7 +38,7 @@ PhysicsControllerComponent::~PhysicsControllerComponent()
 QSet<QString> PhysicsControllerComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "engageTrigger" << "releaseTrigger" << "controlType" << "value" << "requiredContact";
+    properties << "triggerToRelease" << "triggerToEngage" << "controlType" << "value" << "requiredContact";
     return properties;
 }
 

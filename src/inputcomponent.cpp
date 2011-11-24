@@ -16,7 +16,7 @@ InputComponent::InputComponent(GameObject *parentObject) :
 QSet<QString> InputComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "key" << "trigger" << "triggerType" << "releaseTrigger" << "tag";
+    properties << "key" << "pressTrigger" << "triggerType" << "releaseTrigger" << "tag";
     return properties;
 }
 

@@ -5,23 +5,41 @@ AnimationComponent::AnimationComponent(GameObject *parentObject) :
     Component(parentObject)
 {
     this->setObjectName("Animation Component");
-    qRegisterMetaType<AnimationComponent::AnimationTrigger>("AnimationTrigger");
 
-    m_timeStep = 60;
-    m_trigger = AnimationComponent::Constant;
+    m_timeStep = 10;
+    m_startTrigger = "";
+    m_stopTrigger = "";
     m_files = QStringList();
     m_elapsedTime = 0;
     m_currentFrame = 0;
     m_completeTrigger = "";
-
-    connect(GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
 }
 
 QSet<QString> AnimationComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "timeStep" << "pixmapFiles" << "animationTrigger" <<"completeTrigger";
+    properties << "timeStep" << "pixmapFiles" << "triggerToStart" << "triggerToStop" << "completeTrigger" << "activeByDefault";
     return properties;
+}
+
+void AnimationComponent::reactToTrigger(QString trigger)
+{
+    if (trigger == m_startTrigger)
+    {
+        connect(GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
+    }
+    else if (trigger == m_stopTrigger)
+    {
+        disconnect(GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
+    }
+}
+
+void AnimationComponent::setDefault(bool active)
+{
+    m_activeByDefault = active;
+
+    if (active)
+        connect(GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
 }
 
 void AnimationComponent::reactToTimerTick()

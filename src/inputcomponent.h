@@ -9,7 +9,7 @@ class InputComponent : public Component, public InputReceiver
     Q_OBJECT
     Q_PROPERTY(Qt::Key key READ getKey WRITE setKey)
     Q_ENUMS(Qt::Key)
-    Q_PROPERTY(QString trigger READ getTrigger WRITE setTrigger)
+    Q_PROPERTY(QString pressTrigger READ getTrigger WRITE setTrigger)
     Q_PROPERTY(QString releaseTrigger READ getReleaseTrigger WRITE setReleaseTrigger)
     Q_PROPERTY(TriggerType triggerType READ getType WRITE setType)
     Q_ENUMS(TriggerType)

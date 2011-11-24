@@ -30,7 +30,7 @@ ContactComponent::ContactComponent(GameObject *parentObject) :
 QSet<QString> ContactComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "localTrigger" << "contactTrigger";
+    properties << "thisObjectTrigger" << "contactedObjectTrigger";
     return properties;
 }
 

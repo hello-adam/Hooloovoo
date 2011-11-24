@@ -20,7 +20,7 @@ TimerComponent::TimerComponent(GameObject *parentObject) :
 QSet<QString> TimerComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "timeStep" << "initiateTrigger" << "stopTrigger" << "stepTrigger";
+    properties << "timeStep" << "triggerToStart" << "triggerToStop" << "stepElapsedTrigger";
     return properties;
 }
 

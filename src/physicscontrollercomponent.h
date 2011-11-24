@@ -9,8 +9,8 @@
 class PhysicsControllerComponent : public Component
 {
     Q_OBJECT
-    Q_PROPERTY(QString engageTrigger READ getEngageTrigger WRITE setEngageTrigger)
-    Q_PROPERTY(QString releaseTrigger READ getReleaseTrigger WRITE setReleaseTrigger)
+    Q_PROPERTY(QString triggerToEngage READ getEngageTrigger WRITE setEngageTrigger)
+    Q_PROPERTY(QString triggerToRelease READ getReleaseTrigger WRITE setReleaseTrigger)
     Q_PROPERTY(PhysicsControlType controlType READ getControlType WRITE setControlType)
     Q_ENUMS(PhysicsControlType)
     Q_PROPERTY(PhysicsComponent::ContactType requiredContact READ getRequiredContact WRITE setRequiredContact)

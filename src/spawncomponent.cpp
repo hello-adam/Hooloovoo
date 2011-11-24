@@ -17,7 +17,7 @@ SpawnComponent::SpawnComponent(GameObject *parentObject) :
 QSet<QString> SpawnComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "objectFile" << "spawnInterval" << "spawnTrigger" << "xOffset" << "yOffset";
+    properties << "objectFile" << "spawnInterval" << "triggerToSpawn" << "xOffset" << "yOffset";
     return properties;
 }
 

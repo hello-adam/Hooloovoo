@@ -7,8 +7,8 @@
 class ContactComponent : public Component
 {
     Q_OBJECT
-    Q_PROPERTY(QString localTrigger READ getLocalTrigger WRITE setLocalTrigger)
-    Q_PROPERTY(QString contactTrigger READ getContactTrigger WRITE setContactTrigger)
+    Q_PROPERTY(QString thisObjectTrigger READ getLocalTrigger WRITE setLocalTrigger)
+    Q_PROPERTY(QString contactedObjectTrigger READ getContactTrigger WRITE setContactTrigger)
 
 public:
     explicit ContactComponent(GameObject *parentObject);

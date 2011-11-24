@@ -7,9 +7,9 @@ class TimerComponent : public Component
 {
     Q_OBJECT
     Q_PROPERTY(int timeStep READ getTimeStep WRITE setTimeStep)
-    Q_PROPERTY(QString initiateTrigger READ getInitiate WRITE setInitiate)
-    Q_PROPERTY(QString stopTrigger READ getStop WRITE setStop)
-    Q_PROPERTY(QString stepTrigger READ getStep WRITE setStep)
+    Q_PROPERTY(QString triggerToStart READ getInitiate WRITE setInitiate)
+    Q_PROPERTY(QString triggerToStop READ getStop WRITE setStop)
+    Q_PROPERTY(QString stepElapsedTrigger READ getStep WRITE setStep)
 
 public:
     TimerComponent(GameObject* parentObject);

@@ -30,6 +30,18 @@ void TriggerLineEdit::setTriggerText(QString text)
     ui->cb_TriggerBox->lineEdit()->setText(text);
 }
 
+void TriggerLineEdit::setAdvancedEditButton(bool enable)
+{
+    if (enable)
+    {
+        ui->pb_propertyEdit->setVisible(true);
+    }
+    else
+    {
+        ui->pb_propertyEdit->setVisible(false);
+    }
+}
+
 void TriggerLineEdit::launchPropertyTriggerEdit()
 {
     TriggerEdit editor;
