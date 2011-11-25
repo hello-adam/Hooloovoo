@@ -32,6 +32,9 @@ PhysicsComponent::PhysicsComponent(GameObject *parentObject) :
     connect (m_parentObject, SIGNAL(sendRotation(double)),
              this, SLOT(setAngle(double)));
 
+    connect (m_parentObject, SIGNAL(newTessellation()),
+             this, SLOT(instantiate()));
+
     instantiate();
 }
 
@@ -102,7 +105,23 @@ void PhysicsComponent::instantiate()
         b2Vec2 *vertices = new b2Vec2[tesselation.at(j).count()];
         for (int i=0; i<tesselation.at(j).count(); i++)
         {
-            vertices[i] = b2Vec2((tesselation.at(j).at(i).x()*m_parentObject->scale() - centerX)/20.0f, -1*(tesselation.at(j).at(i).y()*m_parentObject->scale() - centerY)/20.0f);
+            //when the object is scaled up, the far bottom and right need to be added to
+            double xScaleAdjustment = 0;
+            double yScaleAdjustment = 0;
+            if (m_parentObject->scale() > 1)
+            {
+                if (tesselation.at(j).at(i).x()*m_parentObject->scale() > centerX)
+                {
+                    xScaleAdjustment = (m_parentObject->scale() - 1.0);
+                }
+                if (tesselation.at(j).at(i).y()*m_parentObject->scale() > centerY)
+                {
+                    yScaleAdjustment = (m_parentObject->scale() - 1.0);
+                }
+            }
+
+            vertices[i] = b2Vec2((tesselation.at(j).at(i).x()*m_parentObject->scale() - centerX + xScaleAdjustment)/20.0f,
+                                 -1*(tesselation.at(j).at(i).y()*m_parentObject->scale() - centerY + yScaleAdjustment)/20.0f);
         }
         shapes.push_back(new b2PolygonShape());
         shapes.back()->Set(vertices, tesselation.at(j).count());
