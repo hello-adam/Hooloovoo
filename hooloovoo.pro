@@ -36,7 +36,8 @@ HEADERS += \
     src/editwidgets/pointedit.h \
     src/timercomponent.h \
     src/editwidgets/triggeredit.h \
-    src/editwidgets/triggerlineedit.h
+    src/editwidgets/triggerlineedit.h \
+    src/audiocomponent.h
 
 SOURCES += \
     src/mainwindow.cpp \
@@ -64,7 +65,8 @@ SOURCES += \
     src/editwidgets/pointedit.cpp \
     src/timercomponent.cpp \
     src/editwidgets/triggeredit.cpp \
-    src/editwidgets/triggerlineedit.cpp
+    src/editwidgets/triggerlineedit.cpp \
+    src/audiocomponent.cpp
 
 FORMS += \
     src/mainwindow.ui \
@@ -77,6 +79,8 @@ FORMS += \
     src/editwidgets/triggeredit.ui
 
 OTHER_FILES +=
+
+
 
 
 

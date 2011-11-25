@@ -20,6 +20,8 @@ GameCore::GameCore(QObject *parent) :
     m_gameTimer.setInterval(1000.0 / 60.0);
     this->pause();
 
+    m_audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
+
     connect(&m_gameTimer, SIGNAL(timeout()), this, SIGNAL(timerTick()));
     connect(this, SIGNAL(timerTick()), PhysicsManager::getInstance(), SLOT(takeStep()));
 }
@@ -34,6 +36,7 @@ GameCore* GameCore::getInstance()
 
 GameCore::~GameCore()
 {
+    delete m_audioOutput;
     qDeleteAll(m_inputReceivers);
 }
 
@@ -316,4 +319,9 @@ QString GameCore::getGamePath()
 QString GameCore::getObjectPath()
 {
     return QApplication::applicationDirPath() + "/objects/";
+}
+
+QString GameCore::getAudioPath()
+{
+    return QApplication::applicationDirPath() + "/audio/";
 }

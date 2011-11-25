@@ -303,6 +303,8 @@ void GameObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 void GameObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    this->setFocus(Qt::MouseFocusReason);
+
     if (event->button() != Qt::LeftButton || !m_paused)
     {
         event->ignore();

@@ -1,51 +1,49 @@
-#ifndef ANIMATIONCOMPONENT_H
-#define ANIMATIONCOMPONENT_H
+#ifndef AUDIOCOMPONENT_H
+#define AUDIOCOMPONENT_H
 
 #include "component.h"
+#include <phonon>
 
-class AnimationComponent : public Component
+class AudioComponent : public Component
 {
     Q_OBJECT
-    Q_PROPERTY(int timeStep READ getTimeStep WRITE setTimeStep)
-    Q_PROPERTY(bool activeByDefault READ getDefault WRITE setDefault)
+    Q_PROPERTY(bool repeat READ getRepeat WRITE setRepeat)
     Q_PROPERTY(QString triggerToStart READ getStart WRITE setStart)
     Q_PROPERTY(QString triggerToStop READ getStop WRITE setStop)
     Q_PROPERTY(QString completeTrigger READ getCompleteTrigger WRITE setCompleteTrigger)
-    Q_PROPERTY(QStringList pixmapFiles READ getFiles WRITE setFiles)
+    Q_PROPERTY(QString audioFile READ getFile WRITE setFile)
 
 public:
-    AnimationComponent(GameObject *parentObject);
+    AudioComponent(GameObject *parentObject);
+    ~AudioComponent();
 
     QSet<QString> getEditProperties();
 
     int getTimeStep() {return m_timeStep;}
     QString getStart() {return m_startTrigger;}
     QString getStop() {return m_stopTrigger;}
-    QStringList getFiles() {return m_files;}
+    QString getFile() {return m_file;}
     QString getCompleteTrigger() {return m_completeTrigger;}
-    bool getDefault() {return m_activeByDefault;}
+    bool getRepeat() {return m_repeat;}
 
 private:
     int m_timeStep;
     QString m_completeTrigger;
-    QStringList m_files;
+    QString m_file;
     QString m_startTrigger;
     QString m_stopTrigger;
-    int m_currentFrame;
-    int m_elapsedTime;
-    bool m_activeByDefault;
+    bool m_repeat;
+    Phonon::MediaObject *m_audioObject;
+    Phonon::Path m_path;
 
     void reactToTrigger(QString trigger);
 
 public slots:
-    void setTimeStep(int timeStep) {m_timeStep = timeStep;}
     void setCompleteTrigger(QString trigger) {m_completeTrigger = trigger;}
     void setStart(QString trigger) {m_startTrigger = trigger;}
     void setStop(QString trigger) {m_stopTrigger = trigger;}
-    void setFiles(QStringList files) {m_files = files;}
-    void setDefault(bool active);
-
-    void reactToTimerTick();
+    void setFile(QString file);
+    void setRepeat(bool repeat) {m_repeat = repeat;}
 };
 
-#endif // ANIMATIONCOMPONENT_H
+#endif // AUDIOCOMPONENT_H

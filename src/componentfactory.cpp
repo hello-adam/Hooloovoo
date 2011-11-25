@@ -8,6 +8,7 @@
 #include "inputcomponent.h"
 #include "contactcomponent.h"
 #include "timercomponent.h"
+#include "audiocomponent.h"
 
 ComponentFactory::ComponentFactory()
 {
@@ -50,6 +51,11 @@ Component* ComponentFactory::createComponent(GameObject* parentObject, QString n
     {
         TimerComponent* timer = new TimerComponent(parentObject);
         return timer;
+    }
+    else if (name == "Audio Component")
+    {
+        AudioComponent* audio = new AudioComponent(parentObject);
+        return audio;
     }
     else
         return 0;
@@ -102,6 +108,12 @@ Component* ComponentFactory::createComponent(GameObject* parentObject, const QDo
         timer->deserialize(specs);
         return timer;
     }
+    else if (name == "Audio Component")
+    {
+        AudioComponent* audio = new AudioComponent(parentObject);
+        audio->deserialize(specs);
+        return audio;
+    }
     else
         return 0;
 }
@@ -109,6 +121,6 @@ Component* ComponentFactory::createComponent(GameObject* parentObject, const QDo
 QStringList ComponentFactory::availableComponents()
 {
     QStringList available;
-    available << "Physics Component" << "Physics Controller Component" << "Spawn Component" << "Animation Component" << "Input Component" <<"Contact Component" << "Timer Component";
+    available << "Physics Component" << "Physics Controller Component" << "Spawn Component" << "Animation Component" << "Input Component" <<"Contact Component" << "Timer Component" << "Audio Component";
     return available;
 }

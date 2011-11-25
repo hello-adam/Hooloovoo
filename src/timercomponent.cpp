@@ -14,7 +14,6 @@ TimerComponent::TimerComponent(GameObject *parentObject) :
     m_currentStep = 0;
 
     connect(GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
-    connect(parentObject, SIGNAL(sendLocalTrigger(QString)), this, SLOT(reactToTrigger(QString)));
 }
 
 QSet<QString> TimerComponent::getEditProperties()

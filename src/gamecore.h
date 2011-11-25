@@ -9,6 +9,7 @@
 #include "componentfactory.h"
 #include "physicsmanager.h"
 #include "inputreceiver.h"
+#include <phonon>
 
 class GameCore : public QObject
 {
@@ -34,11 +35,14 @@ public:
     static QString getPicturePath();
     static QString getGamePath();
     static QString getObjectPath();
+    static QString getAudioPath();
 
     void handleKeyEvent(QKeyEvent *ke);
 
     void addInputReceiver(InputReceiver* receiver) {m_inputReceivers.push_back(receiver);}
     void removeInputReceiver(InputReceiver* receiver) {m_inputReceivers.removeAll(receiver);}
+
+    Phonon::AudioOutput* getAudioOutput() {return m_audioOutput;}
 
 private:
     GraphicsScene* m_scene;
@@ -51,6 +55,8 @@ private:
     bool m_isPaused;
     void pause();
     void unpause();
+
+    Phonon::AudioOutput *m_audioOutput;
 
 signals:
     void timerTick();
