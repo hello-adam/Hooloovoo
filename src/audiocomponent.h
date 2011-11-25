@@ -12,6 +12,7 @@ class AudioComponent : public Component
     Q_PROPERTY(QString triggerToStop READ getStop WRITE setStop)
     Q_PROPERTY(QString completeTrigger READ getCompleteTrigger WRITE setCompleteTrigger)
     Q_PROPERTY(QString audioFile READ getFile WRITE setFile)
+    Q_PROPERTY(double volume READ getVolume WRITE setVolume)
 
 public:
     AudioComponent(GameObject *parentObject);
@@ -25,6 +26,7 @@ public:
     QString getFile() {return m_file;}
     QString getCompleteTrigger() {return m_completeTrigger;}
     bool getRepeat() {return m_repeat;}
+    double getVolume() {return m_audioOutput->volume()*11.0;}
 
 private:
     int m_timeStep;
@@ -34,6 +36,7 @@ private:
     QString m_stopTrigger;
     bool m_repeat;
     Phonon::MediaObject *m_audioObject;
+    Phonon::AudioOutput *m_audioOutput;
     Phonon::Path m_path;
 
     void reactToTrigger(QString trigger);
@@ -44,6 +47,7 @@ public slots:
     void setStop(QString trigger) {m_stopTrigger = trigger;}
     void setFile(QString file);
     void setRepeat(bool repeat) {m_repeat = repeat;}
+    void setVolume(double volume) {m_audioOutput->setVolume(volume/11.0);}
 };
 
 #endif // AUDIOCOMPONENT_H

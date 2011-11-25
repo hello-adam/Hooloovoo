@@ -14,19 +14,23 @@ AudioComponent::AudioComponent(GameObject *parentObject) :
     m_repeat = false;
 
     m_audioObject = new Phonon::MediaObject(this);
-    m_path = Phonon::createPath(m_audioObject, GameCore::getInstance()->getAudioOutput());
+    m_audioOutput = new Phonon::AudioOutput(Phonon::GameCategory, this);
+
+    m_path = Phonon::createPath(m_audioObject, m_audioOutput);
 }
 
 AudioComponent::~AudioComponent()
 {
     if (m_audioObject)
         delete m_audioObject;
+    if (m_audioOutput)
+        delete m_audioOutput;
 }
 
 QSet<QString> AudioComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "audioFile" << "triggerToStart" << "triggerToStop" << "completeTrigger" << "repeat";
+    properties << "audioFile" << "triggerToStart" << "triggerToStop" << "completeTrigger" << "repeat" << "volume";
     return properties;
 }
 

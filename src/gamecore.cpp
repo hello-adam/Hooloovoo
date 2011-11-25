@@ -20,7 +20,7 @@ GameCore::GameCore(QObject *parent) :
     m_gameTimer.setInterval(1000.0 / 60.0);
     this->pause();
 
-    m_audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
+    m_audioOutput = new Phonon::AudioOutput(Phonon::GameCategory, this);
 
     connect(&m_gameTimer, SIGNAL(timeout()), this, SIGNAL(timerTick()));
     connect(this, SIGNAL(timerTick()), PhysicsManager::getInstance(), SLOT(takeStep()));
