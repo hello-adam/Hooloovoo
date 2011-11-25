@@ -39,13 +39,13 @@ void GraphicsScene::drawBackground(QPainter *painter, const QRectF &rect)
 
 void GraphicsScene::drawForeground(QPainter *painter, const QRectF &rect)
 {
-    if (this->focusItem())
-    {
-        painter->setPen(Qt::green);
-        painter->setBrush(Qt::transparent);
+//    if (this->focusItem())
+//    {
+//        painter->setPen(Qt::green);
+//        painter->setBrush(Qt::transparent);
 
-        painter->drawRect(this->focusItem()->sceneBoundingRect());
-    }
+//        painter->drawRect(this->focusItem()->sceneBoundingRect());
+//    }
 
     if (m_isPaused)
     {

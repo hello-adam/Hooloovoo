@@ -25,7 +25,6 @@ public:
     virtual QSet<QString> getEditProperties() {return QSet<QString>();}
     virtual void prepareForSerialization() {}
     virtual bool allowMultipleComponents() {return true;}
-    virtual void instantiate() {}
 
 protected:
     GameObject* m_parentObject;
@@ -40,6 +39,7 @@ signals:
 
 public slots:
     virtual void checkTrigger(QString trigger);
+    virtual void instantiate() {}
 };
 
 #endif // COMPONENT_H

@@ -25,6 +25,10 @@ GameObject::GameObject(QGraphicsItem * parent) :
 
     m_paused = false;
 
+    m_modeOnClick = Nothing;
+    m_currentMode = Nothing;
+    m_startPoint = QPointF();
+
     this->setFlag(QGraphicsItem::ItemIsFocusable, true);
     this->setPaused(true);
 
@@ -175,6 +179,7 @@ void GameObject::createTesselation()
     }
 
     m_tessellation = tessellation;
+    emit newTessellation();
 }
 
 QVector<QPoint> GameObject::grahamScan(QList<QPoint> points, int minYIndex)
@@ -238,13 +243,28 @@ void GameObject::paint (QPainter * painter, const QStyleOptionGraphicsItem * opt
     painter->setOpacity(this->opacity());
     painter->drawPixmap(boundingRect().toRect(), m_pixmap);
 
-    //Enable this code in order to see the object's tesselation
-    QList<QPolygonF> tessellation = getTessellation();
-    painter->setPen(Qt::red);
-    foreach (QPolygonF poly, tessellation)
+    if (this->hasFocus() && m_paused)
     {
-        painter->drawPolygon(poly.translated(m_pixmap.width()/-2, m_pixmap.height()/-2));
+        painter->setPen(Qt::green);
+        if (m_outlineRect.isNull())
+        {
+            painter->drawRect(this->boundingRect());
+            painter->drawRect(QRectF(this->boundingRect().bottomRight() - QPointF(7, 7), QSizeF(7, 7)));
+        }
+        else
+        {
+            painter->drawRect(m_outlineRect);
+        }
     }
+
+
+    //Enable this code in order to see the object's tesselation
+//    QList<QPolygonF> tessellation = getTessellation();
+//    painter->setPen(Qt::red);
+//    foreach (QPolygonF poly, tessellation)
+//    {
+//        painter->drawPolygon(poly.translated(m_pixmap.width()/-2, m_pixmap.height()/-2));
+//    }
 }
 
 QRectF GameObject::boundingRect() const
@@ -281,12 +301,222 @@ void GameObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     delete saveAction;
 }
 
+void GameObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (event->button() != Qt::LeftButton || !m_paused)
+    {
+        event->ignore();
+        return;
+    }
+
+    m_currentMode = m_modeOnClick;
+    m_startPoint = event->scenePos();
+}
+
+void GameObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (!m_paused)
+    {
+        event->ignore();
+        return;
+    }
+
+    if (m_currentMode == Move)
+    {
+        QPointF diff = event->scenePos()-m_startPoint;
+        this->setPos(this->pos()+diff);
+        m_startPoint = event->scenePos();
+    }
+    else if (m_currentMode == ResizeBottomRight)
+    {
+        m_outlineRect = boundingRect();
+        QPointF diff = event->scenePos() - m_startPoint;
+        if (diff.x() > diff.y())
+            diff.setY(diff.x());
+        else
+            diff.setX(diff.y());
+        m_outlineRect.setBottomRight(m_outlineRect.bottomRight() + diff/scale());
+        this->update();
+    }
+    else if (m_currentMode == RotateHorizontal)
+    {
+        QPointF diff = event->scenePos()-m_startPoint;
+        this->setRotation(this->rotation()+diff.x());
+        m_startPoint = event->scenePos();
+    }
+    else if (m_currentMode == RotateVertical)
+    {
+        QPointF diff = event->scenePos()-m_startPoint;
+        this->setRotation(this->rotation()+diff.y());
+        m_startPoint = event->scenePos();
+    }
+}
+
+void GameObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (event->button() != Qt::LeftButton || !m_paused)
+    {
+        event->ignore();
+        return;
+    }
+
+    if (m_currentMode == Move)
+    {
+
+    }
+    else if (m_currentMode == ResizeBottomRight)
+    {
+        this->resizeToRect(m_outlineRect);
+        m_outlineRect = QRectF();
+        this->update();
+    }
+    else if (m_currentMode == RotateHorizontal)
+    {
+
+    }
+
+    m_currentMode = Nothing;
+}
+
+void GameObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    if (!m_paused)
+    {
+        event->ignore();
+        return;
+    }
+
+    bool leftBorder = false;
+    bool rightBorder = false;
+    bool bottomBorder = false;
+    bool topBorder = false;
+
+
+    if (event->pos().x() < this->boundingRect().width()/-2+7)
+    {
+        leftBorder = true;
+    }
+    if (event->pos().x() > this->boundingRect().width()/2-7)
+    {
+        rightBorder = true;
+    }
+    if (event->pos().y() < this->boundingRect().height()/-2+7)
+    {
+        topBorder = true;
+    }
+    if (event->pos().y() > this->boundingRect().height()/2-7)
+    {
+        bottomBorder = true;
+    }
+
+    if (bottomBorder && rightBorder)
+    {
+        setCursor(Qt::SizeFDiagCursor);
+        m_modeOnClick = ResizeBottomRight;
+    }
+    else if (bottomBorder || topBorder)
+    {
+        setCursor(Qt::SizeHorCursor);
+        m_modeOnClick = RotateHorizontal;
+    }
+    else if (rightBorder || leftBorder)
+    {
+        setCursor(Qt::SizeVerCursor);
+        m_modeOnClick = RotateVertical;
+    }
+    else
+    {
+        setCursor(Qt::SizeAllCursor);
+        m_modeOnClick = Move;
+    }
+}
+
+void GameObject::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+{
+    if (!m_paused)
+    {
+        event->ignore();
+        return;
+    }
+
+    bool leftBorder = false;
+    bool rightBorder = false;
+    bool bottomBorder = false;
+    bool topBorder = false;
+
+
+    if (event->pos().x() < this->boundingRect().width()/-2+7)
+    {
+        leftBorder = true;
+    }
+    if (event->pos().x() > this->boundingRect().width()/2-7)
+    {
+        rightBorder = true;
+    }
+    if (event->pos().y() < this->boundingRect().height()/-2+7)
+    {
+        topBorder = true;
+    }
+    if (event->pos().y() > this->boundingRect().height()/2-7)
+    {
+        bottomBorder = true;
+    }
+
+    if (bottomBorder && rightBorder)
+    {
+        setCursor(Qt::SizeFDiagCursor);
+        m_modeOnClick = ResizeBottomRight;
+    }
+    else if (bottomBorder || topBorder)
+    {
+        setCursor(Qt::SizeHorCursor);
+        m_modeOnClick = RotateHorizontal;
+    }
+    else if (rightBorder || leftBorder)
+    {
+        setCursor(Qt::SizeVerCursor);
+        m_modeOnClick = RotateVertical;
+    }
+    else
+    {
+        setCursor(Qt::SizeAllCursor);
+        m_modeOnClick = Move;
+    }
+}
+
+void GameObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    if (!m_paused)
+    {
+        event->ignore();
+        return;
+    }
+
+    setCursor(Qt::ArrowCursor);
+    m_modeOnClick = Nothing;
+}
+
+void GameObject::resizeToRect(QRectF rect)
+{
+    QPointF centerDiff;
+    qDebug() << rect.center();
+    centerDiff = this->mapToScene(rect.center());
+    qDebug() << centerDiff;
+    this->setPos(centerDiff);
+
+    double scaleDiff;
+    scaleDiff = rect.width()/boundingRect().width();
+    this->setScale(scale()*scaleDiff);
+
+    createTesselation();
+}
+
 void GameObject::setPaused(bool pause)
 {
     if (pause)
     {
         m_paused = true;
-        this->setFlag(QGraphicsItem::ItemIsMovable, true);
+//        this->setFlag(QGraphicsItem::ItemIsMovable, true);
 
         if (!m_visibleInGame)
             this->setVisible(true);
@@ -301,7 +531,7 @@ void GameObject::setPaused(bool pause)
     else
     {
         m_paused = false;
-        this->setFlag(QGraphicsItem::ItemIsMovable, false);
+//        this->setFlag(QGraphicsItem::ItemIsMovable, false);
 
         if (!m_visibleInGame)
             this->setVisible(false);

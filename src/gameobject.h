@@ -19,6 +19,8 @@ public:
     GameObject(QGraphicsItem  *parent = 0);
     ~GameObject();
 
+    enum MouseEditMode { Nothing, Move, ResizeBottomRight, RotateHorizontal, RotateVertical };
+
     void setPixmapFile(QString fileName);
     void setTemporaryPixmapFile(QString fileName);
     QString getPixmapFile() {return m_pixmapFileName;}
@@ -32,6 +34,14 @@ public:
 
     void paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
     QRectF boundingRect() const;
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
     void setPaused(bool pause);
 
@@ -64,6 +74,12 @@ private:
     QColor m_defaultColor;
     QList<QPolygonF> m_tessellation;
 
+    MouseEditMode m_modeOnClick;
+    MouseEditMode m_currentMode;
+    QPointF m_startPoint;
+    void resizeToRect(QRectF rect);
+    QRectF m_outlineRect;
+
     void createTesselation();
     QVector<QPoint> grahamScan(QList<QPoint> points, int minYIndex);
 
@@ -75,6 +91,7 @@ signals:
     void sendGlobalTrigger(QString);
     void componentAdded(Component*);
     void componentRemoved(Component*);
+    void newTessellation();
 
 private slots:
     void slotXChanged() {emit sendX(x());}
