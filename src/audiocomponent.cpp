@@ -34,6 +34,27 @@ QSet<QString> AudioComponent::getEditProperties()
     return properties;
 }
 
+void AudioComponent::setRepeat(bool repeat)
+{
+    m_repeat = repeat;
+    if (repeat)
+    {
+        connect(m_audioObject, SIGNAL(finished()),
+                this, SLOT(forceRepeat()));
+    }
+    else
+    {
+        disconnect(m_audioObject, SIGNAL(finished()),
+                this, SLOT(forceRepeat()));
+    }
+}
+
+void AudioComponent::forceRepeat()
+{
+    m_audioObject->stop();
+    m_audioObject->play();
+}
+
 void AudioComponent::setFile(QString file)
 {
     m_file = file;

@@ -46,8 +46,10 @@ public slots:
     void setStart(QString trigger) {m_startTrigger = trigger;}
     void setStop(QString trigger) {m_stopTrigger = trigger;}
     void setFile(QString file);
-    void setRepeat(bool repeat) {m_repeat = repeat;}
+    void setRepeat(bool repeat);
     void setVolume(double volume) {m_audioOutput->setVolume(volume/11.0);}
+
+    void forceRepeat();
 };
 
 #endif // AUDIOCOMPONENT_H
