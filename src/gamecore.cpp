@@ -93,6 +93,7 @@ void GameCore::addObjectToScene(QString fileName, QPointF pos)
     GameObject *gameObject = new GameObject();
     gameObject->deserialize(object);
     gameObject->setPos(pos);
+    gameObject->emitLocalTrigger("Initiated");
 
     if (m_scene)
     {

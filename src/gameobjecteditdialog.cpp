@@ -94,7 +94,10 @@ bool GameObjectEditDialog::editObject(GameObject *object)
         }
     }
 
-    return this->exec();
+    if (this->exec())
+    {
+        m_object->emitLocalTrigger("Initiated");
+    }
 }
 
 QWidget* GameObjectEditDialog::getObjectEditWidget(QObject* object, QSet<QString> editProperties)
