@@ -156,7 +156,6 @@ void TriggerEdit::propertyChanged()
         {
             if (name == ui->cb_PropertyName->currentText())
             {
-                qDebug() << "setting up property widget " << name;
                 m_propertyEditWidget = new PropertyEditWidget();
                 m_propertyEditWidget->setProperty(property, object);
                 ui->lo_editLayout->addWidget(m_propertyEditWidget);

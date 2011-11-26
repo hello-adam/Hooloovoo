@@ -160,8 +160,6 @@ void Component::checkTrigger(QString trigger)
 
 void Component::reactToPropertyTrigger(QStringList args)
 {
-    qDebug() << args;
-
     if (args.count() == 3)
     {
         if (args.at(0) == this->objectName())

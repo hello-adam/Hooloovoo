@@ -253,7 +253,6 @@ void PropertyEditWidget::removeItemFromList()
     if (qobject_cast<QListWidget*>(m_editWidget))
     {
         QListWidget* listWidget = qobject_cast<QListWidget*>(m_editWidget);
-        qDebug() << "Removing Item: " << listWidget->currentItem()->text();
         delete listWidget->currentItem();
     }
 }

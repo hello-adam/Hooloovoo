@@ -15,6 +15,8 @@ public:
     explicit GameFileDialog(QWidget *parent = 0);
     ~GameFileDialog();
 
+    enum FileType { Picture, Audio, GameObject, Game };
+
     QString getFileName();
     void setAccept(QString accept);
     void setCancel(QString cancel);
