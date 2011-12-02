@@ -36,8 +36,6 @@ public:
     QStringList getAvailablePictures();
     QStringList getAvailableAudio();
 
-    QString getPicturePath();
-    QString getAudioPath();
 
     static QStringList getObjectExtensions() {return QStringList("*.gameobject");}
     static QStringList getLevelExtensions() {return QStringList("*.level");}
@@ -46,17 +44,20 @@ public:
     static QStringList getPictureExtensions() {return QStringList("*.png");}
     static QStringList getAudioExtensions() {return QStringList("*.wav");}
 
-private:
-    explicit FileManager(QObject *parent = 0);
-
-    QString m_activeGameFileDirectory;
-    QString m_activeGameFileName;
 
     static QString getDefaultGamesPath();
     QString getActiveGamePath();
     QString getLevelPath();
     QString getObjectPath();
     QString getPlayStatePath();
+    QString getPicturePath();
+    QString getAudioPath();
+
+private:
+    explicit FileManager(QObject *parent = 0);
+
+    QString m_activeGameFileDirectory;
+    QString m_activeGameFileName;
 
 signals:
 

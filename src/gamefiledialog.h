@@ -32,11 +32,13 @@ private:
     QWidget* m_currentPreviewWidget;
     FileType m_type;
     QStringList m_extensions;
+    QString m_directory;
 
     void setupPreviewWidget();
 
 private slots:
     void fileSelectionChanged();
+    void importFiles();
 };
 
 #endif // GAMEFILEDIALOG_H
