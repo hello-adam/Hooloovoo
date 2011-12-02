@@ -97,6 +97,11 @@ bool GameObjectEditDialog::editObject(GameObject *object)
     if (this->exec())
     {
         m_object->emitLocalTrigger("Initiated");
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 

@@ -6,6 +6,10 @@
 #include <QtOpenGL/qgl.h>
 #include <QGraphicsItem>
 #include <QGraphicsView>
+#include "physicsmanager.h"
+#include "gamefiledialog.h"
+#include "leveldatadialog.h"
+#include "filemanager.h"
 
 GraphicsScene::GraphicsScene(QObject *parent) :
     QGraphicsScene(parent)
@@ -55,6 +59,11 @@ void GraphicsScene::drawForeground(QPainter *painter, const QRectF &rect)
         painter->drawText(
                     QRectF(this->views().at(0)->mapToScene(this->views().at(0)->width()/2 - 80, this->views().at(0)->height()/2 - 12), QSizeF(160, 25)),
                     "PAUSED", QTextOption(Qt::AlignHCenter | Qt::AlignVCenter));
+
+        //draw border of world
+        painter->setPen(Qt::red);
+        painter->setBrush(Qt::transparent);
+        painter->drawRect(PhysicsManager::getInstance().getBoundingRect());
     }
 }
 
@@ -74,26 +83,35 @@ void GraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
     if (selectedAction == addObject)
     {
-        GameCore::getInstance()->launchAddObjectDialog(event->screenPos());
+        GameFileDialog dlg;
+
+        dlg.setAcceptMode(GameFileDialog::Select);
+        dlg.setFileType(GameFileDialog::GameObject);
+
+        if (dlg.exec() && !dlg.getFileName().isEmpty())
+        {
+            GameCore::getInstance().addObjectToLevel(FileManager::getInstance().loadGameObject(dlg.getFileName()), event->scenePos());
+        }
     }
     else if (selectedAction == editGlobal)
     {
-        GameCore::getInstance()->launchGlobalDataDialog();
+        LevelDataDialog dlg;
+        dlg.editLevelData();
     }
 
     delete addObject;
     delete editGlobal;
 }
 
-void GraphicsScene::keyPressEvent(QKeyEvent *event)
-{
-    GameCore::getInstance()->handleKeyEvent(event);
-}
+//void GraphicsScene::keyPressEvent(QKeyEvent *event)
+//{
+//    GameCore::getInstance().handleKeyEvent(event);
+//}
 
-void GraphicsScene::keyReleaseEvent(QKeyEvent *event)
-{
-    GameCore::getInstance()->handleKeyEvent(event);
-}
+//void GraphicsScene::keyReleaseEvent(QKeyEvent *event)
+//{
+//    GameCore::getInstance().handleKeyEvent(event);
+//}
 
 void GraphicsScene::clearAll()
 {

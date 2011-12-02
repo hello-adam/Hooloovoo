@@ -13,6 +13,7 @@
 #include <QToolButton>
 #include <QMetaProperty>
 #include <QVariant>
+#include "gamefiledialog.h"
 
 namespace Ui {
     class PropertyEditWidget;
@@ -38,8 +39,7 @@ private:
     QToolButton* m_toolButton;
     QToolButton* m_removeButton;
 
-    QStringList m_fileExtensions;
-    QString m_fileDirectory;
+    GameFileDialog::FileType m_fileType;
 
 private slots:
     void getStringFromFile();

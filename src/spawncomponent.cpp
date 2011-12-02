@@ -1,5 +1,6 @@
 #include "spawncomponent.h"
 #include "gamecore.h"
+#include "filemanager.h"
 
 SpawnComponent::SpawnComponent(GameObject *parentObject) :
     Component(parentObject)
@@ -11,7 +12,7 @@ SpawnComponent::SpawnComponent(GameObject *parentObject) :
     m_elapsed = 0;
     m_offset = QPointF(0, 0);
 
-    connect(GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
+    connect(&GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
 }
 
 QSet<QString> SpawnComponent::getEditProperties()
@@ -23,7 +24,7 @@ QSet<QString> SpawnComponent::getEditProperties()
 
 void SpawnComponent::spawn()
 {
-    GameCore::getInstance()->addObjectToScene(m_objectFileName, m_parentObject->pos() + m_offset);
+    GameCore::getInstance().addObjectToLevel(FileManager::getInstance().loadGameObject(m_objectFileName), m_parentObject->pos() + m_offset);
 }
 
 void SpawnComponent::reactToTimerTick()

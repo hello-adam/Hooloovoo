@@ -11,7 +11,12 @@ class PhysicsManager : public QObject
 {
     Q_OBJECT
 public:
-    static PhysicsManager* getInstance();
+    static PhysicsManager &getInstance()
+    {
+        static PhysicsManager instance;
+
+        return instance;
+    }
     ~PhysicsManager();
 
     void setGravity(double gravity) {m_gravity = gravity;  m_world->SetGravity(b2Vec2(0, m_gravity));}
@@ -23,9 +28,12 @@ public:
     PhysicsComponent* getComponent(b2Body* body) {return m_bodyToComponent.value(body);}
     PhysicsComponent* getComponent(b2Fixture* fixture) {return m_fixtureToComponent.value(fixture);}
 
+    QRectF getBoundingRect() {return m_boundingRect;}
+
 private:
     PhysicsManager(QObject* parent = 0);
     static PhysicsManager* m_instance;
+    QRectF m_boundingRect;
 
     b2World *m_world;
     b2Body *m_worldBounds;

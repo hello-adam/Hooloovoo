@@ -75,7 +75,7 @@ void PhysicsControllerComponent::reactToTrigger(QString trigger)
         }
         else
         {
-            connect(GameCore::getInstance(), SIGNAL(timerTick()),
+            connect(&GameCore::getInstance(), SIGNAL(timerTick()),
                     this, SLOT(reactToTimerTick()));
         }
     }
@@ -93,7 +93,7 @@ void PhysicsControllerComponent::reactToTrigger(QString trigger)
             body->SetLinearVelocity(nullifyValue + body->GetLinearVelocity());
         }
 
-        disconnect(GameCore::getInstance(), SIGNAL(timerTick()),
+        disconnect(&GameCore::getInstance(), SIGNAL(timerTick()),
                    this, SLOT(reactToTimerTick()));
     }
 }

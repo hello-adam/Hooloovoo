@@ -26,11 +26,11 @@ void AnimationComponent::reactToTrigger(QString trigger)
 {
     if (trigger == m_startTrigger)
     {
-        connect(GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
+        connect(&GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
     }
     else if (trigger == m_stopTrigger)
     {
-        disconnect(GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
+        disconnect(&GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
     }
 }
 
@@ -39,7 +39,7 @@ void AnimationComponent::setDefault(bool active)
     m_activeByDefault = active;
 
     if (active)
-        connect(GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
+        connect(&GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
 }
 
 void AnimationComponent::reactToTimerTick()

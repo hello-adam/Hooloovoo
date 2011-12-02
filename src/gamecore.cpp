@@ -9,89 +9,52 @@
 #include <QSpinBox>
 #include <QDialogButtonBox>
 #include "graphicsview.h"
-
-GameCore* GameCore::m_instance;
+#include <QMenu>
+#include "leveldatadialog.h"
 
 GameCore::GameCore(QObject *parent) :
     QObject(parent)
 {
-    m_scene = 0;
+    m_scene = new GraphicsScene();
+    m_scene->setSceneRect(0, 0, 800, 600);
 
     m_gameTimer.setInterval(1000.0 / 60.0);
-    this->pause();
-
-    m_audioOutput = new Phonon::AudioOutput(Phonon::GameCategory, this);
 
     connect(&m_gameTimer, SIGNAL(timeout()), this, SIGNAL(timerTick()));
-    connect(this, SIGNAL(timerTick()), PhysicsManager::getInstance(), SLOT(takeStep()));
-}
+    connect(this, SIGNAL(timerTick()), &PhysicsManager::getInstance(), SLOT(takeStep()));
 
-GameCore* GameCore::getInstance()
-{
-    if (!m_instance)
-        m_instance = new GameCore();
+    emit hasSelectedObject(false);
+    emit hasObjectOnClipboard(false);
 
-    return m_instance;
+    this->pause();
 }
 
 GameCore::~GameCore()
 {
-    delete m_audioOutput;
     qDeleteAll(m_inputReceivers);
 }
 
-void GameCore::initializeGameDirectoriesAndData()
+QDomElement GameCore::serializeSelectedObject()
 {
-    QDir dir;
-    if (!QDir(getPicturePath()).exists())
+    QDomElement selected;
+
+    if (m_scene->focusItem())
     {
-        dir.mkdir(getPicturePath());
-    }
-    if (!QDir(getObjectPath()).exists())
-    {
-        dir.mkdir(getObjectPath());
-    }
-    if (!QDir(getGamePath()).exists())
-    {
-        dir.mkdir(getGamePath());
+
     }
 
-    QString baseObjectFile = getObjectPath() + "baseobject.gameobject";
-    if (!QFile(baseObjectFile).exists())
-    {
-        GameObject* baseObject = new GameObject();
-        baseObject->saveObject("baseobject.gameobject");
-        delete baseObject;
-    }
+    return selected;
 }
 
-void GameCore::setScene(GraphicsScene *scene)
+void GameCore::copySelectedObjectToClipboard()
 {
-    m_scene = scene;
-    if (m_isPaused)
-        m_scene->pause();
-    else
-        m_scene->unpause();
-
-    PhysicsManager::getInstance()->setWorldBounds(m_scene->sceneRect());
-    connect(m_scene, SIGNAL(sceneRectChanged(QRectF)), PhysicsManager::getInstance(), SLOT(setWorldBounds(QRectF)));
+    m_clipBoardElement = serializeSelectedObject();
 }
 
-void GameCore::addObjectToScene(QString fileName, QPointF pos)
+void GameCore::addObjectToLevel(const QDomElement &objectElement, QPointF pos)
 {
-    QFile *file = new QFile(getObjectPath() + fileName);
-
-    file->open(QFile::ReadOnly);
-    QDomDocument *doc = new QDomDocument();
-    doc->setContent(file);
-    file->close();
-    delete file;
-
-    QDomElement object = doc->documentElement();
-    delete doc;
-
     GameObject *gameObject = new GameObject();
-    gameObject->deserialize(object);
+    gameObject->deserialize(objectElement);
     gameObject->setPos(pos);
     gameObject->emitLocalTrigger("Initiated");
 
@@ -100,125 +63,101 @@ void GameCore::addObjectToScene(QString fileName, QPointF pos)
         m_scene->addGameObject(gameObject);
         m_scene->setFocusItem(gameObject);
     }
-}
-
-void GameCore::launchGlobalDataDialog()
-{
-    if (!m_scene)
-        return;
-
-    QDialog dlg;
-    QFormLayout formLayout(&dlg);
-    dlg.setLayout(&formLayout);
-
-    QSpinBox width;
-    width.setMaximum(999999999);
-    width.setValue(m_scene->width());
-    QSpinBox height;
-    height.setMaximum(999999999);
-    height.setValue(m_scene->height());
-
-    QSpinBox gravity;
-    gravity.setMinimum(-100);
-    gravity.setMaximum(100);
-    gravity.setValue(PhysicsManager::getInstance()->getGravity());
-
-    formLayout.addRow("width", &width);
-    formLayout.addRow("height", &height);
-    formLayout.addRow("gravity", &gravity);
-
-    QDialogButtonBox buttons(QDialogButtonBox::Ok
-                             | QDialogButtonBox::Cancel);
-    formLayout.addRow(&buttons);
-    connect(&buttons, SIGNAL(accepted()), &dlg, SLOT(accept()));
-    connect(&buttons, SIGNAL(rejected()), &dlg, SLOT(reject()));
-
-    if (dlg.exec())
+    else
     {
-        m_scene->setSceneRect(0, 0, width.value(), height.value());
-        PhysicsManager::getInstance()->setGravity(gravity.value());
+        qDebug() << "No scene!  Can't add object";
+        delete gameObject;
     }
 }
 
-void GameCore::launchAddObjectDialog(QPoint pos)
+QDomElement GameCore::serializeLevel()
 {
-    GameFileDialog *dlg = new GameFileDialog();
-    dlg->setFileExtensions(QStringList("*.gameobject"));
-    dlg->setSubdirectory("objects");
-    dlg->setAccept("Select");
+    QDomDocument doc;
+    QDomElement level = doc.createElement("level");
 
-    if (dlg->exec())
-    {
-        QGraphicsView* view = m_scene->views().at(0);
-        if (pos.isNull())
-            GameCore::getInstance()->addObjectToScene(dlg->getFileName(), view->mapToScene(view->width()/2.0, view->height()/2.0));
-        else
-            GameCore::getInstance()->addObjectToScene(dlg->getFileName(), view->mapToScene(view->mapFromGlobal(pos)));
-    }
+    QDomElement levelData = doc.createElement("leveldata");
 
-    delete dlg;
-}
+    QDomElement bounds = doc.createElement("bounds");
+    bounds.setAttribute("width", PhysicsManager::getInstance().getBoundingRect().width());
+    bounds.setAttribute("height", PhysicsManager::getInstance().getBoundingRect().height());
+    QDomElement gravity = doc.createElement("gravity");
+    gravity.setAttribute("yGravity", PhysicsManager::getInstance().getGravity());
 
-void GameCore::saveGame(QString fileName)
-{
-    QFile *file = new QFile(getGamePath() + fileName);
+    levelData.appendChild(bounds);
+    levelData.appendChild(gravity);
 
-    file->open(QFile::WriteOnly | QFile::Truncate);
-
-    QTextStream fileStream(file);
-
-    QDomDocument *doc = new QDomDocument();
-    QDomElement root = doc->createElement("root");
-
-    doc->appendChild(root);
-
-    root.appendChild(serializeGlobal(doc));
+    level.appendChild(levelData);
 
     QList<GameObject*> gameObjects = m_scene->getGameObjects();
-
     foreach(GameObject* g, gameObjects)
     {
-        root.appendChild(g->serialize(doc));
+        level.appendChild(g->serialize());
     }
 
-    doc->save(fileStream, 2);
-    delete doc;
-
-    file->close();
-    delete file;
+    return level;
 }
 
-void GameCore::loadGame(QString fileName)
+bool GameCore::deserializeLevel(const QDomElement &levelElement)
 {
-    if (m_scene)
-        m_scene->clearAll();
+    m_scene->clearAll();
 
-    QFile *file = new QFile(getGamePath() + fileName);
+    QDomElement dataElement = levelElement.firstChildElement("leveldata");
+    QDomElement scene = dataElement.firstChildElement("bounds");
+    if (!scene.isNull())
+    {
+        PhysicsManager::getInstance().setWorldBounds(QRectF(0, 0,
+                                                             scene.attribute("width").toDouble(),
+                                                             scene.attribute("height").toDouble()));
+    }
+    QDomElement gravity = dataElement.firstChildElement("gravity");
+    if (!gravity.isNull())
+    {
+        PhysicsManager::getInstance().setGravity(gravity.attribute("yGravity").toDouble());
+    }
 
-    file->open(QFile::ReadOnly);
-    QDomDocument *doc = new QDomDocument();
-    doc->setContent(file);
-    file->close();
-    delete file;
+    QDomElement gameobject = levelElement.firstChildElement("gameobject");
 
-    QDomElement root = doc->documentElement();
-    delete doc;
-
-    QDomElement global = root.firstChildElement("global");
-    deserializeGlobal(global);
-
-    QDomElement child = root.firstChildElement("gameobject");
-
-    while (!child.isNull())
+    while (!gameobject.isNull())
     {
         GameObject *g = new GameObject();
-        g->deserialize(child);
+        g->deserialize(gameobject);
 
-        if (m_scene)
-            m_scene->addGameObject(g);
+        m_scene->addGameObject(g);
 
-        child = child.nextSiblingElement("gameobject");
+        gameobject = gameobject.nextSiblingElement("gameobject");
     }
+
+    return true;
+}
+
+void GameCore::togglePaused()
+{
+    if (m_isPaused)
+    {
+        unpause();
+    }
+    else
+    {
+        pause();
+    }
+}
+
+void GameCore::pause()
+{
+    m_gameTimer.stop();
+    PhysicsManager::getInstance().pause();
+    if (m_scene)
+        m_scene->pause();
+    m_isPaused = true;
+}
+
+void GameCore::unpause()
+{
+    m_gameTimer.start();
+    PhysicsManager::getInstance().start();
+    if (m_scene)
+        m_scene->unpause();
+    m_isPaused = false;
 }
 
 void GameCore::handleKeyEvent(QKeyEvent *ke)
@@ -240,89 +179,4 @@ void GameCore::handleKeyEvent(QKeyEvent *ke)
             receiver->handleKeyEvent(ke);
         }
     }
-}
-
-void GameCore::pause()
-{
-    m_gameTimer.stop();
-    PhysicsManager::getInstance()->pause();
-    if (m_scene)
-        m_scene->pause();
-    m_isPaused = true;
-}
-
-void GameCore::unpause()
-{
-    m_gameTimer.start();
-    PhysicsManager::getInstance()->start();
-    if (m_scene)
-        m_scene->unpause();
-    m_isPaused = false;
-}
-
-void GameCore::togglePaused()
-{
-    if (m_isPaused)
-    {
-        unpause();
-    }
-    else
-    {
-        pause();
-    }
-}
-
-QDomElement GameCore::serializeGlobal(QDomDocument *document)
-{
-    QDomElement globalElement = document->createElement("global");
-
-    QDomElement scene = document->createElement("scene");
-    scene.setAttribute("width", m_scene->width());
-    scene.setAttribute("height", m_scene->height());
-    QDomElement gravity = document->createElement("gravity");
-    gravity.setAttribute("yGravity", PhysicsManager::getInstance()->getGravity());
-
-    globalElement.appendChild(scene);
-
-    return globalElement;
-}
-
-bool GameCore::deserializeGlobal(const QDomElement &objectElement)
-{
-    QDomElement scene = objectElement.firstChildElement("scene");
-    if (!scene.isNull())
-    {
-        if (m_scene)
-            m_scene->setSceneRect(0, 0,
-                                  scene.attribute("width").toDouble(),
-                                  scene.attribute("height").toDouble());
-    }
-
-    QDomElement gravity = objectElement.firstChildElement("gravity");
-    if (!gravity.isNull())
-    {
-        PhysicsManager::getInstance()->setGravity(gravity.attribute("yGravity").toDouble());
-    }
-
-    return true;
-}
-
-QString GameCore::getPicturePath()
-{
-    return QApplication::applicationDirPath() + "/pics/";
-}
-
-QString GameCore::getGamePath()
-{
-    return QApplication::applicationDirPath() + "/games/";
-}
-
-QString GameCore::getObjectPath()
-{
-    return QApplication::applicationDirPath() + "/objects/";
-}
-
-QString GameCore::getAudioPath()
-{
-    return QApplication::applicationDirPath() + "/audio/";
 }

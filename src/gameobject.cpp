@@ -11,6 +11,7 @@
 #include "componentfactory.h"
 #include "graphicsscene.h"
 #include "gamefiledialog.h"
+#include "filemanager.h"
 
 GameObject::GameObject(QGraphicsItem * parent) :
     QGraphicsObject(parent)
@@ -70,7 +71,7 @@ void GameObject::setPixmapFile(QString fileName)
 
     m_tessellation.clear();
 
-    if (!m_pixmap.load(GameCore::getPicturePath() + fileName))
+    if (!m_pixmap.load(FileManager::getInstance().getPicturePath() + fileName))
     {
         m_pixmap = QPixmap(42, 42);
         m_pixmap.fill(m_defaultColor);
@@ -82,7 +83,7 @@ void GameObject::setPixmapFile(QString fileName)
 
 void GameObject::setTemporaryPixmapFile(QString fileName)
 {
-    if (!m_pixmap.load(GameCore::getPicturePath() + fileName))
+    if (!m_pixmap.load(FileManager::getInstance().getPicturePath() + fileName))
     {
         m_pixmap = QPixmap(42, 42);
         m_pixmap.fill(m_defaultColor);
@@ -583,8 +584,10 @@ bool GameObject::removeComponent(Component *component)
     return false;
 }
 
-QDomElement GameObject::serialize(QDomDocument *document)
+QDomElement GameObject::serialize()
 {
+    QDomDocument *document = new QDomDocument();
+
     QDomElement objectElement = document->createElement("gameobject");
 
     for (int i = 0; i<this->metaObject()->propertyCount(); i++)
@@ -634,6 +637,8 @@ QDomElement GameObject::serialize(QDomDocument *document)
     {
         objectElement.appendChild(c->serialize(document));
     }
+
+    delete document;
 
     return objectElement;
 }
@@ -709,26 +714,6 @@ void GameObject::launchEditorDialog()
     dlg->deleteLater();
 }
 
-void GameObject::saveObject(QString fileName)
-{
-    QFile *file = new QFile(GameCore::getObjectPath() + fileName);
-
-    file->open(QFile::WriteOnly | QFile::Truncate);
-
-    QTextStream fileStream(file);
-
-    QDomDocument *doc = new QDomDocument();
-    QDomElement object = this->serialize(doc);
-
-    doc->appendChild(object);
-
-    doc->save(fileStream, 2);
-    delete doc;
-
-    file->close();
-    delete file;
-}
-
 void GameObject::checkLocalTrigger(QString trigger)
 {
     if (trigger.contains(QRegExp("Tag(.*)")))
@@ -771,9 +756,8 @@ void GameObject::checkLocalTrigger(QString trigger)
 void GameObject::launchSaveDialog()
 {
     GameFileDialog *dlg = new GameFileDialog();
-    dlg->setFileExtensions(QStringList("*.gameobject"));
-    dlg->setSubdirectory("objects");
-    dlg->setAccept("Save");
+    dlg->setAcceptMode(GameFileDialog::Save);
+    dlg->setFileType(GameFileDialog::GameObject);
 
     if (dlg->exec())
     {
@@ -781,4 +765,9 @@ void GameObject::launchSaveDialog()
     }
 
     delete dlg;
+}
+
+void GameObject::saveObject(QString fileName)
+{
+    FileManager::getInstance().saveGameObject(this->serialize(), fileName);
 }

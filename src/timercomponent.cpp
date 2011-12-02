@@ -13,7 +13,7 @@ TimerComponent::TimerComponent(GameObject *parentObject) :
     m_timeStep = 1;
     m_currentStep = 0;
 
-    connect(GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
+    connect(&GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
 }
 
 QSet<QString> TimerComponent::getEditProperties()

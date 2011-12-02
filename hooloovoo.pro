@@ -12,7 +12,6 @@ RCC_DIR = buildFiles/rcc
 UI_HEADERS_DIR = buildFiles/ui_h
 
 HEADERS += \
-    src/mainwindow.h \
     src/gameobject.h \
     src/gamecore.h \
     src/component.h \
@@ -37,10 +36,14 @@ HEADERS += \
     src/timercomponent.h \
     src/editwidgets/triggeredit.h \
     src/editwidgets/triggerlineedit.h \
-    src/audiocomponent.h
+    src/audiocomponent.h \
+    src/audiopreviewwidget.h \
+    src/leveldatadialog.h \
+    src/filemanager.h \
+    src/filepreviewwidget.h \
+    src/mainwindow.h
 
 SOURCES += \
-    src/mainwindow.cpp \
     src/gameobject.cpp \
     src/gamecore.cpp \
     src/component.cpp \
@@ -66,19 +69,60 @@ SOURCES += \
     src/timercomponent.cpp \
     src/editwidgets/triggeredit.cpp \
     src/editwidgets/triggerlineedit.cpp \
-    src/audiocomponent.cpp
+    src/audiocomponent.cpp \
+    src/audiopreviewwidget.cpp \
+    src/leveldatadialog.cpp \
+    src/filemanager.cpp \
+    src/filepreviewwidget.cpp \
+    src/mainwindow.cpp
 
 FORMS += \
-    src/mainwindow.ui \
     src/gamefiledialog.ui \
     src/gameobjecteditdialog.ui \
     src/propertyeditwidget.ui \
     src/componenteditwidget.ui \
     src/editwidgets/pointedit.ui \
     src/editwidgets/triggerlineedit.ui \
-    src/editwidgets/triggeredit.ui
+    src/editwidgets/triggeredit.ui \
+    src/audiopreviewwidget.ui \
+    src/leveldatadialog.ui \
+    src/mainwindow.ui
 
 OTHER_FILES +=
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

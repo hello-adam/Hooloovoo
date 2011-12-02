@@ -10,15 +10,13 @@ ContactListener::ContactListener(QObject *parent) :
 
 void ContactListener::BeginContact(b2Contact *contact)
 {
-    PhysicsManager* manager = PhysicsManager::getInstance();
-
     b2WorldManifold worldManifold;
     contact->GetWorldManifold(&worldManifold);
 
     b2Fixture* fixtureA = contact->GetFixtureA();
     b2Fixture* fixtureB = contact->GetFixtureB();
-    PhysicsComponent* componentA = manager->getComponent(fixtureA);
-    PhysicsComponent* componentB = manager->getComponent(fixtureB);
+    PhysicsComponent* componentA = PhysicsManager::getInstance().getComponent(fixtureA);
+    PhysicsComponent* componentB = PhysicsManager::getInstance().getComponent(fixtureB);
     float32 x = worldManifold.normal.x;
     float32 y = worldManifold.normal.y;
     PhysicsComponent::ContactType typeA = PhysicsComponent::ContactIrrelevant;
@@ -56,12 +54,10 @@ void ContactListener::BeginContact(b2Contact *contact)
 
 void ContactListener::EndContact(b2Contact *contact)
 {
-    PhysicsManager* manager = PhysicsManager::getInstance();
-
     b2Fixture* fixtureA = contact->GetFixtureA();
     b2Fixture* fixtureB = contact->GetFixtureB();
-    PhysicsComponent* componentA = manager->getComponent(fixtureA);
-    PhysicsComponent* componentB = manager->getComponent(fixtureB);
+    PhysicsComponent* componentA = PhysicsManager::getInstance().getComponent(fixtureA);
+    PhysicsComponent* componentB = PhysicsManager::getInstance().getComponent(fixtureB);
 
     if (componentA)
         componentA->leaveContact(componentB);

@@ -2,30 +2,20 @@
 #include "gamecore.h"
 #include <QDebug>
 
-PhysicsManager* PhysicsManager::m_instance;
-
 PhysicsManager::PhysicsManager(QObject *parent) :
     QObject(parent)
 {
-    m_worldBounds = 0;
     m_gravity = -10;
     m_world = new b2World(b2Vec2(0.0f, m_gravity));
     m_contactListener = new ContactListener();
     m_world->SetContactListener(m_contactListener);
+
+    setWorldBounds(QRectF(0, 0, 800, 600));
 }
 
 PhysicsManager::~PhysicsManager()
 {
     m_contactListener->deleteLater();
-}
-
-
-PhysicsManager* PhysicsManager::getInstance()
-{
-    if (!m_instance)
-        m_instance = new PhysicsManager();
-
-    return m_instance;
 }
 
 b2Body* PhysicsManager::addBody(b2BodyDef *bodyDef, b2FixtureDef fixtureDef[], int fixtureCount, PhysicsComponent *component)
@@ -76,6 +66,8 @@ void PhysicsManager::takeStep()
 
 void PhysicsManager::setWorldBounds(QRectF rect)
 {
+    m_boundingRect = rect;
+
     //adjust for world coordinates
     rect.setHeight(rect.height()/-20.0);
     rect.setY(rect.y()/-20.0);

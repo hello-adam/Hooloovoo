@@ -22,8 +22,8 @@ protected:
     void drawForeground(QPainter *painter, const QRectF &rect);
 
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    void keyPressEvent(QKeyEvent *event);
-    void keyReleaseEvent(QKeyEvent *event);
+//    void keyPressEvent(QKeyEvent *event);
+//    void keyReleaseEvent(QKeyEvent *event);
 
 private:
     QList<GameObject*> m_gameObjects;

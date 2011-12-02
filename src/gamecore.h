@@ -10,42 +10,36 @@
 #include "physicsmanager.h"
 #include "inputreceiver.h"
 #include <phonon>
+#include <QMenuBar>
 
 class GameCore : public QObject
 {
     Q_OBJECT
 public:
-    static GameCore* getInstance();
+    static GameCore &getInstance()
+    {
+        static GameCore instance;
+
+        return instance;
+    }
     ~GameCore();
 
-    void initializeGameDirectoriesAndData();
+    QDomElement getClipboardElement() {return m_clipBoardElement;}
 
-    void setScene(GraphicsScene* scene);
-    void addObjectToScene(QString fileName, QPointF pos);
+    QDomElement serializeSelectedObject();
+    void addObjectToLevel(const QDomElement &objectElement, QPointF pos = QPoint());
 
-    void launchGlobalDataDialog();
-    void launchAddObjectDialog(QPoint pos = QPoint());
-
-    void saveGame(QString fileName);
-    void loadGame(QString fileName);
-
-    QDomElement serializeGlobal(QDomDocument *document);
-    bool deserializeGlobal(const QDomElement &objectElement);
-
-    static QString getPicturePath();
-    static QString getGamePath();
-    static QString getObjectPath();
-    static QString getAudioPath();
+    QDomElement serializeLevel();
+    bool deserializeLevel(const QDomElement &levelElement);
 
     void handleKeyEvent(QKeyEvent *ke);
 
     void addInputReceiver(InputReceiver* receiver) {m_inputReceivers.push_back(receiver);}
     void removeInputReceiver(InputReceiver* receiver) {m_inputReceivers.removeAll(receiver);}
 
-    Phonon::AudioOutput* getAudioOutput() {return m_audioOutput;}
+    GraphicsScene* getGraphicsScene() {return m_scene;}
 
 private:
-    GraphicsScene* m_scene;
     explicit GameCore(QObject *parent = 0);
     static GameCore *m_instance;
     QTimer m_gameTimer;
@@ -56,13 +50,20 @@ private:
     void pause();
     void unpause();
 
-    Phonon::AudioOutput *m_audioOutput;
+    QDomElement m_clipBoardElement;
+
+    GraphicsScene* m_scene;
 
 signals:
     void timerTick();
 
+    void hasSelectedObject(bool);
+    void hasObjectOnClipboard(bool);
+
 public slots:
     void togglePaused();
+
+    void copySelectedObjectToClipboard();
 };
 
 #endif // CORE_H

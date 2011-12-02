@@ -54,7 +54,7 @@ public:
     bool removeComponent(Component* component);
     QList<Component*> getComponents() {return m_components;}
 
-    QDomElement serialize(QDomDocument *document);
+    QDomElement serialize();
     bool deserialize(const QDomElement &objectElement);
 
     bool polarLessThan(const QPoint &a, const QPoint &b);

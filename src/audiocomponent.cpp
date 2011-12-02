@@ -1,5 +1,5 @@
 #include "audiocomponent.h"
-#include "gamecore.h"
+#include "filemanager.h"
 
 AudioComponent::AudioComponent(GameObject *parentObject) :
     Component(parentObject)
@@ -59,7 +59,7 @@ void AudioComponent::setFile(QString file)
 {
     m_file = file;
 
-    m_audioObject->setCurrentSource(GameCore::getAudioPath() + file);
+    m_audioObject->setCurrentSource(FileManager::getInstance().getAudioPath() + file);
 }
 
 void AudioComponent::reactToTrigger(QString trigger)

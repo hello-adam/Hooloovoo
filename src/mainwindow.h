@@ -2,8 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
-#include "graphicsscene.h"
 #include "graphicsview.h"
 
 namespace Ui {
@@ -18,23 +16,52 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    GraphicsScene* getGraphicsScene() {return m_scene;}
-    GraphicsView* getGraphicsView() {return m_view;}
-
-protected:
-    void keyPressEvent(QKeyEvent *ke);
-    void keyReleaseEvent(QKeyEvent *ke);
-
 private:
     Ui::MainWindow *ui;
-    GraphicsScene *m_scene;
-    GraphicsView *m_view;
+
+    void initializeMenus();
+
+    GraphicsView *m_gameGraphicsView;
+
+    QMenu* m_playGameMenu;
+    QMenu* m_createGameMenu;
+    QMenu* m_levelMenu;
+    QMenu* m_objectMenu;
+    QMenu* m_helpMenu;
+
+signals:
+
+public slots:
+    void refreshGameList();
 
 private slots:
-    void saveGame();
-    void loadGame();
-    void setSceneSize();
+    void startScreenEditGame();
+    void startScreenPlayGame();
+    void startScreenFileSelected();
+
+    void switchToStartScreen();
+    void switchToGameScreen();
+    void switchToGameEditorScreen();
+
+    void createGame();
+    void switchGame();
+
+    void newLevel();
+    void saveLevel();
+    void loadLevel();
+    void editLevelData();
     void addObject();
+
+    void savePlayState();
+    void loadPlayState();
+
+    void saveSelectedObject();
+    void editSelectedObject();
+    void removeSelectedObject();
+    void copySelectedObject();
+    void pasteObjectFromClipboard();
+
+    void launchAboutDialog();
 };
 
 #endif // MAINWINDOW_H

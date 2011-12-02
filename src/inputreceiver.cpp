@@ -3,10 +3,10 @@
 
 InputReceiver::InputReceiver()
 {
-    GameCore::getInstance()->addInputReceiver(this);
+    GameCore::getInstance().addInputReceiver(this);
 }
 
 InputReceiver::~InputReceiver()
 {
-    GameCore::getInstance()->removeInputReceiver(this);
+    GameCore::getInstance().removeInputReceiver(this);
 }

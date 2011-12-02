@@ -2,6 +2,7 @@
 #define GAMEFILEDIALOG_H
 
 #include <QDialog>
+#include "filepreviewwidget.h"
 
 namespace Ui {
     class GameFileDialog;
@@ -15,20 +16,27 @@ public:
     explicit GameFileDialog(QWidget *parent = 0);
     ~GameFileDialog();
 
-    enum FileType { Picture, Audio, GameObject, Game };
+    enum FileType { Picture, Audio, GameObject, Level, Game, PlayState };
+    enum AcceptMode { Select, Load, Save, Create };
 
     QString getFileName();
-    void setAccept(QString accept);
-    void setCancel(QString cancel);
-    void setSubdirectory(QString sub) { m_subdirectory = sub; updateList(); }
-    void setFileExtensions(QStringList extensions) { m_extensions = extensions; updateList(); }
-    void updateList();
+    QStringList getAllAvailableFiles();
+
+    void setAcceptMode(AcceptMode mode);
+    void setFileType(FileType type);
 
 private:
     Ui::GameFileDialog *ui;
 
-    QString m_subdirectory;
+    FilePreviewWidget* m_previewWidget;
+    QWidget* m_currentPreviewWidget;
+    FileType m_type;
     QStringList m_extensions;
+
+    void setupPreviewWidget();
+
+private slots:
+    void fileSelectionChanged();
 };
 
 #endif // GAMEFILEDIALOG_H

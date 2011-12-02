@@ -22,7 +22,7 @@ PhysicsComponent::PhysicsComponent(GameObject *parentObject) :
     m_vangle = 0;
     m_linearDamping = 0;
 
-    connect (PhysicsManager::getInstance(), SIGNAL(stepTaken()),
+    connect (&PhysicsManager::getInstance(), SIGNAL(stepTaken()),
              this, SLOT(updateParent()));
 
     connect (m_parentObject, SIGNAL(sendX(double)),
@@ -42,7 +42,7 @@ PhysicsComponent::~PhysicsComponent()
 {
     if (m_body)
     {
-        PhysicsManager::getInstance()->removeBody(m_body);
+        PhysicsManager::getInstance().removeBody(m_body);
     }
 
     QList<PhysicsComponent*> components = m_contacts.keys();
@@ -75,7 +75,7 @@ void PhysicsComponent::instantiate()
 {
     if (m_body)
     {
-        PhysicsManager::getInstance()->removeBody(m_body);
+        PhysicsManager::getInstance().removeBody(m_body);
     }
 
     b2BodyDef bodyDef;
@@ -133,7 +133,7 @@ void PhysicsComponent::instantiate()
         fixture.isSensor = m_isSensor;
         fixtureDefs[j] = fixture;
     }
-    m_body = PhysicsManager::getInstance()->addBody(&bodyDef, fixtureDefs, tesselation.count(), this);
+    m_body = PhysicsManager::getInstance().addBody(&bodyDef, fixtureDefs, tesselation.count(), this);
     qDeleteAll(shapes);
 
     m_body->SetAngularVelocity(m_vangle);
