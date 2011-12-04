@@ -22,11 +22,17 @@ GameObjectEditDialog::GameObjectEditDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    m_causeAndEffectWidget = new CauseAndEffectEditWidget();
+    ui->causeAndEffectLayout->addWidget(m_causeAndEffectWidget);
+
     connect(ui->pb_AddSelected, SIGNAL(clicked()), this, SLOT(addSelectedComponent()));
 }
 
 GameObjectEditDialog::~GameObjectEditDialog()
 {
+    if (m_causeAndEffectWidget)
+        delete m_causeAndEffectWidget;
+
     delete ui;
 
     //qDeleteAll(this->children());
@@ -75,6 +81,7 @@ bool GameObjectEditDialog::editObject(GameObject *object)
     QList<Component*> components = object->getComponents();
     foreach (Component* component, components)
     {
+        //add property data
         QWidget *widget = m_componentWidgetLookup.value(component->objectName(), 0);
 
         if (widget)
@@ -91,6 +98,19 @@ bool GameObjectEditDialog::editObject(GameObject *object)
             }
             widget->layout()->addWidget(editWidget);
             connect(this, SIGNAL(accepted()), editWidget, SLOT(saveChanges()));
+        }
+
+        //add cause and effect data
+        QStringList causes = component->getCauseList();
+        foreach(QString cause, causes)
+        {
+            m_causeAndEffectWidget->addCause(component, cause);
+        }
+
+        QStringList effects = component->getEffectList();
+        foreach(QString effect, effects)
+        {
+            m_causeAndEffectWidget->addEffect(component, effect);
         }
     }
 

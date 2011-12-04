@@ -18,13 +18,18 @@ SpawnComponent::SpawnComponent(GameObject *parentObject) :
 QSet<QString> SpawnComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "objectFile" << "spawnInterval" << "triggerToSpawn" << "xOffset" << "yOffset";
+    properties << "objectFile" << "spawnInterval" << "xOffset" << "yOffset" << "tag";
     return properties;
 }
 
 void SpawnComponent::spawn()
 {
     GameCore::getInstance().addObjectToLevel(FileManager::getInstance().loadGameObject(m_objectFileName), m_parentObject->pos() + m_offset);
+}
+
+void SpawnComponent::effectSpawn()
+{
+    this->spawn();
 }
 
 void SpawnComponent::reactToTimerTick()
@@ -38,13 +43,5 @@ void SpawnComponent::reactToTimerTick()
     {
         spawn();
         m_elapsed = 0;
-    }
-}
-
-void SpawnComponent::reactToTrigger(QString trigger)
-{
-    if (trigger == m_trigger)
-    {
-        spawn();
     }
 }

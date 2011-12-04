@@ -6,11 +6,7 @@ AudioComponent::AudioComponent(GameObject *parentObject) :
 {
     this->setObjectName("Audio Component");
 
-    m_timeStep = 10;
-    m_startTrigger = "";
-    m_stopTrigger = "";
     m_file = "";
-    m_completeTrigger = "";
     m_repeat = false;
 
     m_audioObject = new Phonon::MediaObject(this);
@@ -30,7 +26,7 @@ AudioComponent::~AudioComponent()
 QSet<QString> AudioComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "audioFile" << "triggerToStart" << "triggerToStop" << "completeTrigger" << "repeat" << "volume";
+    properties << "audioFile" << "repeat" << "volume" << "tag";
     return properties;
 }
 
@@ -49,6 +45,21 @@ void AudioComponent::setRepeat(bool repeat)
     }
 }
 
+void AudioComponent::effectPlay()
+{
+    m_audioObject->play();
+}
+
+void AudioComponent::effectStop()
+{
+    m_audioObject->stop();
+}
+
+void AudioComponent::effectPause()
+{
+    m_audioObject->pause();
+}
+
 void AudioComponent::forceRepeat()
 {
     m_audioObject->stop();
@@ -60,19 +71,4 @@ void AudioComponent::setFile(QString file)
     m_file = file;
 
     m_audioObject->setCurrentSource(FileManager::getInstance().getAudioPath() + file);
-}
-
-void AudioComponent::reactToTrigger(QString trigger)
-{
-    if (!m_audioObject)
-        return;
-
-    if (trigger == m_startTrigger)
-    {
-        m_audioObject->play();
-    }
-    else if (trigger == m_stopTrigger)
-    {
-        m_audioObject->stop();
-    }
 }

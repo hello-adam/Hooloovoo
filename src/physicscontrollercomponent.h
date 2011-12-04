@@ -9,8 +9,6 @@
 class PhysicsControllerComponent : public Component
 {
     Q_OBJECT
-    Q_PROPERTY(QString triggerToEngage READ getEngageTrigger WRITE setEngageTrigger)
-    Q_PROPERTY(QString triggerToRelease READ getReleaseTrigger WRITE setReleaseTrigger)
     Q_PROPERTY(PhysicsControlType controlType READ getControlType WRITE setControlType)
     Q_ENUMS(PhysicsControlType)
     Q_PROPERTY(PhysicsComponent::ContactType requiredContact READ getRequiredContact WRITE setRequiredContact)
@@ -24,12 +22,6 @@ public:
 
     QSet<QString> getEditProperties();
 
-    void setEngageTrigger(QString trigger) {m_engageTrigger = trigger;}
-    QString getEngageTrigger() {return m_engageTrigger;}
-
-    void setReleaseTrigger(QString trigger) {m_releaseTrigger = trigger;}
-    QString getReleaseTrigger() {return m_releaseTrigger;}
-
     void setValue(QPointF value) {m_value = value;}
     QPointF getValue() {return m_value;}
 
@@ -42,17 +34,16 @@ public:
 private:
     PhysicsComponent* m_physicsComponent;
 
-    QString m_engageTrigger;
-    QString m_releaseTrigger;
     QPointF m_value;
     PhysicsControlType m_controlType;
     PhysicsComponent::ContactType m_requiredContact;
 
-    void reactToTrigger(QString trigger);
-
 signals:
 
 public slots:
+    void effectEngage();
+    void effectDisengage();
+
     void checkForAddedPhysicsComponent(Component* c);
     void checkForRemovedPhysicsComponent(Component* c);
 

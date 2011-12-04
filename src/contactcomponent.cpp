@@ -30,19 +30,13 @@ ContactComponent::ContactComponent(GameObject *parentObject) :
 QSet<QString> ContactComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "thisObjectTrigger" << "contactedObjectTrigger";
+    properties << "tag";
     return properties;
 }
 
 void ContactComponent::reactToContact(GameObject *contactObject)
 {
-    if (!m_localTrigger.isEmpty())
-        emit sendLocalTrigger(m_localTrigger);
-
-    if (m_contactTrigger.isEmpty())
-        return;
-
-    contactObject->emitLocalTrigger(m_contactTrigger);
+    emit causeEnterContact();
 }
 
 void ContactComponent::checkForAddedPhysicsComponent(Component* c)

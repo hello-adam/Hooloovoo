@@ -26,19 +26,19 @@ public:
     virtual void prepareForSerialization() {}
     virtual bool allowMultipleComponents() {return true;}
 
+    QStringList getCauseList();
+    QStringList getEffectList();
+
+    int getID() {return m_ID;}
+
 protected:
     GameObject* m_parentObject;
     QString m_tag;
-
-    virtual void reactToTrigger(QString trigger) {}
-    virtual void reactToPropertyTrigger(QStringList args);
+    int m_ID;
 
 signals:
-    void sendLocalTrigger(QString);
-    void sendGlobalTrigger(QString);
 
 public slots:
-    virtual void checkTrigger(QString trigger);
     virtual void instantiate() {}
 };
 

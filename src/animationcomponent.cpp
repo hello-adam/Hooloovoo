@@ -6,32 +6,18 @@ AnimationComponent::AnimationComponent(GameObject *parentObject) :
 {
     this->setObjectName("Animation Component");
 
+    m_activeByDefault = false;
     m_timeStep = 10;
-    m_startTrigger = "";
-    m_stopTrigger = "";
     m_files = QStringList();
     m_elapsedTime = 0;
     m_currentFrame = 0;
-    m_completeTrigger = "";
 }
 
 QSet<QString> AnimationComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "timeStep" << "pixmapFiles" << "triggerToStart" << "triggerToStop" << "completeTrigger" << "activeByDefault";
+    properties << "timeStep" << "pixmapFiles" << "activeByDefault";
     return properties;
-}
-
-void AnimationComponent::reactToTrigger(QString trigger)
-{
-    if (trigger == m_startTrigger)
-    {
-        connect(&GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
-    }
-    else if (trigger == m_stopTrigger)
-    {
-        disconnect(&GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
-    }
 }
 
 void AnimationComponent::setDefault(bool active)
@@ -54,8 +40,7 @@ void AnimationComponent::reactToTimerTick()
         if (m_currentFrame >= m_files.count())
         {
             m_currentFrame = 0;
-            if (!m_completeTrigger.isEmpty())
-                emit sendLocalTrigger(m_completeTrigger);
+            emit causeAnimationComplete();
         }
 
         m_parentObject->setTemporaryPixmapFile(m_files.at(m_currentFrame));
@@ -65,4 +50,14 @@ void AnimationComponent::reactToTimerTick()
         m_currentFrame++;
         m_elapsedTime = 0;
     }
+}
+
+void AnimationComponent::effectStartAnimation()
+{
+    connect(&GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
+}
+
+void AnimationComponent::effectStopAnimation()
+{
+    disconnect(&GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
 }

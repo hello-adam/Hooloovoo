@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "gameobject.h"
+#include "causeandeffecteditwidget.h"
 class PropertyEditWidget;
 
 namespace Ui {
@@ -25,6 +26,8 @@ private:
     QHash<QString, QWidget*> m_componentWidgetLookup;
 
     QWidget* getObjectEditWidget(QObject* object, QSet<QString> editProperties);
+
+    CauseAndEffectEditWidget* m_causeAndEffectWidget;
 
 private slots:
     void addSelectedComponent();

@@ -5,18 +5,14 @@ InputComponent::InputComponent(GameObject *parentObject) :
 {
     this->setObjectName("Input Component");
     qRegisterMetaType<Qt::Key>("Key");
-    qRegisterMetaType<InputComponent::TriggerType>("TriggerType");
 
     m_key = Qt::Key_0;
-    m_trigger = "";
-    m_releaseTrigger = "";
-    m_type = InputComponent::Local;
 }
 
 QSet<QString> InputComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "key" << "pressTrigger" << "triggerType" << "releaseTrigger" << "tag";
+    properties << "key" << "tag";
     return properties;
 }
 
@@ -42,14 +38,7 @@ void InputComponent::keyPressEvent(QKeyEvent *ke)
 
     if (pressed == m_key)
     {
-        if (m_type == InputComponent::Local)
-        {
-            emit sendLocalTrigger(m_trigger);
-        }
-        else if (m_type == InputComponent::Global)
-        {
-            emit sendGlobalTrigger(m_trigger);
-        }
+        emit causeKeyPressed();
     }
 }
 
@@ -57,16 +46,9 @@ void InputComponent::keyReleaseEvent(QKeyEvent *ke)
 {
     Qt::Key pressed = (Qt::Key)ke->key();
 
-    if (!m_releaseTrigger.isEmpty() && m_pressed.contains(pressed) && pressed == m_key)
+    if (m_pressed.contains(pressed) && pressed == m_key)
     {
-        if (m_type == InputComponent::Local)
-        {
-            emit sendLocalTrigger(m_releaseTrigger);
-        }
-        else if (m_type == InputComponent::Global)
-        {
-            emit sendGlobalTrigger(m_releaseTrigger);
-        }
+        emit causeKeyReleased();
     }
 
     m_pressed.remove(pressed);

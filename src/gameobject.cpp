@@ -12,12 +12,14 @@
 #include "graphicsscene.h"
 #include "gamefiledialog.h"
 #include "filemanager.h"
+#include "causeeffectmanager.h"
 
 GameObject::GameObject(QGraphicsItem * parent) :
     QGraphicsObject(parent)
 {
     setObjectName("Game Object");
 
+    m_causeEffectManager = new CauseEffectManager(this);
 
     m_visibleInGame = true;
     m_tag = "";
@@ -58,11 +60,32 @@ GameObject::~GameObject()
     }
 
     //remove its components
-    foreach (Component* component, m_components)
+    QList<Component*> components = m_IDsByComponents.keys();
+    qDeleteAll(components);
+
+    m_componentRegistry.clear();
+    m_IDsByComponents.clear();
+
+    delete m_causeEffectManager;
+}
+
+CauseEffectManager* GameObject::getCauseEffectManager()
+{
+    return m_causeEffectManager;
+}
+
+int GameObject::getAvailableComponentID()
+{
+    for (int i = 0; i<1000; i++)
     {
-        delete component;
+        if (!m_registeredIDs.contains(i))
+        {
+            m_registeredIDs.insert(i);
+            return i;
+        }
     }
-    m_components.clear();
+
+    return -1;
 }
 
 void GameObject::setPixmapFile(QString fileName)
@@ -334,10 +357,11 @@ void GameObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     {
         m_outlineRect = boundingRect();
         QPointF diff = event->scenePos() - m_startPoint;
-        if (diff.x() > diff.y())
-            diff.setY(diff.x());
+        if (diff.x()/this->width() > diff.y()/this->height())
+            diff.setX(diff.y()*this->width()/this->height());
         else
-            diff.setX(diff.y());
+            diff.setY(diff.x()*this->height()/this->width());
+
         m_outlineRect.setBottomRight(m_outlineRect.bottomRight() + diff/scale());
         this->update();
     }
@@ -502,9 +526,7 @@ void GameObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 void GameObject::resizeToRect(QRectF rect)
 {
     QPointF centerDiff;
-    qDebug() << rect.center();
     centerDiff = this->mapToScene(rect.center());
-    qDebug() << centerDiff;
     this->setPos(centerDiff);
 
     double scaleDiff;
@@ -550,7 +572,8 @@ void GameObject::setPaused(bool pause)
 
 Component* GameObject::addComponent(QString name)
 {
-    foreach(Component* c, m_components)
+    QList<Component*> components = m_IDsByComponents.keys();
+    foreach(Component* c, components)
     {
         if (c->objectName() == name)
         {
@@ -563,7 +586,9 @@ Component* GameObject::addComponent(QString name)
     Component* component = factory.createComponent(this, name);
     if (component)
     {
-        m_components.push_back(component);
+        m_componentRegistry.insert(component->getID(), component);
+        m_IDsByComponents.insert(component, component->getID());
+
         emit componentAdded(component);
         return component;
     }
@@ -573,9 +598,13 @@ Component* GameObject::addComponent(QString name)
 
 bool GameObject::removeComponent(Component *component)
 {
-    if (m_components.contains(component))
+    QList<Component*> components = m_IDsByComponents.keys();
+    if (components.contains(component))
     {
-        m_components.removeAll(component);
+        int ID = m_IDsByComponents.value(component);
+        m_IDsByComponents.remove(component);
+        m_componentRegistry.remove(ID);
+
         emit componentRemoved(component);
         delete component;
         return true;
@@ -633,10 +662,14 @@ QDomElement GameObject::serialize()
         }
     }
     //serialize components
-    foreach(Component* c, m_components)
+    QList<Component*> components = m_IDsByComponents.keys();
+    foreach(Component* c, components)
     {
         objectElement.appendChild(c->serialize(document));
     }
+
+    //serialize cause effect info
+    objectElement.appendChild(m_causeEffectManager->serialize());
 
     delete document;
 
@@ -691,11 +724,16 @@ bool GameObject::deserialize(const QDomElement &objectElement)
         Component* c = factory.createComponent(this, component);
         if (c)
         {
-            m_components.push_back(c);
+            m_IDsByComponents.insert(c, c->getID());
+            m_componentRegistry.insert(c->getID(), c);
             emit componentAdded(c);
         }
         component = component.nextSiblingElement("component");
     }
+
+    //deserialize cause and effect
+    QDomElement causeEffect = objectElement.firstChildElement("causeeffectdefinitions");
+    m_causeEffectManager->deserialize(causeEffect);
 
     return true;
 }

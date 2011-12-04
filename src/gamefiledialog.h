@@ -29,7 +29,6 @@ private:
     Ui::GameFileDialog *ui;
 
     FilePreviewWidget* m_previewWidget;
-    QWidget* m_currentPreviewWidget;
     FileType m_type;
     QStringList m_extensions;
     QString m_directory;

@@ -31,7 +31,6 @@ AudioPreviewWidget::~AudioPreviewWidget()
 
 void AudioPreviewWidget::setFile(QString fileName)
 {
-    qDebug() << "setting current file" << FileManager::getInstance().getAudioPath() + fileName;
     m_audioObject->stop();
     m_audioObject->setCurrentSource(FileManager::getInstance().getAudioPath() + fileName);
 }

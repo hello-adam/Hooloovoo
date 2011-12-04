@@ -7,9 +7,7 @@ class TimerComponent : public Component
 {
     Q_OBJECT
     Q_PROPERTY(int timeStep READ getTimeStep WRITE setTimeStep)
-    Q_PROPERTY(QString triggerToStart READ getInitiate WRITE setInitiate)
-    Q_PROPERTY(QString triggerToStop READ getStop WRITE setStop)
-    Q_PROPERTY(QString stepElapsedTrigger READ getStep WRITE setStep)
+    Q_PROPERTY(bool activeByDefault READ getActiveByDefault WRITE setActiveByDefault)
 
 public:
     TimerComponent(GameObject* parentObject);
@@ -19,27 +17,24 @@ public:
     void setTimeStep(int time) {m_timeStep = time;}
     int getTimeStep() {return m_timeStep;}
 
-    void setInitiate(QString initiate) {m_initiate = initiate;}
-    QString getInitiate() {return m_initiate;}
-
-    void setStop(QString stop) {m_stop = stop;}
-    QString getStop() {return m_stop;}
-
-    void setStep(QString step) {m_step = step;}
-    QString getStep() {return m_step;}
+    void setActiveByDefault(bool time);
+    bool getActiveByDefault() {return m_activeByDefault;}
 
 private:
     int m_timeStep;
-    QString m_initiate;
-    QString m_stop;
-    QString m_step;
+    bool m_activeByDefault;
 
-    bool m_isInitiated;
     int m_currentStep;
 
     void reactToTrigger(QString trigger);
 
+signals:
+    void causeStepElapsed();
+
 public slots:
+    void effectStartTimer();
+    void effectStopTimer();
+
     void reactToTimerTick();
 };
 

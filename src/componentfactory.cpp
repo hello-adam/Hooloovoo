@@ -16,106 +16,56 @@ ComponentFactory::ComponentFactory()
 
 Component* ComponentFactory::createComponent(GameObject* parentObject, QString name)
 {
+    Component* component;
+
     if (name == "Physics Component")
     {
-        PhysicsComponent* physics = new PhysicsComponent(parentObject);
-        physics->instantiate();
-        return physics;
+        component = new PhysicsComponent(parentObject);
     }
     else if (name == "Physics Controller Component")
     {
-        PhysicsControllerComponent* pControl = new PhysicsControllerComponent(parentObject);
-        return pControl;
+        component = new PhysicsControllerComponent(parentObject);
     }
     else if (name == "Spawn Component")
     {
-        SpawnComponent* spawn = new SpawnComponent(parentObject);
-        return spawn;
+        component = new SpawnComponent(parentObject);
     }
     else if (name == "Animation Component")
     {
-        AnimationComponent* anim = new AnimationComponent(parentObject);
-        return anim;
+        component = new AnimationComponent(parentObject);
     }
     else if (name == "Input Component")
     {
-        InputComponent* input = new InputComponent(parentObject);
-        return input;
+        component = new InputComponent(parentObject);
     }
     else if (name == "Contact Component")
     {
-        ContactComponent* contact = new ContactComponent(parentObject);
-        return contact;
+        component = new ContactComponent(parentObject);
     }
     else if (name == "Timer Component")
     {
-        TimerComponent* timer = new TimerComponent(parentObject);
-        return timer;
+        component = new TimerComponent(parentObject);
     }
     else if (name == "Audio Component")
     {
-        AudioComponent* audio = new AudioComponent(parentObject);
-        return audio;
+        component = new AudioComponent(parentObject);
     }
     else
         return 0;
+
+    return component;
 }
 
 Component* ComponentFactory::createComponent(GameObject* parentObject, const QDomElement & specs)
 {
     QString name = specs.attribute("name");
+    Component * component = createComponent(parentObject, name);
 
-    if (name == "Physics Component")
-    {
-        PhysicsComponent* physics = new PhysicsComponent(parentObject);
-        physics->deserialize(specs);
-        physics->instantiate();
-        return physics;
-    }
-    else if (name == "Physics Controller Component")
-    {
-        PhysicsControllerComponent* pControl = new PhysicsControllerComponent(parentObject);
-        pControl->deserialize(specs);
-        return pControl;
-    }
-    else if (name == "Spawn Component")
-    {
-        SpawnComponent* spawn = new SpawnComponent(parentObject);
-        spawn->deserialize(specs);
-        return spawn;
-    }
-    else if (name == "Animation Component")
-    {
-        AnimationComponent* anim = new AnimationComponent(parentObject);
-        anim->deserialize(specs);
-        return anim;
-    }
-    else if (name == "Input Component")
-    {
-        InputComponent* input = new InputComponent(parentObject);
-        input->deserialize(specs);
-        return input;
-    }
-    else if (name == "Contact Component")
-    {
-        ContactComponent* contact = new ContactComponent(parentObject);
-        contact->deserialize(specs);
-        return contact;
-    }
-    else if (name == "Timer Component")
-    {
-        TimerComponent* timer = new TimerComponent(parentObject);
-        timer->deserialize(specs);
-        return timer;
-    }
-    else if (name == "Audio Component")
-    {
-        AudioComponent* audio = new AudioComponent(parentObject);
-        audio->deserialize(specs);
-        return audio;
-    }
-    else
+    if (!component)
         return 0;
+
+    component->deserialize(specs);
+    return component;
 }
 
 QStringList ComponentFactory::availableComponents()

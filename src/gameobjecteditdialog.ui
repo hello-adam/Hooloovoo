@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>589</width>
-    <height>344</height>
+    <width>613</width>
+    <height>432</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,85 +15,109 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QWidget" name="widget" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>230</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>230</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <property name="margin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QListWidget" name="lw_components">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="propertyTab">
+      <attribute name="title">
+       <string>Add Components and Edit Properties</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QWidget" name="widget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>230</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>230</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <property name="margin">
+             <number>0</number>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pb_AddSelected">
-            <property name="text">
-             <string>Add Selected</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QStackedWidget" name="sw_ComponentEditor">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="currentIndex">
-        <number>-1</number>
-       </property>
-      </widget>
-     </item>
-    </layout>
+            <item>
+             <widget class="QListWidget" name="lw_components">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pb_AddSelected">
+                <property name="text">
+                 <string>Add Selected</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QStackedWidget" name="sw_ComponentEditor">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="currentIndex">
+            <number>-1</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="causeAndEffectTab">
+      <attribute name="title">
+       <string>Edit Cause and Effect</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <layout class="QVBoxLayout" name="causeAndEffectLayout"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">

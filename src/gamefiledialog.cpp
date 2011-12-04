@@ -12,9 +12,6 @@ GameFileDialog::GameFileDialog(QWidget *parent) :
     ui->setupUi(this);
     m_previewWidget = 0;
 
-    this->setAcceptMode(Select);
-    this->setFileType(Picture);
-
     connect(ui->lw_existingFiles, SIGNAL(currentTextChanged(QString)), ui->le_selectedFile, SLOT(setText(QString)));
     connect(ui->Accept, SIGNAL(clicked()), this, SLOT(accept()));
     connect(ui->Cancel, SIGNAL(clicked()), this, SLOT(reject()));
@@ -22,6 +19,9 @@ GameFileDialog::GameFileDialog(QWidget *parent) :
     connect(ui->pb_Import, SIGNAL(clicked()), this, SLOT(importFiles()));
 
     connect(ui->le_selectedFile, SIGNAL(textChanged(QString)), this, SLOT(fileSelectionChanged()));
+
+    m_type = Picture;
+    m_directory = "";
 }
 
 GameFileDialog::~GameFileDialog()
@@ -53,7 +53,7 @@ QStringList GameFileDialog::getAllAvailableFiles()
 {
     QStringList items;
 
-    for (int i; i<ui->lw_existingFiles->count(); i++)
+    for (int i=0; i<ui->lw_existingFiles->count(); i++)
     {
         items << ui->lw_existingFiles->itemAt(i, 0)->text();
     }
@@ -96,6 +96,7 @@ void GameFileDialog::setFileType(FileType type)
     ui->pb_Import->setEnabled(true);
 
     QStringList files;
+
     if (type == Picture)
     {
         files = FileManager::getInstance().getAvailablePictures();
@@ -151,6 +152,10 @@ void GameFileDialog::setFileType(FileType type)
                 }
             }
         }
+    }
+    else
+    {
+        noExtensionFiles = files;
     }
 
     ui->lw_existingFiles->clear();

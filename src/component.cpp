@@ -6,13 +6,7 @@ Component::Component(GameObject *parentObject) :
     m_parentObject(parentObject)
 {
     m_tag = "";
-
-    connect(this, SIGNAL(sendLocalTrigger(QString)),
-            parentObject, SIGNAL(sendLocalTrigger(QString)));
-    connect(this, SIGNAL(sendGlobalTrigger(QString)),
-            parentObject, SIGNAL(sendGlobalTrigger(QString)));
-    connect(parentObject, SIGNAL(sendLocalTrigger(QString)),
-            this, SLOT(checkTrigger(QString)));
+    m_ID = parentObject->getAvailableComponentID();
 }
 
 QDomElement Component::serialize(QDomDocument *document)
@@ -22,6 +16,7 @@ QDomElement Component::serialize(QDomDocument *document)
     QDomElement componentElement = document->createElement("component");
 
     componentElement.setAttribute("name", this->objectName());
+    componentElement.setAttribute("id", m_ID);
 
     for (int i = 0; i<this->metaObject()->propertyCount(); i++)
     {
@@ -78,6 +73,12 @@ QDomElement Component::serialize(QDomDocument *document)
 
 bool Component::deserialize(const QDomElement &objectElement)
 {
+    m_ID = objectElement.attribute("id", "-1").toInt();
+    if (m_ID == -1)
+    {
+        m_ID = m_parentObject->getAvailableComponentID();
+    }
+
     for (int i = 0; i<this->metaObject()->propertyCount(); i++)
     {
         QMetaProperty property = this->metaObject()->property(i);
@@ -128,46 +129,40 @@ bool Component::deserialize(const QDomElement &objectElement)
     return true;
 }
 
-void Component::checkTrigger(QString trigger)
+QStringList Component::getCauseList()
 {
-    if (trigger.contains(QRegExp("Tag(.*)")))
+    QMetaObject metaObject = *this->metaObject();
+    QMetaMethod method;
+    QStringList causeList;
+
+    for (int i = 0; i<metaObject.methodCount(); i++)
     {
-        int start = trigger.indexOf("Tag(")+4;
-        int end = trigger.indexOf(")", start);
-        QString tag = trigger.mid(start, end-start);
-
-        trigger.remove("Tag(" + tag + ")");
-
-        if (m_tag != tag)
-            return;
-    }
-
-    if (trigger.contains(QRegExp("Property(.*)")))
-    {
-        int start = trigger.indexOf("Property(")+9;
-        int end = trigger.indexOf(")", start);
-        QString argString = trigger.mid(start, end-start);
-        QStringList args = argString.split(',', QString::KeepEmptyParts);
-
-        trigger.remove("Property(" + argString + ")");
-
-        reactToPropertyTrigger(args);
-    }
-
-    if (!trigger.isEmpty())
-        reactToTrigger(trigger);
-}
-
-void Component::reactToPropertyTrigger(QStringList args)
-{
-    if (args.count() == 3)
-    {
-        if (args.at(0) == this->objectName())
+        method = metaObject.method(i);
+        QString signature = metaObject.normalizedSignature(method.signature());
+        if (method.methodType() == QMetaMethod::Signal && signature.startsWith("cause"))
         {
-            if (this->metaObject()->indexOfProperty(args.at(1).toStdString().c_str()) >= 0)
-            {
-                this->setProperty(args.at(1).toStdString().c_str(), QVariant(args.at(2)));
-            }
+            causeList << signature;
         }
     }
+
+    return causeList;
+}
+
+QStringList Component::getEffectList()
+{
+    QMetaObject metaObject = *this->metaObject();
+    QMetaMethod method;
+    QStringList effectList;
+
+    for (int i = 0; i<metaObject.methodCount(); i++)
+    {
+        method = metaObject.method(i);
+        QString signature = metaObject.normalizedSignature(method.signature());
+        if (method.methodType() == QMetaMethod::Slot && signature.startsWith("effect"))
+        {
+            effectList << signature;
+        }
+    }
+
+    return effectList;
 }

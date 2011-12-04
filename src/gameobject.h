@@ -6,6 +6,7 @@
 #include <QUuid>
 #include <QDialog>
 #include "component.h"
+class CauseEffectManager;
 
 class GameObject : public QGraphicsObject
 {
@@ -52,19 +53,25 @@ public:
 
     Component* addComponent(QString name);
     bool removeComponent(Component* component);
-    QList<Component*> getComponents() {return m_components;}
+    QList<Component*> getComponents() {return m_IDsByComponents.keys();}
+    Component* getComponentByID (int ID) {return m_componentRegistry.value(ID, 0);}
 
     QDomElement serialize();
     bool deserialize(const QDomElement &objectElement);
 
     bool polarLessThan(const QPoint &a, const QPoint &b);
 
+    int getAvailableComponentID();
+
+    CauseEffectManager* getCauseEffectManager();
+
+    int getComponentID(Component* component) {return m_IDsByComponents.value(component, -1);}
+
 
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
 private:
-    QList<Component*> m_components;
     QUuid m_uid;
     QString m_pixmapFileName;
     QPixmap m_pixmap;
@@ -74,6 +81,10 @@ private:
     QColor m_defaultColor;
     QList<QPolygonF> m_tessellation;
 
+    QHash<int, Component*> m_componentRegistry;
+    QHash<Component*, int> m_IDsByComponents;
+    QSet<int> m_registeredIDs;
+
     MouseEditMode m_modeOnClick;
     MouseEditMode m_currentMode;
     QPointF m_startPoint;
@@ -82,6 +93,8 @@ private:
 
     void createTesselation();
     QVector<QPoint> grahamScan(QList<QPoint> points, int minYIndex);
+
+    CauseEffectManager* m_causeEffectManager;
 
 signals:
     void sendX(double x);

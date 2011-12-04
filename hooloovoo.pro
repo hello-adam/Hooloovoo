@@ -41,7 +41,10 @@ HEADERS += \
     src/leveldatadialog.h \
     src/filemanager.h \
     src/filepreviewwidget.h \
-    src/mainwindow.h
+    src/mainwindow.h \
+    src/causeeffectmanager.h \
+    src/causeandeffecteditwidget.h \
+    src/causeeffectlabelwidget.h
 
 SOURCES += \
     src/gameobject.cpp \
@@ -74,7 +77,10 @@ SOURCES += \
     src/leveldatadialog.cpp \
     src/filemanager.cpp \
     src/filepreviewwidget.cpp \
-    src/mainwindow.cpp
+    src/mainwindow.cpp \
+    src/causeeffectmanager.cpp \
+    src/causeandeffecteditwidget.cpp \
+    src/causeeffectlabelwidget.cpp
 
 FORMS += \
     src/gamefiledialog.ui \
@@ -86,9 +92,37 @@ FORMS += \
     src/editwidgets/triggeredit.ui \
     src/audiopreviewwidget.ui \
     src/leveldatadialog.ui \
-    src/mainwindow.ui
+    src/mainwindow.ui \
+    src/causeandeffecteditwidget.ui \
+    src/causeeffectlabelwidget.ui
 
 OTHER_FILES +=
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

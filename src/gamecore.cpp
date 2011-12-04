@@ -31,7 +31,7 @@ GameCore::GameCore(QObject *parent) :
 
 GameCore::~GameCore()
 {
-    qDeleteAll(m_inputReceivers);
+    //qDeleteAll(m_inputReceivers);
 }
 
 QDomElement GameCore::serializeSelectedObject()
