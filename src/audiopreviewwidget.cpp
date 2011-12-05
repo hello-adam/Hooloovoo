@@ -1,6 +1,5 @@
 #include "audiopreviewwidget.h"
 #include "ui_audiopreviewwidget.h"
-#include "filemanager.h"
 
 AudioPreviewWidget::AudioPreviewWidget(QWidget *parent) :
     FilePreviewWidget(parent),

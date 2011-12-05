@@ -2,6 +2,7 @@
 #define FILEPREVIEWWIDGET_H
 
 #include <QWidget>
+#include "filemanager.h"
 
 class FilePreviewWidget : public QWidget
 {

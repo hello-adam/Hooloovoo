@@ -43,14 +43,6 @@ void GraphicsScene::drawBackground(QPainter *painter, const QRectF &rect)
 
 void GraphicsScene::drawForeground(QPainter *painter, const QRectF &rect)
 {
-//    if (this->focusItem())
-//    {
-//        painter->setPen(Qt::green);
-//        painter->setBrush(Qt::transparent);
-
-//        painter->drawRect(this->focusItem()->sceneBoundingRect());
-//    }
-
     if (m_isPaused)
     {
         painter->setPen(Qt::green);
@@ -81,9 +73,17 @@ void GraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     QAction *editGlobal = menu.addAction("Edit World");
     QAction *selectedAction = menu.exec(event->screenPos());
 
+    QWidget *parent = 0;
+    if (this->views().count() > 0)
+    {
+        if (this->views().at(0)->parentWidget())
+        {
+            parent = this->views().at(0)->parentWidget();
+        }
+    }
     if (selectedAction == addObject)
     {
-        GameFileDialog dlg;
+        GameFileDialog dlg(parent);
 
         dlg.setAcceptMode(GameFileDialog::Select);
         dlg.setFileType(GameFileDialog::GameObject);
@@ -95,23 +95,13 @@ void GraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     }
     else if (selectedAction == editGlobal)
     {
-        LevelDataDialog dlg;
+        LevelDataDialog dlg(parent);
         dlg.editLevelData();
     }
 
     delete addObject;
     delete editGlobal;
 }
-
-//void GraphicsScene::keyPressEvent(QKeyEvent *event)
-//{
-//    GameCore::getInstance().handleKeyEvent(event);
-//}
-
-//void GraphicsScene::keyReleaseEvent(QKeyEvent *event)
-//{
-//    GameCore::getInstance().handleKeyEvent(event);
-//}
 
 void GraphicsScene::clearAll()
 {

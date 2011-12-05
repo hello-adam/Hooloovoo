@@ -16,6 +16,12 @@ class GameCore : public QObject
 {
     Q_OBJECT
 public:
+    enum Command
+    {
+        ChangeLevel
+    };
+
+
     static GameCore &getInstance()
     {
         static GameCore instance;

@@ -3,6 +3,7 @@
 #include <QDir>
 #include "filemanager.h"
 #include "audiopreviewwidget.h"
+#include "picturepreviewwidget.h"
 #include <QFileDialog>
 
 GameFileDialog::GameFileDialog(QWidget *parent) :
@@ -177,6 +178,10 @@ void GameFileDialog::setupPreviewWidget()
     if (m_type == Audio)
     {
         m_previewWidget = new AudioPreviewWidget();
+    }
+    if (m_type == Picture)
+    {
+        m_previewWidget = new PicturePreviewWidget();
     }
 
     if (m_previewWidget)
