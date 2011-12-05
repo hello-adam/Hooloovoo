@@ -7,7 +7,7 @@ PicturePreviewWidget::PicturePreviewWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->lb_pic->
+    ui->lb_pic->setScaledContents(false);
 }
 
 PicturePreviewWidget::~PicturePreviewWidget()
