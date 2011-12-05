@@ -36,7 +36,7 @@ PhysicsControllerComponent::~PhysicsControllerComponent()
 QSet<QString> PhysicsControllerComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "triggerToRelease" << "triggerToEngage" << "controlType" << "value" << "requiredContact";
+    properties << "tag" << "controlType" << "value" << "requiredContact";
     return properties;
 }
 
@@ -65,7 +65,7 @@ void PhysicsControllerComponent::effectEngage()
     if (!m_physicsComponent->getBody())
         return;
 
-    if (!m_physicsComponent->getContactCondition() & m_requiredContact)
+    if (!(m_physicsComponent->getContactCondition() & m_requiredContact))
         return;
 
     if (m_controlType == PhysicsControllerComponent::Impulse)
