@@ -72,6 +72,8 @@ private:
     double m_y;
     double m_angle;
 
+    void privateDeserialize(const QDomElement &componentObject) {this->instantiate();}
+
     //these are independent properties, so they are saved
     BodyType m_type;
     bool m_staticRotation;

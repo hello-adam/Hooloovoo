@@ -1,20 +1,24 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
-#include <QGraphicsObject>
+#include <QGraphicsItem>
 #include <QSharedPointer>
 #include <QUuid>
 #include <QDialog>
 #include "component.h"
 class CauseEffectManager;
 
-class GameObject : public QGraphicsObject
+class GameObject : public Component, public QGraphicsItem
 {
     Q_OBJECT
-    Q_PROPERTY(QString pixmapFileName READ getPixmapFile WRITE setPixmapFile)
-    Q_PROPERTY(QString tag READ getTag WRITE setTag)
-    Q_PROPERTY(QColor defaultColor READ getDefaultColor WRITE setDefaultColor)
+    Q_INTERFACES(QGraphicsItem)
     Q_PROPERTY(bool visibleInGame READ getVisibleInGame WRITE setVisibleInGame)
+    Q_PROPERTY(QString pixmapFileName READ getPixmapFile WRITE setPixmapFile)
+    Q_PROPERTY(QPointF position READ pos WRITE setPos)
+    Q_PROPERTY(double zCoordinate READ zValue WRITE setZValue)
+    Q_PROPERTY(double opacityAmount READ opacity WRITE setOpacity)
+    Q_PROPERTY(double clockwiseRotation READ rotation WRITE setRotation)
+    Q_PROPERTY(QColor defaultColor READ getDefaultColor WRITE setDefaultColor)
 
 public:
     GameObject(QGraphicsItem  *parent = 0);
@@ -56,9 +60,6 @@ public:
     QList<Component*> getComponents() {return m_IDsByComponents.keys();}
     Component* getComponentByID (int ID) {return m_componentRegistry.value(ID, 0);}
 
-    QDomElement serialize();
-    bool deserialize(const QDomElement &objectElement);
-
     bool polarLessThan(const QPoint &a, const QPoint &b);
 
     int getAvailableComponentID();
@@ -66,6 +67,8 @@ public:
     CauseEffectManager* getCauseEffectManager();
 
     int getComponentID(Component* component) {return m_IDsByComponents.value(component, -1);}
+
+    void initiateObject() {emit causeInitiated();}
 
 
 protected:
@@ -96,27 +99,29 @@ private:
 
     CauseEffectManager* m_causeEffectManager;
 
+    void privateSerialize(QDomElement &componentObject);
+    void privateDeserialize(const QDomElement &componentObject);
+
 signals:
     void sendX(double x);
     void sendY(double y);
     void sendRotation(double degrees);
-    void sendLocalTrigger(QString);
-    void sendGlobalTrigger(QString);
+
     void componentAdded(Component*);
     void componentRemoved(Component*);
     void newTessellation();
+
+    void causeInitiated();
 
 private slots:
     void slotXChanged() {emit sendX(x());}
     void slotYChanged() {emit sendY(y());}
     void slotRotationChanged() {emit sendRotation(rotation());}
-    void checkLocalTrigger(QString trigger);
 
 public slots:
     void launchEditorDialog();
     void saveObject(QString fileName);
     void launchSaveDialog();
-    void emitLocalTrigger(QString trigger) {if (!trigger.isEmpty()) emit sendLocalTrigger(trigger);}
 };
 
 #endif // GAMEOBJECT_H

@@ -6,14 +6,20 @@ Component::Component(GameObject *parentObject) :
     m_parentObject(parentObject)
 {
     m_tag = "";
-    m_ID = parentObject->getAvailableComponentID();
+
+    if (parentObject == 0)
+        m_ID = 0;
+    else
+        m_ID = parentObject->getAvailableComponentID();
 }
 
-QDomElement Component::serialize(QDomDocument *document)
+QDomElement Component::serialize()
 {
+    QDomDocument doc;
+
     this->prepareForSerialization();
 
-    QDomElement componentElement = document->createElement("component");
+    QDomElement componentElement = doc.createElement("component");
 
     componentElement.setAttribute("name", this->objectName());
     componentElement.setAttribute("id", m_ID);
@@ -29,7 +35,7 @@ QDomElement Component::serialize(QDomDocument *document)
 
             if (property.isEnumType())
             {
-                QDomElement prop = document->createElement(name);
+                QDomElement prop = doc.createElement(name);
                 prop.setAttribute("type", value.type());
                 QVariant intValue = *reinterpret_cast<const int *>(value.constData());
                 prop.setAttribute("value", intValue.toString());
@@ -37,12 +43,12 @@ QDomElement Component::serialize(QDomDocument *document)
             }
             else if (value.type() == QVariant::StringList)
             {
-                QDomElement prop = document->createElement(name);
+                QDomElement prop = doc.createElement(name);
 
                 QStringList stringList = value.toStringList();
                 foreach(QString s, stringList)
                 {
-                    QDomElement child = document->createElement("listitem");
+                    QDomElement child = doc.createElement("listitem");
                     child.setAttribute("value", s);
                     prop.appendChild(child);
                 }
@@ -53,7 +59,7 @@ QDomElement Component::serialize(QDomDocument *document)
             }
             else if (value.type() == QVariant::PointF)
             {
-                QDomElement prop = document->createElement(name);
+                QDomElement prop = doc.createElement(name);
                 prop.setAttribute("type", value.type());
                 prop.setAttribute("x", value.toPointF().x());
                 prop.setAttribute("y", value.toPointF().y());
@@ -61,29 +67,36 @@ QDomElement Component::serialize(QDomDocument *document)
             }
             else
             {
-                QDomElement prop = document->createElement(name);
+                QDomElement prop = doc.createElement(name);
                 prop.setAttribute("type", value.type());
                 prop.setAttribute("value", value.toString());
                 componentElement.appendChild(prop);
             }
         }
     }
+
+    privateSerialize(componentElement);
+
     return componentElement;
 }
 
-bool Component::deserialize(const QDomElement &objectElement)
+bool Component::deserialize(const QDomElement &componentElement)
 {
-    m_ID = objectElement.attribute("id", "-1").toInt();
-    if (m_ID == -1)
+    m_ID = componentElement.attribute("id", "-1").toInt();
+    if (m_ID == -1 && m_parentObject)
     {
         m_ID = m_parentObject->getAvailableComponentID();
+    }
+    else if (!m_parentObject)
+    {
+        m_ID = 0;
     }
 
     for (int i = 0; i<this->metaObject()->propertyCount(); i++)
     {
         QMetaProperty property = this->metaObject()->property(i);
         QString name = property.name();
-        QDomElement prop = objectElement.firstChildElement(name);
+        QDomElement prop = componentElement.firstChildElement(name);
 
         if (prop.hasAttribute("type") && prop.hasAttribute("value"))
         {
@@ -125,6 +138,8 @@ bool Component::deserialize(const QDomElement &objectElement)
             property.write(this, value);
         }
     }
+
+    privateDeserialize(componentElement);
 
     return true;
 }

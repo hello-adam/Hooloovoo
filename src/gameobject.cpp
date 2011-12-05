@@ -6,6 +6,7 @@
 #include <QVariant>
 #include <QMenu>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
 #include "physicscomponent.h"
 #include "physicsmanager.h"
 #include "componentfactory.h"
@@ -15,7 +16,8 @@
 #include "causeeffectmanager.h"
 
 GameObject::GameObject(QGraphicsItem * parent) :
-    QGraphicsObject(parent)
+    Component(0),
+    QGraphicsItem(parent)
 {
     setObjectName("Game Object");
 
@@ -37,9 +39,6 @@ GameObject::GameObject(QGraphicsItem * parent) :
 
     this->setAcceptHoverEvents(true);
     this->setAcceptedMouseButtons(Qt::RightButton | Qt::LeftButton);
-
-    connect(this, SIGNAL(sendLocalTrigger(QString)),
-            this, SLOT(checkLocalTrigger(QString)));
 }
 
 GameObject::~GameObject()
@@ -76,7 +75,7 @@ CauseEffectManager* GameObject::getCauseEffectManager()
 
 int GameObject::getAvailableComponentID()
 {
-    for (int i = 0; i<1000; i++)
+    for (int i = 1; i<5000; i++)
     {
         if (!m_registeredIDs.contains(i))
         {
@@ -545,13 +544,6 @@ void GameObject::setPaused(bool pause)
 
         if (!m_visibleInGame)
             this->setVisible(true);
-
-        connect(this, SIGNAL(xChanged()),
-                this, SLOT(slotXChanged()));
-        connect(this, SIGNAL(yChanged()),
-                this, SLOT(slotYChanged()));
-        connect(this, SIGNAL(rotationChanged()),
-                this, SLOT(slotRotationChanged()));
     }
     else
     {
@@ -561,12 +553,10 @@ void GameObject::setPaused(bool pause)
         if (!m_visibleInGame)
             this->setVisible(false);
 
-        disconnect(this, SIGNAL(xChanged()),
-                this, SLOT(slotXChanged()));
-        disconnect(this, SIGNAL(yChanged()),
-                this, SLOT(slotYChanged()));
-        disconnect(this, SIGNAL(rotationChanged()),
-                this, SLOT(slotRotationChanged()));
+        //send any changes to the physics component (or other components that are inter-locked with these values)
+        slotXChanged();
+        slotYChanged();
+        slotRotationChanged();
     }
 }
 
@@ -613,112 +603,24 @@ bool GameObject::removeComponent(Component *component)
     return false;
 }
 
-QDomElement GameObject::serialize()
+void GameObject::privateSerialize(QDomElement &componentObject)
 {
-    QDomDocument *document = new QDomDocument();
-
-    QDomElement objectElement = document->createElement("gameobject");
-
-    for (int i = 0; i<this->metaObject()->propertyCount(); i++)
-    {
-        QMetaProperty property = this->metaObject()->property(i);
-        QString name = property.name();
-
-        if (property.isValid() && property.type() != QVariant::Invalid && property.userType())
-        {
-            QVariant value = property.read(this);
-
-            if (property.isEnumType())
-            {
-                QDomElement prop = document->createElement(name);
-                prop.setAttribute("type", value.type());
-                QVariant intValue = *reinterpret_cast<const int *>(value.constData());
-                prop.setAttribute("value", intValue.toString());
-                objectElement.appendChild(prop);
-            }
-            else if (value.type() == QVariant::StringList)
-            {
-                QDomElement prop = document->createElement(name);
-
-                QStringList stringList = value.toStringList();
-                foreach(QString s, stringList)
-                {
-                    QDomElement child = document->createElement("listitem");
-                    child.setAttribute("value", s);
-                    prop.appendChild(child);
-                }
-
-                prop.setAttribute("type", value.type());
-                prop.setAttribute("count", stringList.count());
-                objectElement.appendChild(prop);
-            }
-            else
-            {
-                QDomElement prop = document->createElement(name);
-                prop.setAttribute("type", value.type());
-                prop.setAttribute("value", value.toString());
-                objectElement.appendChild(prop);
-            }
-        }
-    }
     //serialize components
     QList<Component*> components = m_IDsByComponents.keys();
     foreach(Component* c, components)
     {
-        objectElement.appendChild(c->serialize(document));
+        componentObject.appendChild(c->serialize());
     }
 
     //serialize cause effect info
-    objectElement.appendChild(m_causeEffectManager->serialize());
-
-    delete document;
-
-    return objectElement;
+    componentObject.appendChild(m_causeEffectManager->serialize());
 }
 
-bool GameObject::deserialize(const QDomElement &objectElement)
+void GameObject::privateDeserialize(const QDomElement &componentObject)
 {
-    for (int i = 0; i<this->metaObject()->propertyCount(); i++)
-    {
-        QMetaProperty property = this->metaObject()->property(i);
-        QString name = property.name();
-        QDomElement prop = objectElement.firstChildElement(name);
-
-        if (prop.hasAttribute("type") && prop.hasAttribute("value"))
-        {
-            QVariant value;
-            value.setValue(prop.attribute("value"));
-
-            if (property.isEnumType())
-            {
-                value.convert(QVariant::Int);
-                property.write(this, value);
-            }
-            else if (value.convert((QVariant::Type)prop.attribute("type").toInt()))
-            {
-                property.write(this, value);
-            }
-        }
-        else if (prop.hasAttribute("type") && prop.hasAttribute("count"))
-        {
-            QVariant value;
-            QStringList stringList;
-
-            QDomElement child = prop.firstChildElement("listitem");
-            while (!child.isNull())
-            {
-                stringList << child.attribute("value");
-                child = child.nextSiblingElement("listitem");
-            }
-
-            value.setValue(stringList);
-            property.write(this, value);
-        }
-    }
-
     //deserialize components
     ComponentFactory factory;
-    QDomElement component = objectElement.firstChildElement("component");
+    QDomElement component = componentObject.firstChildElement("component");
     while (!component.isNull())
     {
         Component* c = factory.createComponent(this, component);
@@ -732,10 +634,8 @@ bool GameObject::deserialize(const QDomElement &objectElement)
     }
 
     //deserialize cause and effect
-    QDomElement causeEffect = objectElement.firstChildElement("causeeffectdefinitions");
+    QDomElement causeEffect = componentObject.firstChildElement("causeeffectdefinitions");
     m_causeEffectManager->deserialize(causeEffect);
-
-    return true;
 }
 
 QSet<QString> GameObject::getEditProperties()
@@ -747,53 +647,48 @@ QSet<QString> GameObject::getEditProperties()
 
 void GameObject::launchEditorDialog()
 {
-    GameObjectEditDialog* dlg = new GameObjectEditDialog();
-    dlg->editObject(this);
-    dlg->deleteLater();
-}
-
-void GameObject::checkLocalTrigger(QString trigger)
-{
-    if (trigger.contains(QRegExp("Tag(.*)")))
+    QWidget* parent = 0;
+    if (this->scene())
     {
-        int start = trigger.indexOf("Tag(")+4;
-        int end = trigger.indexOf(")", start);
-        QString tag = trigger.mid(start, end-start);
-
-        trigger.remove("Tag(" + tag + ")");
-
-        if (m_tag != tag)
-            return;
-    }
-
-    if (trigger.contains(QRegExp("Property(.*)")))
-    {
-        int start = trigger.indexOf("Property(")+9;
-        int end = trigger.indexOf(")", start);
-        QString argString = trigger.mid(start, end-start);
-        QStringList args = argString.split(',', QString::KeepEmptyParts);
-
-        trigger.remove("Property(" + argString + ")");
-
-        if (args.count() == 3)
+        if (scene()->views().count() > 0)
         {
-            if (args.at(0) == this->objectName())
+            if (scene()->views().at(0)->parentWidget());
             {
-                if (this->metaObject()->indexOfProperty(args.at(1).toStdString().c_str()) >= 0)
+                parent = scene()->views().at(0)->parentWidget();
+
+                while (parent->parentWidget())
                 {
-                    this->setProperty(args.at(1).toStdString().c_str(), QVariant(args.at(2)));
+                    parent = parent->parentWidget();
                 }
             }
         }
     }
 
-    if (trigger == "Destroy")
-        this->deleteLater();
+    GameObjectEditDialog* dlg = new GameObjectEditDialog(parent);
+    dlg->editObject(this);
+    dlg->deleteLater();
 }
 
 void GameObject::launchSaveDialog()
 {
-    GameFileDialog *dlg = new GameFileDialog();
+    QWidget* parent = 0;
+    if (this->scene())
+    {
+        if (scene()->views().count() > 0)
+        {
+            if (scene()->views().at(0)->parentWidget());
+            {
+                parent = scene()->views().at(0)->parentWidget();
+
+                while (parent->parentWidget())
+                {
+                    parent = parent->parentWidget();
+                }
+            }
+        }
+    }
+
+    GameFileDialog *dlg = new GameFileDialog(parent);
     dlg->setAcceptMode(GameFileDialog::Save);
     dlg->setFileType(GameFileDialog::GameObject);
 

@@ -15,7 +15,7 @@ public:
     Component(GameObject* parentObject);
 
     bool deserialize(const QDomElement & specs);
-    QDomElement serialize(QDomDocument *doc);
+    QDomElement serialize();
 
     GameObject* getParentObject() {return m_parentObject;}
 
@@ -35,6 +35,9 @@ protected:
     GameObject* m_parentObject;
     QString m_tag;
     int m_ID;
+
+    virtual void privateSerialize(QDomElement & componentObject) {}
+    virtual void privateDeserialize(const QDomElement & componentObject) {}
 
 signals:
 

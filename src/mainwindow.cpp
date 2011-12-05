@@ -169,7 +169,7 @@ void MainWindow::switchToGameEditorScreen()
 
 void MainWindow::createGame()
 {
-    GameFileDialog dlg;
+    GameFileDialog dlg(this);
 
     dlg.setAcceptMode(GameFileDialog::Create);
     dlg.setFileType(GameFileDialog::Game);
@@ -186,7 +186,7 @@ void MainWindow::createGame()
 
 void MainWindow::switchGame()
 {
-    GameFileDialog dlg;
+    GameFileDialog dlg(this);
 
     dlg.setAcceptMode(GameFileDialog::Load);
     dlg.setFileType(GameFileDialog::Game);
@@ -199,7 +199,7 @@ void MainWindow::switchGame()
 
 void MainWindow::newLevel()
 {
-    GameFileDialog dlg;
+    GameFileDialog dlg(this);
 
     dlg.setAcceptMode(GameFileDialog::Create);
     dlg.setFileType(GameFileDialog::Level);
@@ -212,7 +212,7 @@ void MainWindow::newLevel()
 
 void MainWindow::saveLevel()
 {
-    GameFileDialog dlg;
+    GameFileDialog dlg(this);
 
     dlg.setAcceptMode(GameFileDialog::Save);
     dlg.setFileType(GameFileDialog::Level);
@@ -225,7 +225,7 @@ void MainWindow::saveLevel()
 
 void MainWindow::loadLevel()
 {
-    GameFileDialog dlg;
+    GameFileDialog dlg(this);
 
     dlg.setAcceptMode(GameFileDialog::Load);
     dlg.setFileType(GameFileDialog::Level);
@@ -244,7 +244,7 @@ void MainWindow::editLevelData()
 
 void MainWindow::addObject()
 {
-    GameFileDialog dlg;
+    GameFileDialog dlg(this);
 
     dlg.setAcceptMode(GameFileDialog::Select);
     dlg.setFileType(GameFileDialog::GameObject);
@@ -268,7 +268,7 @@ void MainWindow::loadPlayState()
 
 void MainWindow::saveSelectedObject()
 {
-    GameFileDialog dlg;
+    GameFileDialog dlg(this);
 
     dlg.setAcceptMode(GameFileDialog::Save);
     dlg.setFileType(GameFileDialog::GameObject);

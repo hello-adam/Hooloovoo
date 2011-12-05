@@ -56,7 +56,7 @@ void GameCore::addObjectToLevel(const QDomElement &objectElement, QPointF pos)
     GameObject *gameObject = new GameObject();
     gameObject->deserialize(objectElement);
     gameObject->setPos(pos);
-    gameObject->emitLocalTrigger("Initiated");
+    gameObject->initiateObject();
 
     if (m_scene)
     {
@@ -115,16 +115,21 @@ bool GameCore::deserializeLevel(const QDomElement &levelElement)
         PhysicsManager::getInstance().setGravity(gravity.attribute("yGravity").toDouble());
     }
 
-    QDomElement gameobject = levelElement.firstChildElement("gameobject");
+    QDomElement gameobject = levelElement.firstChildElement("component");
 
     while (!gameobject.isNull())
     {
-        GameObject *g = new GameObject();
-        g->deserialize(gameobject);
+        qDebug() << gameobject.attribute("name");
 
-        m_scene->addGameObject(g);
+        if (gameobject.attribute("name") == "Game Object")
+        {
+            GameObject *g = new GameObject();
+            g->deserialize(gameobject);
 
-        gameobject = gameobject.nextSiblingElement("gameobject");
+            m_scene->addGameObject(g);
+        }
+
+        gameobject = gameobject.nextSiblingElement("component");
     }
 
     return true;
@@ -168,15 +173,20 @@ void GameCore::handleKeyEvent(QKeyEvent *ke)
         return;
     }
 
-    if (ke->key() == Qt::Key_Space && ke->type() == QKeyEvent::KeyPress)
-    {
-        this->togglePaused();
-    }
     else
     {
-        foreach(InputReceiver* receiver, m_inputReceivers)
+        if (ke->key() == Qt::Key_Space && ke->type() == QKeyEvent::KeyPress)
         {
-            receiver->handleKeyEvent(ke);
+            this->togglePaused();
         }
+        else
+        {
+            foreach(InputReceiver* receiver, m_inputReceivers)
+            {
+                receiver->handleKeyEvent(ke);
+            }
+        }
+
+        ke->accept();
     }
 }
