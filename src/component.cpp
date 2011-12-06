@@ -13,6 +13,16 @@ Component::Component(GameObject *parentObject) :
         m_ID = parentObject->getAvailableComponentID();
 }
 
+GameObject* Component::getParentObject()
+{
+    if (m_parentObject)
+        return m_parentObject;
+    else if (qobject_cast<GameObject*>(this))
+        return qobject_cast<GameObject*>(this);
+    else
+        return 0;
+}
+
 QDomElement Component::serialize()
 {
     QDomDocument doc;
@@ -71,6 +81,8 @@ QDomElement Component::serialize()
                 prop.setAttribute("type", value.type());
                 prop.setAttribute("value", value.toString());
                 componentElement.appendChild(prop);
+
+                qDebug() << value;
             }
         }
     }

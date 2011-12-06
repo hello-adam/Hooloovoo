@@ -31,6 +31,7 @@ private:
 
 private slots:
     void addSelectedComponent();
+    void resetCauseEffectWidget();
 };
 
 #endif // GAMEOBJECTEDITDIALOG_H

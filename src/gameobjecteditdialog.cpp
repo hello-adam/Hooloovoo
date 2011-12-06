@@ -99,20 +99,9 @@ bool GameObjectEditDialog::editObject(GameObject *object)
             widget->layout()->addWidget(editWidget);
             connect(this, SIGNAL(accepted()), editWidget, SLOT(saveChanges()));
         }
-
-        //add cause and effect data
-        QStringList causes = component->getCauseList();
-        foreach(QString cause, causes)
-        {
-            m_causeAndEffectWidget->addCause(component, cause);
-        }
-
-        QStringList effects = component->getEffectList();
-        foreach(QString effect, effects)
-        {
-            m_causeAndEffectWidget->addEffect(component, effect);
-        }
     }
+
+    resetCauseEffectWidget();
 
     if (this->exec())
     {
@@ -182,5 +171,52 @@ void GameObjectEditDialog::addSelectedComponent()
         }
         widget->layout()->addWidget(editWidget);
         connect(this, SIGNAL(accepted()), editWidget, SLOT(saveChanges()));
+        connect(editWidget, SIGNAL(componentRemoved()), this, SLOT(resetCauseEffectWidget()));
+    }
+
+    resetCauseEffectWidget();
+}
+
+void GameObjectEditDialog::resetCauseEffectWidget()
+{
+    if (!m_object)
+        return;
+
+    if (m_causeAndEffectWidget)
+    {
+        ui->causeAndEffectLayout->removeWidget(m_causeAndEffectWidget);
+        delete m_causeAndEffectWidget;
+    }
+    m_causeAndEffectWidget = new CauseAndEffectEditWidget();
+    ui->causeAndEffectLayout->addWidget(m_causeAndEffectWidget);
+
+    //add game object cause and effect info
+    QStringList objCauses = m_object->getCauseList();
+    foreach(QString cause, objCauses)
+    {
+        m_causeAndEffectWidget->addCause(m_object, cause);
+    }
+
+    QStringList objEffects = m_object->getEffectList();
+    foreach(QString effect, objEffects)
+    {
+        m_causeAndEffectWidget->addEffect(m_object, effect);
+    }
+
+    QList<Component*> components = m_object->getComponents();
+    foreach (Component* component, components)
+    {
+        //add cause and effect data
+        QStringList causes = component->getCauseList();
+        foreach(QString cause, causes)
+        {
+            m_causeAndEffectWidget->addCause(component, cause);
+        }
+
+        QStringList effects = component->getEffectList();
+        foreach(QString effect, effects)
+        {
+            m_causeAndEffectWidget->addEffect(component, effect);
+        }
     }
 }

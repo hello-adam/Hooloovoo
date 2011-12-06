@@ -21,6 +21,8 @@ GameObject::GameObject(QGraphicsItem * parent) :
 {
     setObjectName("Game Object");
 
+    m_ID = 0;
+
     m_causeEffectManager = new CauseEffectManager(this);
 
     m_visibleInGame = true;
@@ -336,6 +338,11 @@ void GameObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     m_currentMode = m_modeOnClick;
     m_startPoint = event->scenePos();
+
+    if (m_currentMode == ResizeBottomRight)
+    {
+        m_outlineRect = boundingRect();
+    }
 }
 
 void GameObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -641,7 +648,7 @@ void GameObject::privateDeserialize(const QDomElement &componentObject)
 QSet<QString> GameObject::getEditProperties()
 {
     QSet<QString> set;
-    set << "x" << "y" << "z" << "opacity" << "pixmapFileName" << "scale" << "rotation" << "visibleInGame" << "tag" <<"defaultColor";
+    set << "position" << "zCoordinate" << "opacityAmount" << "pixmapFileName" << "clockwiseRotation" << "visibleInGame" << "tag" <<"defaultColor";
     return set;
 }
 
@@ -703,4 +710,9 @@ void GameObject::launchSaveDialog()
 void GameObject::saveObject(QString fileName)
 {
     FileManager::getInstance().saveGameObject(this->serialize(), fileName);
+}
+
+void GameObject::effectDestroy()
+{
+    this->deleteLater();
 }

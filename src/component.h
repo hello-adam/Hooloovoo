@@ -17,7 +17,7 @@ public:
     bool deserialize(const QDomElement & specs);
     QDomElement serialize();
 
-    GameObject* getParentObject() {return m_parentObject;}
+    GameObject* getParentObject();
 
     void setTag(QString tag) {m_tag = tag;}
     QString getTag() {return m_tag;}

@@ -122,6 +122,7 @@ public slots:
     void launchEditorDialog();
     void saveObject(QString fileName);
     void launchSaveDialog();
+    void effectDestroy();
 };
 
 #endif // GAMEOBJECT_H

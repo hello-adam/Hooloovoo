@@ -51,6 +51,8 @@ void ComponentEditWidget::removeComponent()
     gameObject->removeComponent(m_component);
     m_component = 0;
 
+    emit componentRemoved();
+
     this->deleteLater();
 }
 

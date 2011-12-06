@@ -25,6 +25,9 @@ private:
     Component* m_component;
     QList<PropertyEditWidget*> m_propertyEditWidgets;
 
+signals:
+    void componentRemoved();
+
 public slots:
     void removeComponent();
     void saveChanges();

@@ -14,7 +14,7 @@ CauseEffectLabelWidget::CauseEffectLabelWidget(Component *component, QString nam
     m_linkedToSelectedAsEffect = false;
 
     m_manager = component->getParentObject()->getCauseEffectManager();
-    m_componentID = component->getParentObject()->getComponentID(component);
+    m_componentID = component->getID();
     m_name = name;
 
     m_defsAsCause = m_manager->getDefinitionsWithLinkedEffects(m_componentID, m_name);

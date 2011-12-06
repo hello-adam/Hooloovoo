@@ -136,13 +136,21 @@ bool CauseEffectManager::connectCauseEffect(int causeID, QString causeName, int 
 {
     qDebug() << "Attempting the following connect: " << causeID << causeName << effectID << effectName;
 
-    Component* cause = m_gameObject->getComponentByID(causeID);
+    Component* cause;
+    if (causeID == 0)
+        cause = m_gameObject;
+    else
+        cause = m_gameObject->getComponentByID(causeID);
     if (!cause)
         return false;
     QMetaObject metaCause = *cause->metaObject();
     int causeSignalID = metaCause.indexOfMethod(causeName.toStdString().c_str());
 
-    Component* effect = m_gameObject->getComponentByID(effectID);
+    Component* effect;
+    if (effectID == 0)
+        effect = m_gameObject;
+    else
+        effect = m_gameObject->getComponentByID(effectID);
     if (!effect)
         return false;
     QMetaObject metaEffect = *effect->metaObject();
@@ -161,11 +169,23 @@ bool CauseEffectManager::disconnectCauseEffect(int causeID, QString causeName, i
 {
     qDebug() << "Attempting the following disconnect: " << causeID << causeName << effectID << effectName;
 
-    Component* cause = m_gameObject->getComponentByID(causeID);
+    Component* cause;
+    if (causeID == 0)
+        cause = m_gameObject;
+    else
+        cause = m_gameObject->getComponentByID(causeID);
+    if (!cause)
+        return false;
     QMetaObject metaCause = *cause->metaObject();
     int causeSignalID = metaCause.indexOfMethod(causeName.toStdString().c_str());
 
-    Component* effect = m_gameObject->getComponentByID(effectID);
+    Component* effect;
+    if (effectID == 0)
+        effect = m_gameObject;
+    else
+        effect = m_gameObject->getComponentByID(effectID);
+    if (!effect)
+        return false;
     QMetaObject metaEffect = *effect->metaObject();
     int effectSlotID = metaEffect.indexOfMethod(effectName.toStdString().c_str());
 
