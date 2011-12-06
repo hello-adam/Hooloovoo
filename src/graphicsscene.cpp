@@ -29,6 +29,20 @@ void GraphicsScene::removeGameObject(GameObject *gameObject)
     this->removeItem(gameObject);
 }
 
+void GraphicsScene::destroyDeadObjects()
+{
+    for (int i=0; i< m_gameObjects.count(); i++)
+    {
+        GameObject * object = m_gameObjects.at(i);
+        if (object->isDestroyed())
+        {
+            removeGameObject(object);
+            delete object;
+            i--;
+        }
+    }
+}
+
 void GraphicsScene::drawBackground(QPainter *painter, const QRectF &rect)
 {
     if (painter->paintEngine()->type()!= QPaintEngine::OpenGL)
@@ -43,6 +57,7 @@ void GraphicsScene::drawBackground(QPainter *painter, const QRectF &rect)
 
 void GraphicsScene::drawForeground(QPainter *painter, const QRectF &rect)
 {
+    Q_UNUSED(rect)
     if (m_isPaused)
     {
         painter->setPen(Qt::green);

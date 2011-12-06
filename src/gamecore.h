@@ -60,6 +60,7 @@ private:
     void unpause();
 
     QDomElement m_clipBoardElement;
+    QString m_newLevel;
 
     GraphicsScene* m_scene;
 
@@ -70,6 +71,8 @@ signals:
     void hasObjectOnClipboard(bool);
 
 public slots:
+    void gameStep();
+
     void togglePaused();
 
     void copySelectedObjectToClipboard();

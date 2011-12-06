@@ -33,6 +33,7 @@ signals:
 
 public slots:
     void clearAll();
+    void destroyDeadObjects();
 
 };
 

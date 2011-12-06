@@ -22,6 +22,7 @@ GameObject::GameObject(QGraphicsItem * parent) :
     setObjectName("Game Object");
 
     m_ID = 0;
+    m_destroyed = false;
 
     m_causeEffectManager = new CauseEffectManager(this);
 
@@ -45,21 +46,6 @@ GameObject::GameObject(QGraphicsItem * parent) :
 
 GameObject::~GameObject()
 {
-    //remove it from its scene if it has one
-    if (this->scene())
-    {
-        GraphicsScene* scene = qobject_cast<GraphicsScene*>(this->scene());
-
-        if (scene)
-        {
-            scene->removeGameObject(this);
-        }
-        else if (this->scene())
-        {
-            this->scene()->removeItem(this);
-        }
-    }
-
     //remove its components
     QList<Component*> components = m_IDsByComponents.keys();
     qDeleteAll(components);
@@ -264,6 +250,9 @@ QVector<QPoint> GameObject::grahamScan(QList<QPoint> points, int minYIndex)
 
 void GameObject::paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
+    Q_UNUSED(option)
+    Q_UNUSED(widget)
+
     painter->setRenderHint(QPainter::SmoothPixmapTransform);
     painter->setOpacity(this->opacity());
     painter->drawPixmap(boundingRect().toRect(), m_pixmap);
@@ -659,7 +648,7 @@ void GameObject::launchEditorDialog()
     {
         if (scene()->views().count() > 0)
         {
-            if (scene()->views().at(0)->parentWidget());
+            if (scene()->views().at(0)->parentWidget())
             {
                 parent = scene()->views().at(0)->parentWidget();
 
@@ -683,7 +672,7 @@ void GameObject::launchSaveDialog()
     {
         if (scene()->views().count() > 0)
         {
-            if (scene()->views().at(0)->parentWidget());
+            if (scene()->views().at(0)->parentWidget())
             {
                 parent = scene()->views().at(0)->parentWidget();
 
@@ -710,9 +699,4 @@ void GameObject::launchSaveDialog()
 void GameObject::saveObject(QString fileName)
 {
     FileManager::getInstance().saveGameObject(this->serialize(), fileName);
-}
-
-void GameObject::effectDestroy()
-{
-    this->deleteLater();
 }

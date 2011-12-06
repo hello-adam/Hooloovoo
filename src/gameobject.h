@@ -19,6 +19,7 @@ class GameObject : public Component, public QGraphicsItem
     Q_PROPERTY(double opacityAmount READ opacity WRITE setOpacity)
     Q_PROPERTY(double clockwiseRotation READ rotation WRITE setRotation)
     Q_PROPERTY(QColor defaultColor READ getDefaultColor WRITE setDefaultColor)
+    Q_PROPERTY(double scaleFactor READ scale WRITE setScale)
 
 public:
     GameObject(QGraphicsItem  *parent = 0);
@@ -70,6 +71,7 @@ public:
 
     void initiateObject() {emit causeInitiated();}
 
+    bool isDestroyed() {return m_destroyed;}
 
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
@@ -83,6 +85,8 @@ private:
     QString m_tag;
     QColor m_defaultColor;
     QList<QPolygonF> m_tessellation;
+
+    bool m_destroyed;
 
     QHash<int, Component*> m_componentRegistry;
     QHash<Component*, int> m_IDsByComponents;
@@ -122,7 +126,7 @@ public slots:
     void launchEditorDialog();
     void saveObject(QString fileName);
     void launchSaveDialog();
-    void effectDestroy();
+    void effectDestroy() {m_destroyed = true;}
 };
 
 #endif // GAMEOBJECT_H

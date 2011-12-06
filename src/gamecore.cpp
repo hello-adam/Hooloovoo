@@ -22,8 +22,7 @@ GameCore::GameCore(QObject *parent) :
 
     m_gameTimer.setInterval(1000.0 / 60.0);
 
-    connect(&m_gameTimer, SIGNAL(timeout()), this, SIGNAL(timerTick()));
-    connect(this, SIGNAL(timerTick()), &PhysicsManager::getInstance(), SLOT(takeStep()));
+    connect(&m_gameTimer, SIGNAL(timeout()), this, SLOT(gameStep()));
 
     emit hasSelectedObject(false);
     emit hasObjectOnClipboard(false);
@@ -36,17 +35,32 @@ GameCore::~GameCore()
     //qDeleteAll(m_inputReceivers);
 }
 
-void GameCore::issueCommand(Command command, QString parameter)
+void GameCore::gameStep()
 {
-    if (command == ChangeLevel)
+    PhysicsManager::getInstance().takeStep();
+    emit timerTick();
+    m_scene->destroyDeadObjects();
+
+    if (!m_newLevel.isEmpty())
     {
         QDomElement levelElem;
-        levelElem = FileManager::getInstance().loadLevel(parameter);
+        levelElem = FileManager::getInstance().loadLevel(m_newLevel);
 
         if (!levelElem.isNull())
         {
             deserializeLevel(levelElem);
         }
+
+        m_newLevel = "";
+    }
+
+}
+
+void GameCore::issueCommand(Command command, QString parameter)
+{
+    if (command == ChangeLevel)
+    {
+        m_newLevel = parameter;
     }
 }
 

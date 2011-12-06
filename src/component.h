@@ -36,8 +36,8 @@ protected:
     QString m_tag;
     int m_ID;
 
-    virtual void privateSerialize(QDomElement & componentObject) {}
-    virtual void privateDeserialize(const QDomElement & componentObject) {}
+    virtual void privateSerialize(QDomElement & componentObject) {Q_UNUSED(componentObject)}
+    virtual void privateDeserialize(const QDomElement & componentObject) {Q_UNUSED(componentObject)}
 
 signals:
 

@@ -53,6 +53,8 @@ PhysicsComponent::~PhysicsComponent()
         if (component)
             component->leaveContact(this);
     }
+
+    m_contacts.clear();
 }
 
 QSet<QString> PhysicsComponent::getEditProperties()
@@ -133,6 +135,9 @@ void PhysicsComponent::instantiate()
         fixture.density = m_density;
         fixture.isSensor = m_isSensor;
         fixtureDefs[j] = fixture;
+
+        delete [] vertices;
+        vertices = 0;
     }
     m_body = PhysicsManager::getInstance().addBody(&bodyDef, fixtureDefs, tesselation.count(), this);
     qDeleteAll(shapes);

@@ -120,6 +120,9 @@ void CauseEffectLabelWidget::newSelection(int componentID, QString name)
 
 void CauseEffectLabelWidget::deselection(int componentID, QString name)
 {
+    Q_UNUSED(componentID)
+    Q_UNUSED(name)
+
     m_selectionID = -1;
     m_selectionName = "";
 
