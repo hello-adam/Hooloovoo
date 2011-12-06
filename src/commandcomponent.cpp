@@ -3,6 +3,8 @@
 CommandComponent::CommandComponent(GameObject *parentObject) :
     Component(parentObject)
 {
+    this->setObjectName("Command Component");
+
     m_command = GameCore::ChangeLevel;
     m_parameter = "";
 }
@@ -21,5 +23,5 @@ QSet<QString> CommandComponent::getEditProperties()
 
 void CommandComponent::effectSendCommand()
 {
-
+    GameCore::getInstance().issueCommand(m_command, m_parameter);
 }

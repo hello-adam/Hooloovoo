@@ -152,10 +152,8 @@ void GameObjectEditDialog::removeComponentEditWidget(ComponentEditWidget *editWi
 
 void GameObjectEditDialog::saveChanges()
 {
-    qDebug() << "save";
     foreach(ComponentEditWidget* editWidget, m_componentEditWidgets)
     {
-        qDebug() << "saving component";
         editWidget->saveChanges();
     }
 

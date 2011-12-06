@@ -18,6 +18,8 @@ GameCore::GameCore(QObject *parent) :
     m_scene = new GraphicsScene();
     m_scene->setSceneRect(0, 0, 800, 600);
 
+    qRegisterMetaType<Command>("Command");
+
     m_gameTimer.setInterval(1000.0 / 60.0);
 
     connect(&m_gameTimer, SIGNAL(timeout()), this, SIGNAL(timerTick()));
@@ -32,6 +34,20 @@ GameCore::GameCore(QObject *parent) :
 GameCore::~GameCore()
 {
     //qDeleteAll(m_inputReceivers);
+}
+
+void GameCore::issueCommand(Command command, QString parameter)
+{
+    if (command == ChangeLevel)
+    {
+        QDomElement levelElem;
+        levelElem = FileManager::getInstance().loadLevel(parameter);
+
+        if (!levelElem.isNull())
+        {
+            deserializeLevel(levelElem);
+        }
+    }
 }
 
 QDomElement GameCore::serializeSelectedObject()
@@ -99,6 +115,9 @@ QDomElement GameCore::serializeLevel()
 
 bool GameCore::deserializeLevel(const QDomElement &levelElement)
 {
+    bool unpaused = !m_isPaused;
+
+    this->pause();
     m_scene->clearAll();
 
     QDomElement dataElement = levelElement.firstChildElement("leveldata");
@@ -131,6 +150,9 @@ bool GameCore::deserializeLevel(const QDomElement &levelElement)
 
         gameobject = gameobject.nextSiblingElement("component");
     }
+
+    if (unpaused)
+        this->unpause();
 
     return true;
 }

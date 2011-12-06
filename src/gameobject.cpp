@@ -54,7 +54,7 @@ GameObject::~GameObject()
         {
             scene->removeGameObject(this);
         }
-        else
+        else if (this->scene())
         {
             this->scene()->removeItem(this);
         }

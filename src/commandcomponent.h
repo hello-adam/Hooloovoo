@@ -33,4 +33,5 @@ public slots:
     void effectSendCommand();
 };
 
+
 #endif // COMMANDCOMPONENT_H

@@ -15,6 +15,7 @@
 class GameCore : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(Command)
 public:
     enum Command
     {
@@ -44,6 +45,8 @@ public:
     void removeInputReceiver(InputReceiver* receiver) {m_inputReceivers.removeAll(receiver);}
 
     GraphicsScene* getGraphicsScene() {return m_scene;}
+
+    void issueCommand(Command command, QString parameter);
 
 private:
     explicit GameCore(QObject *parent = 0);

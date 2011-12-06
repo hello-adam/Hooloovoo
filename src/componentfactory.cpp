@@ -9,6 +9,7 @@
 #include "contactcomponent.h"
 #include "timercomponent.h"
 #include "audiocomponent.h"
+#include "commandcomponent.h"
 
 ComponentFactory::ComponentFactory()
 {
@@ -50,6 +51,10 @@ Component* ComponentFactory::createComponent(GameObject* parentObject, QString n
     {
         component = new AudioComponent(parentObject);
     }
+    else if (name == "Command Component")
+    {
+        component = new CommandComponent(parentObject);
+    }
     else
         return 0;
 
@@ -71,6 +76,8 @@ Component* ComponentFactory::createComponent(GameObject* parentObject, const QDo
 QStringList ComponentFactory::availableComponents()
 {
     QStringList available;
-    available << "Physics Component" << "Physics Controller Component" << "Spawn Component" << "Animation Component" << "Input Component" <<"Contact Component" << "Timer Component" << "Audio Component";
+    available << "Physics Component" << "Physics Controller Component" << "Spawn Component"
+              << "Animation Component" << "Input Component" <<"Contact Component" << "Timer Component"
+              << "Audio Component" << "Command Component";
     return available;
 }

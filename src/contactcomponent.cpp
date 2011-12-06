@@ -1,5 +1,6 @@
 #include "contactcomponent.h"
 #include "gameobject.h"
+#include "physicsmanager.h"
 
 ContactComponent::ContactComponent(GameObject *parentObject) :
     Component(parentObject)
@@ -7,6 +8,7 @@ ContactComponent::ContactComponent(GameObject *parentObject) :
     this->setObjectName("Contact Component");
 
     m_physicsComponent = 0;
+    m_madeContact = false;
 
     QList<Component*> components = parentObject->getComponents();
     foreach (Component* c, components)
@@ -23,6 +25,9 @@ ContactComponent::ContactComponent(GameObject *parentObject) :
     connect(parentObject, SIGNAL(componentRemoved(Component*)),
             this, SLOT(checkForRemovedPhysicsComponent(Component*)));
 
+    connect(&PhysicsManager::getInstance(), SIGNAL(stepTaken()),
+            this, SLOT(contactCheck()));
+
     if (m_physicsComponent)
         connect(m_physicsComponent, SIGNAL(enteringContact(GameObject*)), this, SLOT(reactToContact(GameObject*)));
 }
@@ -36,7 +41,16 @@ QSet<QString> ContactComponent::getEditProperties()
 
 void ContactComponent::reactToContact(GameObject *contactObject)
 {
-    emit causeEnterContact();
+    m_madeContact = true;
+}
+
+void ContactComponent::contactCheck()
+{
+    if (m_madeContact)
+    {
+        emit causeEnterContact();
+        m_madeContact = false;
+    }
 }
 
 void ContactComponent::checkForAddedPhysicsComponent(Component* c)

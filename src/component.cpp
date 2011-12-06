@@ -81,8 +81,6 @@ QDomElement Component::serialize()
                 prop.setAttribute("type", value.type());
                 prop.setAttribute("value", value.toString());
                 componentElement.appendChild(prop);
-
-                qDebug() << value;
             }
         }
     }
