@@ -25,6 +25,12 @@ bool ComponentEditWidget::setComponent(Component *component)
 
     m_component = component;
 
+    if (component->getID() == 0)
+    {
+        ui->pb_remove->setEnabled(false);
+        ui->pb_remove->setVisible(false);
+    }
+
     for (int i = 0; i<component->metaObject()->propertyCount(); i++)
     {
         QMetaProperty property = component->metaObject()->property(i);
@@ -46,14 +52,18 @@ bool ComponentEditWidget::setComponent(Component *component)
 
 void ComponentEditWidget::removeComponent()
 {
+    if (m_component->getID() == 0)
+    {
+        qDebug() << "you can't remove the game object!";
+        return;
+    }
+
     GameObject* gameObject = m_component->getParentObject();
 
     gameObject->removeComponent(m_component);
     m_component = 0;
 
-    emit componentRemoved();
-
-    this->deleteLater();
+    emit componentRemoved(this);
 }
 
 void ComponentEditWidget::saveChanges()

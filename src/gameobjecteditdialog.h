@@ -5,6 +5,7 @@
 #include "gameobject.h"
 #include "causeandeffecteditwidget.h"
 class PropertyEditWidget;
+class ComponentEditWidget;
 
 namespace Ui {
     class GameObjectEditDialog;
@@ -25,12 +26,15 @@ private:
     GameObject* m_object;
     QHash<QString, QWidget*> m_componentWidgetLookup;
 
-    QWidget* getObjectEditWidget(QObject* object, QSet<QString> editProperties);
+    QSet<ComponentEditWidget*> m_componentEditWidgets;
 
     CauseAndEffectEditWidget* m_causeAndEffectWidget;
 
 private slots:
     void addSelectedComponent();
+    void addComponentEditWidget(Component* component);
+    void removeComponentEditWidget(ComponentEditWidget* editWidget);
+    void saveChanges();
     void resetCauseEffectWidget();
 };
 

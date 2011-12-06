@@ -26,6 +26,11 @@ GameObjectEditDialog::GameObjectEditDialog(QWidget *parent) :
     ui->causeAndEffectLayout->addWidget(m_causeAndEffectWidget);
 
     connect(ui->pb_AddSelected, SIGNAL(clicked()), this, SLOT(addSelectedComponent()));
+
+    connect(ui->buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()),
+            this, SLOT(saveChanges()));
+    connect(ui->buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()),
+            this, SLOT(saveChanges()));
 }
 
 GameObjectEditDialog::~GameObjectEditDialog()
@@ -33,22 +38,20 @@ GameObjectEditDialog::~GameObjectEditDialog()
     if (m_causeAndEffectWidget)
         delete m_causeAndEffectWidget;
 
-    delete ui;
+    qDeleteAll(m_componentEditWidgets);
 
-    //qDeleteAll(this->children());
+    delete ui;
 }
 
 bool GameObjectEditDialog::editObject(GameObject *object)
 {
     m_object = object;
 
-    //add the game object to the stacked widget
-    ui->sw_ComponentEditor->addWidget(getObjectEditWidget(object, object->getEditProperties()));
-    ui->lw_components->addItem(object->objectName());
-
     //add each of the component pages to the stacked widget
     ComponentFactory factory;
-    QStringList available = factory.availableComponents();
+    QStringList available;
+    available << "Game Object";
+    available << factory.availableComponents();
     foreach(QString name, available)
     {
         QGroupBox *groupBox = new QGroupBox(this);
@@ -77,31 +80,15 @@ bool GameObjectEditDialog::editObject(GameObject *object)
         m_componentWidgetLookup.insert(name, baseWidget);
     }
 
+    //add the game object to the stacked widget
+    addComponentEditWidget(m_object);
+
     //add each of the objects components to their corresponding component pages in the stacked widget
     QList<Component*> components = object->getComponents();
     foreach (Component* component, components)
     {
-        //add property data
-        QWidget *widget = m_componentWidgetLookup.value(component->objectName(), 0);
-
-        if (widget)
-        {
-            ComponentEditWidget* editWidget = new ComponentEditWidget();
-            editWidget->setComponent(component);
-            if (widget->layout()->count() > 0)
-            {
-                QFrame *line = new QFrame();
-                line->setFrameShape(QFrame::HLine);
-                line->setFrameShadow(QFrame::Sunken);
-                widget->layout()->addWidget(line);
-                connect (editWidget, SIGNAL(destroyed()), line, SLOT(deleteLater()));
-            }
-            widget->layout()->addWidget(editWidget);
-            connect(this, SIGNAL(accepted()), editWidget, SLOT(saveChanges()));
-        }
+        addComponentEditWidget(component);
     }
-
-    resetCauseEffectWidget();
 
     if (this->exec())
     {
@@ -114,44 +101,18 @@ bool GameObjectEditDialog::editObject(GameObject *object)
     }
 }
 
-QWidget* GameObjectEditDialog::getObjectEditWidget(QObject* object, QSet<QString> editProperties)
-{
-    QGroupBox *groupBox = new QGroupBox(this);
-    groupBox->setFlat(true);
-
-    QFormLayout *formLayout = new QFormLayout();
-    groupBox->setLayout(formLayout);
-    formLayout->setLabelAlignment(Qt::AlignVCenter | Qt::AlignRight);
-
-    for (int i = 0; i<object->metaObject()->propertyCount(); i++)
-    {
-        QMetaProperty property = object->metaObject()->property(i);
-        QString name = property.name();
-
-        if (property.isValid() && property.isReadable() && property.userType())
-        {
-            if (name == "objectName")
-            {
-                QVariant value = property.read(object);
-                groupBox->setTitle(value.toString());
-            }
-            else if (editProperties.contains(name))
-            {
-                PropertyEditWidget* editWidget = new PropertyEditWidget(this);
-                editWidget->setProperty(property, object);
-                connect(this, SIGNAL(accepted()), editWidget, SLOT(writeProperty()));
-                formLayout->addRow(name, editWidget);
-            }
-        }
-    }
-
-    return groupBox;
-}
-
 void GameObjectEditDialog::addSelectedComponent()
 {
     Component* component = m_object->addComponent(ui->lw_components->currentItem()->text());
 
+    if (!component)
+        return;
+
+    addComponentEditWidget(component);
+}
+
+void GameObjectEditDialog::addComponentEditWidget(Component *component)
+{
     if (!component)
         return;
 
@@ -170,8 +131,32 @@ void GameObjectEditDialog::addSelectedComponent()
             connect (editWidget, SIGNAL(destroyed()), line, SLOT(deleteLater()));
         }
         widget->layout()->addWidget(editWidget);
-        connect(this, SIGNAL(accepted()), editWidget, SLOT(saveChanges()));
-        connect(editWidget, SIGNAL(componentRemoved()), this, SLOT(resetCauseEffectWidget()));
+        connect(editWidget, SIGNAL(componentRemoved(ComponentEditWidget*)), this, SLOT(removeComponentEditWidget(ComponentEditWidget*)));
+
+        m_componentEditWidgets.insert(editWidget);
+
+        resetCauseEffectWidget();
+    }
+}
+
+void GameObjectEditDialog::removeComponentEditWidget(ComponentEditWidget *editWidget)
+{
+    if (!editWidget)
+        return;
+
+    m_componentEditWidgets.remove(editWidget);
+    editWidget->deleteLater();
+
+    resetCauseEffectWidget();
+}
+
+void GameObjectEditDialog::saveChanges()
+{
+    qDebug() << "save";
+    foreach(ComponentEditWidget* editWidget, m_componentEditWidgets)
+    {
+        qDebug() << "saving component";
+        editWidget->saveChanges();
     }
 
     resetCauseEffectWidget();

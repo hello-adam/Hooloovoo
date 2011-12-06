@@ -15,7 +15,7 @@ class GameObject : public Component, public QGraphicsItem
     Q_PROPERTY(bool visibleInGame READ getVisibleInGame WRITE setVisibleInGame)
     Q_PROPERTY(QString pixmapFileName READ getPixmapFile WRITE setPixmapFile)
     Q_PROPERTY(QPointF position READ pos WRITE setPos)
-    Q_PROPERTY(double zCoordinate READ zValue WRITE setZValue)
+    Q_PROPERTY(int zCoordinate READ zValue WRITE setZValue)
     Q_PROPERTY(double opacityAmount READ opacity WRITE setOpacity)
     Q_PROPERTY(double clockwiseRotation READ rotation WRITE setRotation)
     Q_PROPERTY(QColor defaultColor READ getDefaultColor WRITE setDefaultColor)
