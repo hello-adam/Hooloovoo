@@ -23,6 +23,7 @@ public:
     QString getTag() {return m_tag;}
 
     virtual QSet<QString> getEditProperties() {return QSet<QString>();}
+
     virtual void prepareForSerialization() {}
     virtual bool allowMultipleComponents() {return true;}
 

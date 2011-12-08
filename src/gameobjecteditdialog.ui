@@ -61,6 +61,16 @@
              </widget>
             </item>
             <item>
+             <widget class="QLabel" name="lb_componentInfo">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
              <layout class="QHBoxLayout" name="horizontalLayout_3">
               <item>
                <spacer name="horizontalSpacer">

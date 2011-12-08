@@ -36,6 +36,7 @@ private slots:
     void removeComponentEditWidget(ComponentEditWidget* editWidget);
     void saveChanges();
     void resetCauseEffectWidget();
+    void setComponentInfo(QString name);
 };
 
 #endif // GAMEOBJECTEDITDIALOG_H

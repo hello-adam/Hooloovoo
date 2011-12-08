@@ -31,6 +31,9 @@ GameObjectEditDialog::GameObjectEditDialog(QWidget *parent) :
             this, SLOT(saveChanges()));
     connect(ui->buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()),
             this, SLOT(saveChanges()));
+
+    connect(ui->lw_components, SIGNAL(currentTextChanged(QString)),
+            this, SLOT(setComponentInfo(QString)));
 }
 
 GameObjectEditDialog::~GameObjectEditDialog()
@@ -202,4 +205,9 @@ void GameObjectEditDialog::resetCauseEffectWidget()
             m_causeAndEffectWidget->addEffect(component, effect);
         }
     }
+}
+
+void GameObjectEditDialog::setComponentInfo(QString name)
+{
+    ui->lb_componentInfo->setText(ComponentFactory::componentInfo(name));
 }
