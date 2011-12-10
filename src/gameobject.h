@@ -22,7 +22,7 @@ class GameObject : public Component, public QGraphicsItem
     Q_PROPERTY(double scaleFactor READ scale WRITE setScale)
 
 public:
-    GameObject(QGraphicsItem  *parent = 0);
+    GameObject(QGraphicsItem  *parent = 0, int levelID);
     ~GameObject();
 
     enum MouseEditMode { Nothing, Move, ResizeBottomRight, RotateHorizontal, RotateVertical };
@@ -68,6 +68,7 @@ public:
     CauseEffectManager* getCauseEffectManager();
 
     int getComponentID(Component* component) {return m_IDsByComponents.value(component, -1);}
+    int getLevelID() {return m_levelID;}
 
     void initiateObject() {emit causeInitiated();}
 
@@ -77,6 +78,7 @@ protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
 private:
+    int m_levelID;
     QUuid m_uid;
     QString m_pixmapFileName;
     QPixmap m_pixmap;

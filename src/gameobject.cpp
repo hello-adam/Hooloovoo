@@ -15,13 +15,14 @@
 #include "filemanager.h"
 #include "causeeffectmanager.h"
 
-GameObject::GameObject(QGraphicsItem * parent) :
+GameObject::GameObject(QGraphicsItem * parent, int levelID) :
     Component(0),
     QGraphicsItem(parent)
 {
     setObjectName("Game Object");
 
     m_ID = 0;
+    m_levelID = levelID;
     m_destroyed = false;
 
     m_causeEffectManager = new CauseEffectManager(this);
@@ -590,6 +591,7 @@ bool GameObject::removeComponent(Component *component)
         int ID = m_IDsByComponents.value(component);
         m_IDsByComponents.remove(component);
         m_componentRegistry.remove(ID);
+        m_registeredIDs.remove(ID);
 
         emit componentRemoved(component);
         delete component;

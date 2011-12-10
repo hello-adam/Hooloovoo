@@ -5,7 +5,6 @@
 #include "gamecore.h"
 #include "filemanager.h"
 #include "gamefiledialog.h"
-#include "leveldatadialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -21,7 +20,10 @@ MainWindow::MainWindow(QWidget *parent) :
     m_gameGraphicsView->setScene(GameCore::getInstance().getGraphicsScene());
 
     this->setCentralWidget(ui->stackedWidget);
-    ui->editorLayout->addWidget(m_gameGraphicsView);
+    ui->editorLayout->insertWidget(0, m_gameGraphicsView);
+
+    connect(ui->tb_pause, SIGNAL(toggled(bool)),
+            GameCore::getInstance().getTogglePauseAction(), SLOT(setChecked(bool)));
 
     connect(ui->pb_createGame, SIGNAL(clicked()),
             this, SLOT(createGame()));
@@ -37,6 +39,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->refreshGameList();
 
     switchToStartScreen();
+
+    GameCore::getInstance().setDialogParent(this);
 }
 
 MainWindow::~MainWindow()
@@ -63,39 +67,33 @@ void MainWindow::initializeMenus()
     m_helpMenu = new QMenu("&Help");
     m_objectMenu = new QMenu("&Object");
 
-    m_playGameMenu->addAction("&Save Game", this, SLOT(savePlayState()));
-    m_playGameMenu->addAction("&Load Game", this, SLOT(loadPlayState()));
+    m_playGameMenu->addAction(GameCore::getInstance().getSavePlayStateAction());
+    m_playGameMenu->addAction(GameCore::getInstance().getLoadPlayStateAction());
     m_playGameMenu->addSeparator();
-    m_playGameMenu->addAction("&Switch Game", this, SLOT(switchGame()));
+    m_playGameMenu->addAction(GameCore::getInstance().getSwitchGameAction());
     m_playGameMenu->addSeparator();
     m_playGameMenu->addAction("&Exit to Start Screen", this, SLOT(switchToStartScreen()));
     m_playGameMenu->addAction("&Exit Program", this, SLOT(close()));
 
-    m_createGameMenu->addAction("&New Game Project", this, SLOT(createGame()));
-    m_createGameMenu->addAction("&Switch Game Project", this, SLOT(switchGame()));
+    m_createGameMenu->addAction(GameCore::getInstance().getCreateGameAction());
+    m_createGameMenu->addAction(GameCore::getInstance().getSwitchGameAction());
     m_createGameMenu->addSeparator();
     m_createGameMenu->addAction("&Exit to Start Screen", this, SLOT(switchToStartScreen()));
     m_createGameMenu->addAction("&Exit Program", this, SLOT(close()));
 
-    m_levelMenu->addAction("&New Level", this, SLOT(newLevel()));
-    m_levelMenu->addAction("&Save Level", this, SLOT(saveLevel()));
-    m_levelMenu->addAction("&Switch Level", this, SLOT(loadLevel()));
+    m_levelMenu->addAction(GameCore::getInstance().getManageLevelsAction());
+    m_levelMenu->addAction(GameCore::getInstance().getSaveLevelAction());
     m_levelMenu->addSeparator();
-    m_levelMenu->addAction("&Edit Level Properties", this, SLOT(editLevelData()));
-    m_levelMenu->addAction("&Add Object To Level", this, SLOT(addObject()));
+    m_levelMenu->addAction(GameCore::getInstance().getEditCurrentLevelAction());
+    m_levelMenu->addAction(GameCore::getInstance().getAddObjectToLevelAction());
 
     QAction *action;
-    m_objectMenu->addAction("&Add Object To Level", this, SLOT(addObject()));
-    action = m_objectMenu->addAction("&Edit Selected Object", this, SLOT(editSelectedObject()));
-    connect(&GameCore::getInstance(), SIGNAL(hasSelectedObject(bool)), action, SLOT(setEnabled(bool)));
-    action = m_objectMenu->addAction("&Save Selected Object", this, SLOT(saveSelectedObject()));
-    connect(&GameCore::getInstance(), SIGNAL(hasSelectedObject(bool)), action, SLOT(setEnabled(bool)));
-    action = m_objectMenu->addAction("&Remove Selected Object", this, SLOT(removeSelectedObject()));
-    connect(&GameCore::getInstance(), SIGNAL(hasSelectedObject(bool)), action, SLOT(setEnabled(bool)));
-    action = m_objectMenu->addAction("&Copy Selected Object", this, SLOT(copySelectedObject()));
-    connect(&GameCore::getInstance(), SIGNAL(hasSelectedObject(bool)), action, SLOT(setEnabled(bool)));
-    action = m_objectMenu->addAction("&Paste Copied Object", this, SLOT(pasteObjectFromClipboard()));
-    connect(&GameCore::getInstance(), SIGNAL(hasObjectOnClipboard(bool)), action, SLOT(setEnabled(bool)));
+    m_objectMenu->addAction(GameCore::getInstance().getAddObjectToLevelAction());
+    m_objectMenu->addAction(GameCore::getInstance().getEditSelectedObjectAction());
+    m_objectMenu->addAction(GameCore::getInstance().getSaveSelectedObjectAction());
+    m_objectMenu->addAction(GameCore::getInstance().getRemoveSelectedObjectAction());
+    m_objectMenu->addAction(GameCore::getInstance().getCopySelectedObjectAction());
+    m_objectMenu->addAction(GameCore::getInstance().getPasteSelectedObjectAction());
 
     m_helpMenu->addAction("&About...", this, SLOT(launchAboutDialog()));
 }
@@ -110,8 +108,8 @@ void MainWindow::startScreenEditGame()
 {
     if (ui->listWidget->currentItem())
     {
-        GameCore::getInstance().deserializeLevel(FileManager::getInstance().loadGame(ui->listWidget->currentItem()->text()));
-        switchToGameEditorScreen();
+        if (GameCore::getInstance().loadGame(ui->listWidget->currentItem()->text()))
+            switchToGameEditorScreen();
     }
 }
 
@@ -119,8 +117,8 @@ void MainWindow::startScreenPlayGame()
 {
     if (ui->listWidget->currentItem())
     {
-        GameCore::getInstance().deserializeLevel(FileManager::getInstance().loadGame(ui->listWidget->currentItem()->text()));
-        switchToGameScreen();
+        if (GameCore::getInstance().loadGame(ui->listWidget->currentItem()->text()))
+            switchToGameScreen();
     }
 }
 
@@ -165,138 +163,6 @@ void MainWindow::switchToGameEditorScreen()
     createMenuBar->addMenu(m_objectMenu);
     createMenuBar->addMenu(m_helpMenu);
     this->setMenuBar(createMenuBar);
-}
-
-void MainWindow::createGame()
-{
-    GameFileDialog dlg(this);
-
-    dlg.setAcceptMode(GameFileDialog::Create);
-    dlg.setFileType(GameFileDialog::Game);
-
-    if (dlg.exec())
-    {
-        if (!dlg.getFileName().isEmpty())
-        {
-            GameCore::getInstance().deserializeLevel(FileManager::getInstance().createNewGame(dlg.getFileName()));
-            switchToGameEditorScreen();
-        }
-    }
-}
-
-void MainWindow::switchGame()
-{
-    GameFileDialog dlg(this);
-
-    dlg.setAcceptMode(GameFileDialog::Load);
-    dlg.setFileType(GameFileDialog::Game);
-
-    if (dlg.exec() && !dlg.getFileName().isEmpty())
-    {
-        GameCore::getInstance().deserializeLevel(FileManager::getInstance().loadGame(dlg.getFileName()));
-    }
-}
-
-void MainWindow::newLevel()
-{
-    GameFileDialog dlg(this);
-
-    dlg.setAcceptMode(GameFileDialog::Create);
-    dlg.setFileType(GameFileDialog::Level);
-
-    if (dlg.exec() && !dlg.getFileName().isEmpty())
-    {
-        GameCore::getInstance().deserializeLevel(FileManager::getInstance().createNewLevel(dlg.getFileName()));
-    }
-}
-
-void MainWindow::saveLevel()
-{
-    GameFileDialog dlg(this);
-
-    dlg.setAcceptMode(GameFileDialog::Save);
-    dlg.setFileType(GameFileDialog::Level);
-
-    if (dlg.exec() && !dlg.getFileName().isEmpty())
-    {
-        FileManager::getInstance().saveLevel(GameCore::getInstance().serializeLevel(), dlg.getFileName());
-    }
-}
-
-void MainWindow::loadLevel()
-{
-    GameFileDialog dlg(this);
-
-    dlg.setAcceptMode(GameFileDialog::Load);
-    dlg.setFileType(GameFileDialog::Level);
-
-    if (dlg.exec() && !dlg.getFileName().isEmpty())
-    {
-        GameCore::getInstance().deserializeLevel(FileManager::getInstance().loadLevel(dlg.getFileName()));
-    }
-}
-
-void MainWindow::editLevelData()
-{
-    LevelDataDialog dlg;
-    dlg.editLevelData();
-}
-
-void MainWindow::addObject()
-{
-    GameFileDialog dlg(this);
-
-    dlg.setAcceptMode(GameFileDialog::Select);
-    dlg.setFileType(GameFileDialog::GameObject);
-
-    if (dlg.exec() && !dlg.getFileName().isEmpty())
-    {
-        QPointF pos = m_gameGraphicsView->mapToScene(m_gameGraphicsView->width()/2, m_gameGraphicsView->height()/2);
-        GameCore::getInstance().addObjectToLevel(FileManager::getInstance().loadGameObject(dlg.getFileName()), pos);
-    }
-}
-
-void MainWindow::savePlayState()
-{
-
-}
-
-void MainWindow::loadPlayState()
-{
-
-}
-
-void MainWindow::saveSelectedObject()
-{
-    GameFileDialog dlg(this);
-
-    dlg.setAcceptMode(GameFileDialog::Save);
-    dlg.setFileType(GameFileDialog::GameObject);
-
-    if (dlg.exec() && !dlg.getFileName().isEmpty())
-    {
-        FileManager::getInstance().saveGameObject(GameCore::getInstance().serializeSelectedObject(), dlg.getFileName());
-    }
-}
-
-void MainWindow::editSelectedObject()
-{
-
-}
-
-void MainWindow::removeSelectedObject()
-{
-
-}
-
-void MainWindow::copySelectedObject()
-{
-    GameCore::getInstance().copySelectedObjectToClipboard();
-}
-
-void MainWindow::pasteObjectFromClipboard()
-{
-    GameCore::getInstance().addObjectToLevel(GameCore::getInstance().getClipboardElement());
 }
 
 void MainWindow::launchAboutDialog()

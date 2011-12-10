@@ -35,7 +35,6 @@ public:
                         ContactRight = 8,
                         ContactIrrelevant = 16};
 
-
     explicit PhysicsComponent(GameObject *parentObject);
     ~PhysicsComponent();
 

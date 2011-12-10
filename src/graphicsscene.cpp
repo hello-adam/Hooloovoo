@@ -85,17 +85,10 @@ void GraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
     QMenu menu;
     QAction *addObject = menu.addAction("Add Object");
-    QAction *editGlobal = menu.addAction("Edit World");
+    QAction *editGlobal = menu.addAction("Edit Level Properties");
     QAction *selectedAction = menu.exec(event->screenPos());
 
-    QWidget *parent = 0;
-    if (this->views().count() > 0)
-    {
-        if (this->views().at(0)->parentWidget())
-        {
-            parent = this->views().at(0)->parentWidget();
-        }
-    }
+    QWidget *parent = GameCore::getDialogParent();
     if (selectedAction == addObject)
     {
         GameFileDialog dlg(parent);
@@ -105,7 +98,7 @@ void GraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
         if (dlg.exec() && !dlg.getFileName().isEmpty())
         {
-            GameCore::getInstance().addObjectToLevel(FileManager::getInstance().loadGameObject(dlg.getFileName()), event->scenePos());
+            GameCore::getInstance().addObjectToCurrentLevel(FileManager::getInstance().loadGameObject(dlg.getFileName()), event->scenePos());
         }
     }
     else if (selectedAction == editGlobal)

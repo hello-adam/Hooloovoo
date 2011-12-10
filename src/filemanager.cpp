@@ -13,7 +13,7 @@ FileManager::FileManager(QObject *parent) :
         dir.mkdir(getDefaultGamesPath());
 }
 
-QDomElement FileManager::createNewGame(const QString &gameDirectoryName, const QString &startLevel)
+bool FileManager::createNewGame(const QString &gameDirectoryName, const QString &startLevel)
 {
     QDir gameDir(gameDirectoryName);
     if (gameDir.exists())
@@ -37,7 +37,7 @@ QDomElement FileManager::createNewGame(const QString &gameDirectoryName, const Q
     baseObject->saveObject("baseobject.gameobject");
     delete baseObject;
 
-    return loadGame(gameDirectoryName);
+    return true;
 }
 
 QDomElement FileManager::loadGame(const QString &fileDirectory)
@@ -64,10 +64,7 @@ QDomElement FileManager::loadGame(const QString &fileDirectory)
 
     QDomElement element = doc.documentElement();
 
-    QDomElement level = element.firstChildElement("startlevel");
-    QString startLevel = level.attribute("file");
-
-    return loadLevel(startLevel);
+    return element;
 }
 
 bool FileManager::saveGame(QString startLevel, bool overwrite)

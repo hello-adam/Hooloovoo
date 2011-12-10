@@ -15,14 +15,20 @@ public:
 
 private:
     PhysicsComponent* m_physicsComponent;
-    bool m_madeContact;
+
+    QSet<GameObject*> m_newContacts;
+    QSet<GameObject*> m_removedContacts;
+    QSet<GameObject*> m_contacts;
 
 signals:
     void causeEnterContact();
+    void causeLeaveContact();
+    void causeNoContact();
 
 public slots:
 
-    void reactToContact(GameObject* contactObject);
+    void enterContact(GameObject* contactObject);
+    void leaveContact(GameObject* contactObject);
     void checkForAddedPhysicsComponent(Component* c);
     void checkForRemovedPhysicsComponent(Component* c);
     void contactCheck();

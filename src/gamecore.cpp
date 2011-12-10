@@ -18,11 +18,44 @@ GameCore::GameCore(QObject *parent) :
     m_scene = new GraphicsScene();
     m_scene->setSceneRect(0, 0, 800, 600);
 
+    m_dialogParent = 0;
+
     qRegisterMetaType<Command>("Command");
 
     m_gameTimer.setInterval(1000.0 / 60.0);
-
     connect(&m_gameTimer, SIGNAL(timeout()), this, SLOT(gameStep()));
+
+    m_togglePaused = new QAction("&Pause Game", this);
+    m_togglePaused->setCheckable(true);
+    connect(m_togglePaused, SIGNAL(toggled(bool)), this, SLOT(togglePaused(bool)));
+    m_savePlayState = new QAction("&Save Game", this);
+    connect(m_savePlayState, SIGNAL(triggered()), this, SLOT(savePlayState()));
+    m_loadPlayState = new QAction("&Load Game", this);
+    connect(m_loadPlayState, SIGNAL(triggered()), this, SLOT(loadPlayState()));
+    m_switchGame = new QAction("&Switch Game Project", this);
+    connect(m_switchGame, SIGNAL(triggered()), this, SLOT(switchGame()));
+    m_createGame = new QAction("&Create New Game Project", this);
+    connect(m_createGame, SIGNAL(triggered()), this, SLOT(createGame()));
+    m_saveLevel = new QAction("&Save Current Level", this);
+    connect(m_saveLevel, SIGNAL(triggered()), this, SLOT(saveCurrentLevel()));
+    m_manageLevels = new QAction("&Manage Levels", this);
+    connect(m_manageLevels, SIGNAL(triggered()), this, SLOT(launchManageLevelsDialog()));
+    m_editCurrentLevel = new QAction("&Edit Current Level", this);
+    connect(m_editCurrentLevel, SIGNAL(triggered()), this, SLOT(launchEditLevelDialog()));
+    m_addObjectToLevel = new QAction("&Add Object to Level", this);
+    connect(m_addObjectToLevel, SIGNAL(triggered()), this, SLOT(addObjectToCurrentLevelSlot()));
+    m_editSelectedObject = new QAction("&Edit Selected Object", this);
+    connect(m_editSelectedObject, SIGNAL(triggered()), this, SLOT(editSelectedObject()));
+    connect(this, SIGNAL(hasSelectedObject(bool)), m_editSelectedObject, SLOT(setEnabled(bool)));
+    m_saveSelectedObject = new QAction("&Save Selected Object", this);
+    connect(m_saveSelectedObject, SIGNAL(triggered()), this, SLOT(saveSelectedObject()));
+    connect(this, SIGNAL(hasSelectedObject(bool)), m_saveSelectedObject, SLOT(setEnabled(bool)));
+    m_copySelectedObject = new QAction("&Copy Selected Object", this);
+    connect(m_copySelectedObject, SIGNAL(triggered()), this, SLOT(copySelectedObjectToClipboard()));
+    connect(this, SIGNAL(hasSelectedObject(bool)), m_copySelectedObject, SLOT(setEnabled(bool)));
+    m_pasteSelectedObject = new QAction("&Copy Selected Object", this);
+    connect(m_pasteSelectedObject, SIGNAL(triggered()), this, SLOT(pasteClipboardObjectToCurrentLevel()));
+    connect(this, SIGNAL(hasObjectOnClipboard(bool)), m_pasteSelectedObject, SLOT(setEnabled(bool)));
 
     emit hasSelectedObject(false);
     emit hasObjectOnClipboard(false);
@@ -32,7 +65,6 @@ GameCore::GameCore(QObject *parent) :
 
 GameCore::~GameCore()
 {
-    //qDeleteAll(m_inputReceivers);
 }
 
 void GameCore::gameStep()
@@ -64,25 +96,28 @@ void GameCore::issueCommand(Command command, QString parameter)
     }
 }
 
-QDomElement GameCore::serializeSelectedObject()
+int GameCore::getAvailableGameObjectID()
 {
-    QDomElement selected;
+    QSet<int> ids = m_gameObjectsByID.keys().toSet();
 
-    if (m_scene->focusItem())
+    for (int i=0; i<42000; i++)
     {
-
+        if (!ids.contains(i))
+            return i;
     }
 
-    return selected;
+    return -1;
 }
 
-void GameCore::copySelectedObjectToClipboard()
+int GameCore::addObjectToCurrentLevel(const QDomElement &objectElement, QPointF pos)
 {
-    m_clipBoardElement = serializeSelectedObject();
-}
+    int ID = getAvailableGameObjectID();
+    if (ID == -1)
+    {
+        qDebug() << "Too many game objects!  Cannot add more!";
+        return -1;
+    }
 
-void GameCore::addObjectToLevel(const QDomElement &objectElement, QPointF pos)
-{
     GameObject *gameObject = new GameObject();
     gameObject->deserialize(objectElement);
     gameObject->setPos(pos);
@@ -98,6 +133,55 @@ void GameCore::addObjectToLevel(const QDomElement &objectElement, QPointF pos)
         qDebug() << "No scene!  Can't add object";
         delete gameObject;
     }
+}
+
+bool GameCore::loadGame(QString gameName)
+{
+    if (!FileManager::getInstance().getAvailableGames().contains(gameName))
+    {
+        qDebug() << "Game does not exist!";
+        return false;
+    }
+
+    QDomElement gameElem;
+    gameElem = FileManager::getInstance().loadGame(gameName);
+
+    QDomElement level = gameElem.firstChildElement("startlevel");
+    QString startLevel = level.attribute("file");
+
+    if (this->deserializeLevel(startLevel))
+    {
+        m_currentLevelName = startLevel;
+        m_currentGameName = gameName;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool GameCore::createGame(QString gameName)
+{
+    if (FileManager::getInstance().getAvailableGames().contains(gameName))
+    {
+        qDebug() << "Game already exists!";
+        return false;
+    }
+    FileManager::getInstance().createNewGame(gameName);
+
+    return loadGame(gameName);
+}
+
+bool GameCore::saveCurrentGame()
+{
+    return FileManager::getInstance().saveGame();
+}
+
+bool GameCore::setCurrentGameStartLevel(QString levelName)
+{
+    m_currentGameStartLevel = levelName;
+    return FileManager::getInstance().saveGame(levelName);
 }
 
 QDomElement GameCore::serializeLevel()
@@ -171,36 +255,6 @@ bool GameCore::deserializeLevel(const QDomElement &levelElement)
     return true;
 }
 
-void GameCore::togglePaused()
-{
-    if (m_isPaused)
-    {
-        unpause();
-    }
-    else
-    {
-        pause();
-    }
-}
-
-void GameCore::pause()
-{
-    m_gameTimer.stop();
-    PhysicsManager::getInstance().pause();
-    if (m_scene)
-        m_scene->pause();
-    m_isPaused = true;
-}
-
-void GameCore::unpause()
-{
-    m_gameTimer.start();
-    PhysicsManager::getInstance().start();
-    if (m_scene)
-        m_scene->unpause();
-    m_isPaused = false;
-}
-
 void GameCore::handleKeyEvent(QKeyEvent *ke)
 {
     if (ke->isAutoRepeat())
@@ -225,4 +279,133 @@ void GameCore::handleKeyEvent(QKeyEvent *ke)
 
         ke->accept();
     }
+}
+
+void GameCore::pause()
+{
+    m_gameTimer.stop();
+    PhysicsManager::getInstance().pause();
+    if (m_scene)
+        m_scene->pause();
+    m_isPaused = true;
+}
+
+void GameCore::unpause()
+{
+    m_gameTimer.start();
+    PhysicsManager::getInstance().start();
+    if (m_scene)
+        m_scene->unpause();
+    m_isPaused = false;
+}
+
+void GameCore::togglePaused()
+{
+    togglePaused(!m_isPaused);
+}
+
+void GameCore::togglePaused(bool pause)
+{
+    if (pause)
+        pause();
+    else
+        unpause();
+}
+
+void GameCore::savePlayState()
+{
+
+}
+
+void GameCore::loadPlayState()
+{
+
+}
+
+void GameCore::switchGame()
+{
+    GameFileDialog dlg(m_dialogParent);
+
+    dlg.setAcceptMode(GameFileDialog::Load);
+    dlg.setFileType(GameFileDialog::Game);
+
+    if (dlg.exec() && !dlg.getFileName().isEmpty())
+    {
+        loadGame(dlg.getFileName());
+    }
+}
+
+void GameCore::createGame()
+{
+    GameFileDialog dlg(m_dialogParent);
+
+    dlg.setAcceptMode(GameFileDialog::Create);
+    dlg.setFileType(GameFileDialog::Game);
+
+    if (dlg.exec())
+    {
+        if (!dlg.getFileName().isEmpty())
+        {
+            createGame(dlg.getFileName());
+        }
+    }
+}
+
+void GameCore::saveCurrentLevel()
+{
+    FileManager::getInstance().saveLevel(serializeLevel(), m_currentLevelName);
+}
+
+void GameCore::launchManageLevelsDialog()
+{
+
+}
+
+void GameCore::launchEditLevelDialog()
+{
+    LevelDataDialog dlg(m_dialogParent);
+    dlg.editLevelData();
+}
+
+void GameCore::addObjectToCurrentLevelSlot()
+{
+
+}
+
+void GameCore::editSelectedObject()
+{
+
+}
+
+void GameCore::saveSelectedObject()
+{
+
+}
+
+void GameCore::removeSelectedObject()
+{
+
+}
+
+void GameCore::copySelectedObjectToClipboard()
+{
+    m_clipBoardElement = serializeSelectedObject();
+}
+
+void GameCore::pasteClipboardObjectToCurrentLevel(QPointF pos = QPointF())
+{
+    if (!m_clipBoardElement.isNull())
+        addObjectToCurrentLevel(m_clipBoardElement);
+}
+
+QDomElement GameCore::serializeSelectedObject()
+{
+    QDomElement selected;
+
+    if (m_scene->focusItem())
+    {
+
+    }
+
+    return selected;
 }

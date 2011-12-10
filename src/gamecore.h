@@ -30,30 +30,54 @@ public:
         return instance;
     }
     ~GameCore();
+    GraphicsScene* getGraphicsScene() {return m_scene;}
+    void setDialogParent(QWidget* parent) {m_dialogParent = parent;}
+    QWidget* getDialogParent() {return m_dialogParent;}
 
-    QDomElement getClipboardElement() {return m_clipBoardElement;}
+    bool createGame(QString gameName);
+    bool loadGame(QString gameName);
+    bool saveCurrentGame();
+    bool setCurrentGameStartLevel(QString levelName);
+    QString getCurrentGameStartLevel() {return m_currentGameStartLevel;}
 
-    QDomElement serializeSelectedObject();
-    void addObjectToLevel(const QDomElement &objectElement, QPointF pos = QPoint());
-
-    QDomElement serializeLevel();
-    bool deserializeLevel(const QDomElement &levelElement);
+    int addObjectToCurrentLevel(const QDomElement &objectElement, QPointF pos = QPointF());
+    bool removeObjectFromCurrentLevel(int objectID);
 
     void handleKeyEvent(QKeyEvent *ke);
-
     void addInputReceiver(InputReceiver* receiver) {m_inputReceivers.push_back(receiver);}
     void removeInputReceiver(InputReceiver* receiver) {m_inputReceivers.removeAll(receiver);}
 
-    GraphicsScene* getGraphicsScene() {return m_scene;}
-
     void issueCommand(Command command, QString parameter);
+
+    QAction* getTogglePauseAction() {return m_togglePaused;}
+    QAction* getSavePlayStateAction() {return m_savePlayState;}
+    QAction* getLoadPlayStateAction() {return m_loadPlayState;}
+    QAction* getSwitchGameAction() {return m_switchGame;}
+    QAction* getCreateGameAction() {return m_createGame;}
+    QAction* getSaveLevelAction() {return m_saveLevel;}
+    QAction* getManageLevelsAction() {return m_manageLevels;}
+    QAction* getEditCurrentLevelAction() {return m_editCurrentLevel;}
+    QAction* getAddObjectToLevelAction() {return m_addObjectToLevel;}
+    QAction* getEditSelectedObjectAction() {return m_editSelectedObject;}
+    QAction* getSaveSelectedObjectAction() {return m_saveSelectedObject;}
+    QAction* getRemoveSelectedObjectAction() {return m_removeSelectedObject;}
+    QAction* getCopySelectedObjectAction() {return m_copySelectedObject;}
+    QAction* getPasteSelectedObjectAction() {return m_pasteSelectedObject;}
 
 private:
     explicit GameCore(QObject *parent = 0);
     static GameCore *m_instance;
     QTimer m_gameTimer;
 
+    QHash<int, GameObject*> m_gameObjectsByID;
+    QSet<GameObject*> m_gameObjects;
+    int getAvailableGameObjectID();
+
     QList<InputReceiver*> m_inputReceivers;
+
+    QString m_currentGameName;
+    QString m_currentLevelName;
+    QString m_currentGameStartLevel;
 
     bool m_isPaused;
     void pause();
@@ -63,6 +87,27 @@ private:
     QString m_newLevel;
 
     GraphicsScene* m_scene;
+    QWidget* m_dialogParent;
+
+    QDomElement serializeSelectedObject();
+
+    QDomElement serializeLevel();
+    bool deserializeLevel(const QDomElement &levelElement);
+
+    QAction* m_togglePaused;
+    QAction* m_savePlayState;
+    QAction* m_loadPlayState;
+    QAction* m_switchGame;
+    QAction* m_createGame;
+    QAction* m_saveLevel;
+    QAction* m_manageLevels;
+    QAction* m_editCurrentLevel;
+    QAction* m_addObjectToLevel;
+    QAction* m_editSelectedObject;
+    QAction* m_saveSelectedObject;
+    QAction* m_removeSelectedObject;
+    QAction* m_copySelectedObject;
+    QAction* m_pasteSelectedObject;
 
 signals:
     void timerTick();
@@ -74,8 +119,25 @@ public slots:
     void gameStep();
 
     void togglePaused();
+    void togglePaused(bool pause);
+
+    void savePlayState();
+    void loadPlayState();
+
+    void switchGame();
+    void createGame();
+
+    void saveCurrentLevel();
+    void launchManageLevelsDialog();
+    void launchEditLevelDialog();
+
+    void addObjectToCurrentLevelSlot();
+    void editSelectedObject();
+    void saveSelectedObject();
+    void removeSelectedObject();
 
     void copySelectedObjectToClipboard();
+    void pasteClipboardObjectToCurrentLevel(QPointF pos = QPointF());
 };
 
 #endif // CORE_H

@@ -39,18 +39,19 @@ QSet<QString> ContactComponent::getEditProperties()
     return properties;
 }
 
-void ContactComponent::reactToContact(GameObject *contactObject)
+void ContactComponent::enterContact(GameObject *contactObject)
 {
-    m_madeContact = true;
+    m_newContacts.insert(contactObject);
+}
+
+void ContactComponent::leaveContact(GameObject *contactObject)
+{
+    m_removedContacts.remove(contactObject);
 }
 
 void ContactComponent::contactCheck()
 {
-    if (m_madeContact)
-    {
-        emit causeEnterContact();
-        m_madeContact = false;
-    }
+    if (m_newContacts)
 }
 
 void ContactComponent::checkForAddedPhysicsComponent(Component* c)
@@ -62,7 +63,10 @@ void ContactComponent::checkForAddedPhysicsComponent(Component* c)
         m_physicsComponent = qobject_cast<PhysicsComponent*>(c);
 
     if (m_physicsComponent)
-        connect(m_physicsComponent, SIGNAL(enteringContact(GameObject*)), this, SLOT(reactToContact(GameObject*)));
+    {
+        connect(m_physicsComponent, SIGNAL(enteringContact(GameObject*)), this, SLOT(enterContact(GameObject*)));
+        connect(m_physicsComponent, SIGNAL(leavingContact(GameObject*)), this, SLOT(leaveContact(GameObject*)));
+    }
 }
 
 void ContactComponent::checkForRemovedPhysicsComponent(Component* c)

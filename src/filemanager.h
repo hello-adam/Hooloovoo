@@ -15,7 +15,7 @@ public:
         return instance;
     }
 
-    QDomElement createNewGame(const QString &gameDirectoryName, const QString &startLevel = QString());
+    bool createNewGame(const QString &gameDirectoryName, const QString &startLevel = QString());
     QDomElement loadGame(const QString &fileDirectory);
     bool saveGame(QString startLevel = QString(), bool overwrite = true);
 

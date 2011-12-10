@@ -24,7 +24,7 @@ QSet<QString> SpawnComponent::getEditProperties()
 
 void SpawnComponent::spawn()
 {
-    GameCore::getInstance().addObjectToLevel(FileManager::getInstance().loadGameObject(m_objectFileName), m_parentObject->pos() + m_offset);
+    GameCore::getInstance().addObjectToCurrentLevel(FileManager::getInstance().loadGameObject(m_objectFileName), m_parentObject->pos() + m_offset);
 }
 
 void SpawnComponent::effectSpawn()
