@@ -13,7 +13,12 @@ class AnimationComponent : public Component
 public:
     AnimationComponent(GameObject *parentObject);
 
-    QSet<QString> getEditProperties();
+    QSet<QString> getEditProperties()
+    {
+        QSet<QString> properties;
+        properties << "timeStep" << "pixmapFiles" << "activeByDefault";
+        return properties;
+    }
 
     int getTimeStep() {return m_timeStep;}
     QStringList getFiles() {return m_files;}

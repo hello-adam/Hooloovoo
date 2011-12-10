@@ -46,7 +46,8 @@ HEADERS += \
     src/causeandeffecteditwidget.h \
     src/causeeffectlabelwidget.h \
     src/picturepreviewwidget.h \
-    src/commandcomponent.h
+    src/commandcomponent.h \
+    src/componentalteration.h
 
 SOURCES += \
     src/gameobject.cpp \
@@ -84,7 +85,8 @@ SOURCES += \
     src/causeandeffecteditwidget.cpp \
     src/causeeffectlabelwidget.cpp \
     src/picturepreviewwidget.cpp \
-    src/commandcomponent.cpp
+    src/commandcomponent.cpp \
+    src/componentalteration.cpp
 
 FORMS += \
     src/gamefiledialog.ui \
@@ -102,6 +104,8 @@ FORMS += \
     src/picturepreviewwidget.ui
 
 OTHER_FILES +=
+
+
 
 
 

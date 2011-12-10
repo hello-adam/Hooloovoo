@@ -16,6 +16,7 @@ public:
     Component* createComponent(GameObject* parentObject, const QDomElement & specs);
 
     QStringList availableComponents();
+    static QString componentInfo(QString name);
 };
 
 #endif // COMPONENTFACTORY_H

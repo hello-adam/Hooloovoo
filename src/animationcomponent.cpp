@@ -13,13 +13,6 @@ AnimationComponent::AnimationComponent(GameObject *parentObject) :
     m_currentFrame = 0;
 }
 
-QSet<QString> AnimationComponent::getEditProperties()
-{
-    QSet<QString> properties;
-    properties << "timeStep" << "pixmapFiles" << "activeByDefault";
-    return properties;
-}
-
 void AnimationComponent::setDefault(bool active)
 {
     m_activeByDefault = active;
