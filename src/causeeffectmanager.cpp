@@ -134,8 +134,6 @@ QList<CauseEffectManager::CauseEffectDefinition> CauseEffectManager::getDefiniti
 
 bool CauseEffectManager::connectCauseEffect(int causeID, QString causeName, int effectID, QString effectName)
 {
-    qDebug() << "Attempting the following connect: " << causeID << causeName << effectID << effectName;
-
     Component* cause;
     if (causeID == 0)
         cause = m_gameObject;
@@ -167,8 +165,6 @@ bool CauseEffectManager::connectCauseEffect(int causeID, QString causeName, int 
 
 bool CauseEffectManager::disconnectCauseEffect(int causeID, QString causeName, int effectID, QString effectName)
 {
-    qDebug() << "Attempting the following disconnect: " << causeID << causeName << effectID << effectName;
-
     Component* cause;
     if (causeID == 0)
         cause = m_gameObject;

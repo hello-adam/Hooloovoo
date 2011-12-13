@@ -28,39 +28,53 @@ GameCore::GameCore(QObject *parent) :
     m_togglePaused = new QAction("&Pause Game", this);
     m_togglePaused->setCheckable(true);
     connect(m_togglePaused, SIGNAL(toggled(bool)), this, SLOT(togglePaused(bool)));
+
     m_savePlayState = new QAction("&Save Game", this);
     connect(m_savePlayState, SIGNAL(triggered()), this, SLOT(savePlayState()));
+
     m_loadPlayState = new QAction("&Load Game", this);
     connect(m_loadPlayState, SIGNAL(triggered()), this, SLOT(loadPlayState()));
+
     m_switchGame = new QAction("&Switch Game Project", this);
     connect(m_switchGame, SIGNAL(triggered()), this, SLOT(switchGame()));
+
     m_createGame = new QAction("&Create New Game Project", this);
     connect(m_createGame, SIGNAL(triggered()), this, SLOT(createGame()));
+
     m_saveLevel = new QAction("&Save Current Level", this);
     connect(m_saveLevel, SIGNAL(triggered()), this, SLOT(saveCurrentLevel()));
-    m_manageLevels = new QAction("&Manage Levels", this);
-    connect(m_manageLevels, SIGNAL(triggered()), this, SLOT(launchManageLevelsDialog()));
+
+//    m_manageLevels = new QAction("&Manage Levels", this);
+//    connect(m_manageLevels, SIGNAL(triggered()), this, SLOT(launchManageLevelsDialog()));
+
     m_editCurrentLevel = new QAction("&Edit Current Level", this);
     connect(m_editCurrentLevel, SIGNAL(triggered()), this, SLOT(launchEditLevelDialog()));
+
     m_addObjectToLevel = new QAction("&Add Object to Level", this);
     connect(m_addObjectToLevel, SIGNAL(triggered()), this, SLOT(addObjectToCurrentLevelSlot()));
+
     m_editSelectedObject = new QAction("&Edit Selected Object", this);
     connect(m_editSelectedObject, SIGNAL(triggered()), this, SLOT(editSelectedObject()));
     connect(this, SIGNAL(hasSelectedObject(bool)), m_editSelectedObject, SLOT(setEnabled(bool)));
+
     m_saveSelectedObject = new QAction("&Save Selected Object", this);
     connect(m_saveSelectedObject, SIGNAL(triggered()), this, SLOT(saveSelectedObject()));
     connect(this, SIGNAL(hasSelectedObject(bool)), m_saveSelectedObject, SLOT(setEnabled(bool)));
+
+    m_removeSelectedObject = new QAction("&Remove Selected Object", this);
+    connect(m_removeSelectedObject, SIGNAL(triggered()), this, SLOT(copySelectedObjectToClipboard()));
+    connect(this, SIGNAL(hasSelectedObject(bool)), m_removeSelectedObject, SLOT(setEnabled(bool)));
+
     m_copySelectedObject = new QAction("&Copy Selected Object", this);
     connect(m_copySelectedObject, SIGNAL(triggered()), this, SLOT(copySelectedObjectToClipboard()));
     connect(this, SIGNAL(hasSelectedObject(bool)), m_copySelectedObject, SLOT(setEnabled(bool)));
-    m_pasteSelectedObject = new QAction("&Copy Selected Object", this);
+
+    m_pasteSelectedObject = new QAction("&Paste Object", this);
     connect(m_pasteSelectedObject, SIGNAL(triggered()), this, SLOT(pasteClipboardObjectToCurrentLevel()));
     connect(this, SIGNAL(hasObjectOnClipboard(bool)), m_pasteSelectedObject, SLOT(setEnabled(bool)));
 
     emit hasSelectedObject(false);
     emit hasObjectOnClipboard(false);
-
-    this->pause();
 }
 
 GameCore::~GameCore()
@@ -71,8 +85,13 @@ void GameCore::gameStep()
 {
     PhysicsManager::getInstance().takeStep();
     emit timerTick();
-    m_scene->destroyDeadObjects();
+    this->destroyDeadObjects();
 
+    dealWithCommands();
+}
+
+void GameCore::dealWithCommands()
+{
     if (!m_newLevel.isEmpty())
     {
         QDomElement levelElem;
@@ -81,19 +100,26 @@ void GameCore::gameStep()
         if (!levelElem.isNull())
         {
             deserializeLevel(levelElem);
+            m_currentLevelName = m_newLevel;
+
+            emit levelDataChanged();
         }
 
         m_newLevel = "";
     }
-
 }
 
 void GameCore::issueCommand(Command command, QString parameter)
 {
     if (command == ChangeLevel)
     {
+        if (!parameter.endsWith(FileManager::getLevelExtensions().at(0).mid(1)))
+            parameter += FileManager::getLevelExtensions().at(0).mid(1);
         m_newLevel = parameter;
     }
+
+    if (isPaused())
+        dealWithCommands();
 }
 
 int GameCore::getAvailableGameObjectID()
@@ -118,20 +144,61 @@ int GameCore::addObjectToCurrentLevel(const QDomElement &objectElement, QPointF 
         return -1;
     }
 
-    GameObject *gameObject = new GameObject();
+    GameObject *gameObject = new GameObject(ID);
+    gameObject->setPaused(true);
     gameObject->deserialize(objectElement);
-    gameObject->setPos(pos);
-    gameObject->initiateObject();
-
-    if (m_scene)
+    if (!pos.isNull())
     {
-        m_scene->addGameObject(gameObject);
-        m_scene->setFocusItem(gameObject);
+        qDebug() << "pos is not null";
+        gameObject->setPos(pos);
     }
-    else
+    gameObject->initiateObject();
+    gameObject->setPaused(m_isPaused);
+
+    m_gameObjects.insert(gameObject);
+    m_gameObjectsByID.insert(ID, gameObject);
+    m_scene->addItem(gameObject);
+
+    return ID;
+}
+
+bool GameCore::removeObjectFromCurrentLevel(int objectID)
+{
+    GameObject* object = m_gameObjectsByID.value(objectID, 0);
+
+    if (!object)
+        return false;
+
+    object->effectDestroy();
+    return true;
+}
+
+bool GameCore::alterComponent(int objectID, const ComponentAlteration &alteration)
+{
+    return true;
+}
+
+void GameCore::destroyDeadObjects()
+{
+    QList<int> ids = m_gameObjectsByID.keys();
+
+    foreach (int id, ids)
     {
-        qDebug() << "No scene!  Can't add object";
-        delete gameObject;
+        GameObject *object = m_gameObjectsByID.value(id);
+
+        if (!object)
+        {
+            m_gameObjectsByID.remove(id);
+            m_gameObjects.remove(0);
+        }
+        else if (object->isDestroyed())
+        {
+            m_gameObjectsByID.remove(id);
+            m_gameObjects.remove(object);
+            m_scene->removeItem(object);
+
+            delete object;
+        }
     }
 }
 
@@ -149,10 +216,12 @@ bool GameCore::loadGame(QString gameName)
     QDomElement level = gameElem.firstChildElement("startlevel");
     QString startLevel = level.attribute("file");
 
-    if (this->deserializeLevel(startLevel))
+    if (this->deserializeLevel(FileManager::getInstance().loadLevel(startLevel)))
     {
+        m_currentGameStartLevel = startLevel;
         m_currentLevelName = startLevel;
         m_currentGameName = gameName;
+        emit levelDataChanged();
         return true;
     }
     else
@@ -176,6 +245,22 @@ bool GameCore::createGame(QString gameName)
 bool GameCore::saveCurrentGame()
 {
     return FileManager::getInstance().saveGame();
+}
+
+void GameCore::destroyLevel()
+{
+    foreach (GameObject *object, m_gameObjects)
+    {
+        object->effectDestroy();
+    }
+
+    destroyDeadObjects();
+
+    m_gameObjectsByID.clear();
+    m_gameObjects.clear();
+
+    m_scene->clear();
+    m_scene->update();
 }
 
 bool GameCore::setCurrentGameStartLevel(QString levelName)
@@ -202,8 +287,7 @@ QDomElement GameCore::serializeLevel()
 
     level.appendChild(levelData);
 
-    QList<GameObject*> gameObjects = m_scene->getGameObjects();
-    foreach(GameObject* g, gameObjects)
+    foreach(GameObject* g, m_gameObjects)
     {
         level.appendChild(g->serialize());
     }
@@ -216,7 +300,7 @@ bool GameCore::deserializeLevel(const QDomElement &levelElement)
     bool unpaused = !m_isPaused;
 
     this->pause();
-    m_scene->clearAll();
+    destroyLevel();
 
     QDomElement dataElement = levelElement.firstChildElement("leveldata");
     QDomElement scene = dataElement.firstChildElement("bounds");
@@ -236,19 +320,16 @@ bool GameCore::deserializeLevel(const QDomElement &levelElement)
 
     while (!gameobject.isNull())
     {
-        qDebug() << gameobject.attribute("name");
-
         if (gameobject.attribute("name") == "Game Object")
         {
-            GameObject *g = new GameObject();
-            g->deserialize(gameobject);
-
-            m_scene->addGameObject(g);
+            this->addObjectToCurrentLevel(gameobject);
         }
 
         gameobject = gameobject.nextSiblingElement("component");
     }
 
+
+    emit levelDataChanged();
     if (unpaused)
         this->unpause();
 
@@ -284,19 +365,26 @@ void GameCore::handleKeyEvent(QKeyEvent *ke)
 void GameCore::pause()
 {
     m_gameTimer.stop();
-    PhysicsManager::getInstance().pause();
     if (m_scene)
         m_scene->pause();
+    foreach(GameObject *object, m_gameObjects)
+    {
+        object->setPaused(true);
+    }
     m_isPaused = true;
 }
 
 void GameCore::unpause()
 {
-    m_gameTimer.start();
-    PhysicsManager::getInstance().start();
     if (m_scene)
         m_scene->unpause();
+    foreach(GameObject *object, m_gameObjects)
+    {
+        object->setPaused(false);
+    }
+
     m_isPaused = false;
+    m_gameTimer.start();
 }
 
 void GameCore::togglePaused()
@@ -307,9 +395,9 @@ void GameCore::togglePaused()
 void GameCore::togglePaused(bool pause)
 {
     if (pause)
-        pause();
+        this->pause();
     else
-        unpause();
+        this->unpause();
 }
 
 void GameCore::savePlayState()
@@ -356,11 +444,6 @@ void GameCore::saveCurrentLevel()
     FileManager::getInstance().saveLevel(serializeLevel(), m_currentLevelName);
 }
 
-void GameCore::launchManageLevelsDialog()
-{
-
-}
-
 void GameCore::launchEditLevelDialog()
 {
     LevelDataDialog dlg(m_dialogParent);
@@ -369,7 +452,24 @@ void GameCore::launchEditLevelDialog()
 
 void GameCore::addObjectToCurrentLevelSlot()
 {
+    GameFileDialog dlg(m_dialogParent);
 
+    dlg.setAcceptMode(GameFileDialog::Load);
+    dlg.setFileType(GameFileDialog::GameObject);
+
+    if (dlg.exec())
+    {
+        if (!dlg.getFileName().isEmpty())
+        {
+            QPointF centerScreen = QPointF(42, 42);
+            if (m_scene->views().count() > 0)
+            {
+                centerScreen = m_scene->views().at(0)->mapToScene(m_scene->views().at(0)->width()/2, m_scene->views().at(0)->height()/2);
+            }
+
+            addObjectToCurrentLevel(FileManager::getInstance().loadGameObject(dlg.getFileName()), centerScreen);
+        }
+    }
 }
 
 void GameCore::editSelectedObject()
@@ -392,7 +492,7 @@ void GameCore::copySelectedObjectToClipboard()
     m_clipBoardElement = serializeSelectedObject();
 }
 
-void GameCore::pasteClipboardObjectToCurrentLevel(QPointF pos = QPointF())
+void GameCore::pasteClipboardObjectToCurrentLevel(QPointF pos)
 {
     if (!m_clipBoardElement.isNull())
         addObjectToCurrentLevel(m_clipBoardElement);

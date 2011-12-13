@@ -11,7 +11,7 @@ TriggerEdit::TriggerEdit(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_editObject = new GameObject();
+    m_editObject = new GameObject(-1);
 
     m_propertyEditWidget = 0;
 

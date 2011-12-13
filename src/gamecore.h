@@ -11,6 +11,8 @@
 #include "inputreceiver.h"
 #include <phonon>
 #include <QMenuBar>
+#include "componentalteration.h"
+#include "levelmanager.h"
 
 class GameCore : public QObject
 {
@@ -21,7 +23,6 @@ public:
     {
         ChangeLevel
     };
-
 
     static GameCore &getInstance()
     {
@@ -39,15 +40,21 @@ public:
     bool saveCurrentGame();
     bool setCurrentGameStartLevel(QString levelName);
     QString getCurrentGameStartLevel() {return m_currentGameStartLevel;}
+    QString getCurrentLevel() {return m_currentLevelName;}
 
     int addObjectToCurrentLevel(const QDomElement &objectElement, QPointF pos = QPointF());
     bool removeObjectFromCurrentLevel(int objectID);
+    bool alterComponent(int objectID, const ComponentAlteration &alteration);
+    void destroyDeadObjects();
 
     void handleKeyEvent(QKeyEvent *ke);
     void addInputReceiver(InputReceiver* receiver) {m_inputReceivers.push_back(receiver);}
     void removeInputReceiver(InputReceiver* receiver) {m_inputReceivers.removeAll(receiver);}
 
     void issueCommand(Command command, QString parameter);
+    void dealWithCommands();
+
+    bool isPaused() {return m_isPaused;}
 
     QAction* getTogglePauseAction() {return m_togglePaused;}
     QAction* getSavePlayStateAction() {return m_savePlayState;}
@@ -55,7 +62,7 @@ public:
     QAction* getSwitchGameAction() {return m_switchGame;}
     QAction* getCreateGameAction() {return m_createGame;}
     QAction* getSaveLevelAction() {return m_saveLevel;}
-    QAction* getManageLevelsAction() {return m_manageLevels;}
+    //QAction* getManageLevelsAction() {return m_manageLevels;}
     QAction* getEditCurrentLevelAction() {return m_editCurrentLevel;}
     QAction* getAddObjectToLevelAction() {return m_addObjectToLevel;}
     QAction* getEditSelectedObjectAction() {return m_editSelectedObject;}
@@ -78,6 +85,7 @@ private:
     QString m_currentGameName;
     QString m_currentLevelName;
     QString m_currentGameStartLevel;
+    //LevelManager m_levelManager;
 
     bool m_isPaused;
     void pause();
@@ -91,6 +99,7 @@ private:
 
     QDomElement serializeSelectedObject();
 
+    void destroyLevel();
     QDomElement serializeLevel();
     bool deserializeLevel(const QDomElement &levelElement);
 
@@ -100,7 +109,7 @@ private:
     QAction* m_switchGame;
     QAction* m_createGame;
     QAction* m_saveLevel;
-    QAction* m_manageLevels;
+    //QAction* m_manageLevels;
     QAction* m_editCurrentLevel;
     QAction* m_addObjectToLevel;
     QAction* m_editSelectedObject;
@@ -115,6 +124,8 @@ signals:
     void hasSelectedObject(bool);
     void hasObjectOnClipboard(bool);
 
+    void levelDataChanged();
+
 public slots:
     void gameStep();
 
@@ -128,7 +139,7 @@ public slots:
     void createGame();
 
     void saveCurrentLevel();
-    void launchManageLevelsDialog();
+    //void launchManageLevelsDialog();
     void launchEditLevelDialog();
 
     void addObjectToCurrentLevelSlot();

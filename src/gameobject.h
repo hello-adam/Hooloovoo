@@ -22,7 +22,7 @@ class GameObject : public Component, public QGraphicsItem
     Q_PROPERTY(double scaleFactor READ scale WRITE setScale)
 
 public:
-    GameObject(QGraphicsItem  *parent = 0, int levelID);
+    GameObject(int levelID = -1);
     ~GameObject();
 
     enum MouseEditMode { Nothing, Move, ResizeBottomRight, RotateHorizontal, RotateVertical };
@@ -58,7 +58,7 @@ public:
 
     Component* addComponent(QString name);
     bool removeComponent(Component* component);
-    QList<Component*> getComponents() {return m_IDsByComponents.keys();}
+    QList<Component*> getComponents() {return m_components.toList();}
     Component* getComponentByID (int ID) {return m_componentRegistry.value(ID, 0);}
 
     bool polarLessThan(const QPoint &a, const QPoint &b);
@@ -67,10 +67,9 @@ public:
 
     CauseEffectManager* getCauseEffectManager();
 
-    int getComponentID(Component* component) {return m_IDsByComponents.value(component, -1);}
     int getLevelID() {return m_levelID;}
 
-    void initiateObject() {emit causeInitiated();}
+    void initiateObject();
 
     bool isDestroyed() {return m_destroyed;}
 
@@ -91,8 +90,7 @@ private:
     bool m_destroyed;
 
     QHash<int, Component*> m_componentRegistry;
-    QHash<Component*, int> m_IDsByComponents;
-    QSet<int> m_registeredIDs;
+    QSet<Component*> m_components;
 
     MouseEditMode m_modeOnClick;
     MouseEditMode m_currentMode;

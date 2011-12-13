@@ -10,9 +10,6 @@ class GraphicsScene : public QGraphicsScene
     Q_OBJECT
 public:
     explicit GraphicsScene(QObject *parent = 0);
-    QList<GameObject*> getGameObjects() {return m_gameObjects;}
-    void addGameObject(GameObject* gameObject);
-    void removeGameObject(GameObject* gameObject);
 
     void pause();
     void unpause();
@@ -32,8 +29,6 @@ private:
 signals:
 
 public slots:
-    void clearAll();
-    void destroyDeadObjects();
 
 };
 

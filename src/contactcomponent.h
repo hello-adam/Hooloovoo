@@ -16,9 +16,9 @@ public:
 private:
     PhysicsComponent* m_physicsComponent;
 
-    QSet<GameObject*> m_newContacts;
-    QSet<GameObject*> m_removedContacts;
-    QSet<GameObject*> m_contacts;
+    QSet<int> m_newContacts;
+    QSet<int> m_removedContacts;
+    QSet<int> m_contacts;
 
 signals:
     void causeEnterContact();
@@ -27,8 +27,8 @@ signals:
 
 public slots:
 
-    void enterContact(GameObject* contactObject);
-    void leaveContact(GameObject* contactObject);
+    void enterContact(int contactObjectID);
+    void leaveContact(int contactObjectID);
     void checkForAddedPhysicsComponent(Component* c);
     void checkForRemovedPhysicsComponent(Component* c);
     void contactCheck();

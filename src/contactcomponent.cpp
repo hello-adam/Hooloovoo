@@ -8,7 +8,6 @@ ContactComponent::ContactComponent(GameObject *parentObject) :
     this->setObjectName("Contact Component");
 
     m_physicsComponent = 0;
-    m_madeContact = false;
 
     QList<Component*> components = parentObject->getComponents();
     foreach (Component* c, components)
@@ -29,7 +28,10 @@ ContactComponent::ContactComponent(GameObject *parentObject) :
             this, SLOT(contactCheck()));
 
     if (m_physicsComponent)
-        connect(m_physicsComponent, SIGNAL(enteringContact(GameObject*)), this, SLOT(reactToContact(GameObject*)));
+    {
+        connect(m_physicsComponent, SIGNAL(enteringContact(int)), this, SLOT(enterContact(int)));
+        connect(m_physicsComponent, SIGNAL(leavingContact(int)), this, SLOT(leaveContact(int)));
+    }
 }
 
 QSet<QString> ContactComponent::getEditProperties()
@@ -39,19 +41,45 @@ QSet<QString> ContactComponent::getEditProperties()
     return properties;
 }
 
-void ContactComponent::enterContact(GameObject *contactObject)
+void ContactComponent::enterContact(int contactObjectID)
 {
-    m_newContacts.insert(contactObject);
+    m_newContacts.insert(contactObjectID);
 }
 
-void ContactComponent::leaveContact(GameObject *contactObject)
+void ContactComponent::leaveContact(int contactObjectID)
 {
-    m_removedContacts.remove(contactObject);
+    m_removedContacts.insert(contactObjectID);
 }
 
 void ContactComponent::contactCheck()
 {
-    if (m_newContacts)
+    if (m_newContacts.count() > 0)
+    {
+        emit causeEnterContact();
+    }
+    if (m_removedContacts.count() > 0)
+    {
+        emit causeLeaveContact();
+    }
+
+    bool hadContact = !m_contacts.isEmpty();
+
+    foreach (int id, m_newContacts)
+    {
+        m_contacts.insert(id);
+    }
+    foreach (int id, m_removedContacts)
+    {
+        m_contacts.remove(id);
+    }
+
+    if (hadContact && m_contacts.isEmpty())
+    {
+        emit causeNoContact();
+    }
+
+    m_newContacts.clear();
+    m_removedContacts.clear();
 }
 
 void ContactComponent::checkForAddedPhysicsComponent(Component* c)
@@ -64,8 +92,8 @@ void ContactComponent::checkForAddedPhysicsComponent(Component* c)
 
     if (m_physicsComponent)
     {
-        connect(m_physicsComponent, SIGNAL(enteringContact(GameObject*)), this, SLOT(enterContact(GameObject*)));
-        connect(m_physicsComponent, SIGNAL(leavingContact(GameObject*)), this, SLOT(leaveContact(GameObject*)));
+        connect(m_physicsComponent, SIGNAL(enteringContact(int)), this, SLOT(enterContact(int)));
+        connect(m_physicsComponent, SIGNAL(leavingContact(int)), this, SLOT(leaveContact(int)));
     }
 }
 

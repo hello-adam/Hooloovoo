@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "graphicsview.h"
+#include "levelmanager.h"
 
 namespace Ui {
     class MainWindow;
@@ -16,6 +17,10 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+protected:
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
+
 private:
     Ui::MainWindow *ui;
 
@@ -28,6 +33,8 @@ private:
     QMenu* m_levelMenu;
     QMenu* m_objectMenu;
     QMenu* m_helpMenu;
+
+    LevelManager *m_levelManager;
 
 signals:
 
@@ -43,23 +50,7 @@ private slots:
     void switchToGameScreen();
     void switchToGameEditorScreen();
 
-    void createGame();
-    void switchGame();
-
-    void newLevel();
-    void saveLevel();
-    void loadLevel();
-    void editLevelData();
-    void addObject();
-
-    void savePlayState();
-    void loadPlayState();
-
-    void saveSelectedObject();
-    void editSelectedObject();
-    void removeSelectedObject();
-    void copySelectedObject();
-    void pasteObjectFromClipboard();
+    void launchLevelManager();
 
     void launchAboutDialog();
 };

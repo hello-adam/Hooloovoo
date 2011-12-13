@@ -16,33 +16,6 @@ GraphicsScene::GraphicsScene(QObject *parent) :
 {
 }
 
-void GraphicsScene::addGameObject(GameObject* gameObject)
-{
-    m_gameObjects.push_back(gameObject);
-    this->addItem(gameObject);
-    gameObject->setPaused(m_isPaused);
-}
-
-void GraphicsScene::removeGameObject(GameObject *gameObject)
-{
-    m_gameObjects.removeAll(gameObject);
-    this->removeItem(gameObject);
-}
-
-void GraphicsScene::destroyDeadObjects()
-{
-    for (int i=0; i< m_gameObjects.count(); i++)
-    {
-        GameObject * object = m_gameObjects.at(i);
-        if (object->isDestroyed())
-        {
-            removeGameObject(object);
-            delete object;
-            i--;
-        }
-    }
-}
-
 void GraphicsScene::drawBackground(QPainter *painter, const QRectF &rect)
 {
     if (painter->paintEngine()->type()!= QPaintEngine::OpenGL)
@@ -88,7 +61,7 @@ void GraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     QAction *editGlobal = menu.addAction("Edit Level Properties");
     QAction *selectedAction = menu.exec(event->screenPos());
 
-    QWidget *parent = GameCore::getDialogParent();
+    QWidget *parent = GameCore::getInstance().getDialogParent();
     if (selectedAction == addObject)
     {
         GameFileDialog dlg(parent);
@@ -111,31 +84,14 @@ void GraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     delete editGlobal;
 }
 
-void GraphicsScene::clearAll()
-{
-    qDeleteAll(m_gameObjects);
-    m_gameObjects.clear();
-    this->clear();
-}
-
 void GraphicsScene::pause()
 {
-    foreach(GameObject* object, m_gameObjects)
-    {
-        object->setPaused(true);
-    }
-
     m_isPaused = true;
     this->update();
 }
 
 void GraphicsScene::unpause()
 {
-    foreach(GameObject* object, m_gameObjects)
-    {
-        object->setPaused(false);
-    }
-
     m_isPaused = false;
     this->update();
 }

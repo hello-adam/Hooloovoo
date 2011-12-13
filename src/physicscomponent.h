@@ -58,8 +58,8 @@ public:
     double getY() {return m_y;}
     double getAngle() {return m_angle;}
 
-    void enterContact(PhysicsComponent* contact, ContactType type) {m_contacts.insert(contact, type);  if (contact) emit enteringContact(contact->getParentObject());}
-    void leaveContact(PhysicsComponent* contact) {m_contacts.remove(contact);  if (contact) emit leavingContact(contact->getParentObject());}
+    void enterContact(PhysicsComponent* contact, ContactType type);
+    void leaveContact(PhysicsComponent* contact);
     ContactType getContactCondition();
 
 private:
@@ -84,16 +84,9 @@ private:
     double m_friction;
     double m_linearDamping;
 
-    QList<QStringList> m_delayedPropertyAlterations;
-    void dealWithDelayedPropertyAlterations();
-
-    void reactToPropertyTrigger(QStringList args);
-
 signals:
-//    void xChanged(double x);
-//    void yChanged(double y);
-    void enteringContact(GameObject*);
-    void leavingContact(GameObject*);
+    void enteringContact(int);
+    void leavingContact(int);
 
 public slots:
     void setX(double x);

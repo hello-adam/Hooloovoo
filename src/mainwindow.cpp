@@ -26,13 +26,16 @@ MainWindow::MainWindow(QWidget *parent) :
             GameCore::getInstance().getTogglePauseAction(), SLOT(setChecked(bool)));
 
     connect(ui->pb_createGame, SIGNAL(clicked()),
-            this, SLOT(createGame()));
+            GameCore::getInstance().getCreateGameAction(), SLOT(trigger()));
     connect(ui->pb_editGame, SIGNAL(clicked()),
             this, SLOT(startScreenEditGame()));
     connect(ui->pb_playGame, SIGNAL(clicked()),
             this, SLOT(startScreenPlayGame()));
     connect(ui->listWidget, SIGNAL(itemSelectionChanged()),
             this, SLOT(startScreenFileSelected()));
+
+    m_levelManager = new LevelManager(this);
+    m_levelManager->setWindowFlags(Qt::Dialog);
 
     initializeMenus();
 
@@ -55,8 +58,19 @@ MainWindow::~MainWindow()
         delete m_helpMenu;
 
     delete m_gameGraphicsView;
+    delete m_levelManager;
 
     delete ui;
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *ke)
+{
+    GameCore::getInstance().handleKeyEvent(ke);
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *ke)
+{
+    GameCore::getInstance().handleKeyEvent(ke);
 }
 
 void MainWindow::initializeMenus()
@@ -81,13 +95,12 @@ void MainWindow::initializeMenus()
     m_createGameMenu->addAction("&Exit to Start Screen", this, SLOT(switchToStartScreen()));
     m_createGameMenu->addAction("&Exit Program", this, SLOT(close()));
 
-    m_levelMenu->addAction(GameCore::getInstance().getManageLevelsAction());
+    m_levelMenu->addAction("&Manage Levels", this, SLOT(launchLevelManager()));
     m_levelMenu->addAction(GameCore::getInstance().getSaveLevelAction());
     m_levelMenu->addSeparator();
     m_levelMenu->addAction(GameCore::getInstance().getEditCurrentLevelAction());
     m_levelMenu->addAction(GameCore::getInstance().getAddObjectToLevelAction());
 
-    QAction *action;
     m_objectMenu->addAction(GameCore::getInstance().getAddObjectToLevelAction());
     m_objectMenu->addAction(GameCore::getInstance().getEditSelectedObjectAction());
     m_objectMenu->addAction(GameCore::getInstance().getSaveSelectedObjectAction());
@@ -109,7 +122,10 @@ void MainWindow::startScreenEditGame()
     if (ui->listWidget->currentItem())
     {
         if (GameCore::getInstance().loadGame(ui->listWidget->currentItem()->text()))
+        {
             switchToGameEditorScreen();
+            ui->tb_pause->setChecked(true);
+        }
     }
 }
 
@@ -118,7 +134,10 @@ void MainWindow::startScreenPlayGame()
     if (ui->listWidget->currentItem())
     {
         if (GameCore::getInstance().loadGame(ui->listWidget->currentItem()->text()))
+        {
             switchToGameScreen();
+            ui->tb_pause->setChecked(false);
+        }
     }
 }
 
@@ -163,6 +182,11 @@ void MainWindow::switchToGameEditorScreen()
     createMenuBar->addMenu(m_objectMenu);
     createMenuBar->addMenu(m_helpMenu);
     this->setMenuBar(createMenuBar);
+}
+
+void MainWindow::launchLevelManager()
+{
+    m_levelManager->showNormal();
 }
 
 void MainWindow::launchAboutDialog()

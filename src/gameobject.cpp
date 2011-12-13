@@ -15,9 +15,9 @@
 #include "filemanager.h"
 #include "causeeffectmanager.h"
 
-GameObject::GameObject(QGraphicsItem * parent, int levelID) :
+GameObject::GameObject(int levelID) :
     Component(0),
-    QGraphicsItem(parent)
+    QGraphicsItem(0)
 {
     setObjectName("Game Object");
 
@@ -32,14 +32,13 @@ GameObject::GameObject(QGraphicsItem * parent, int levelID) :
     m_defaultColor = QColor(0, 0, 128);
     this->setPixmapFile("");
 
-    m_paused = false;
-
     m_modeOnClick = Nothing;
     m_currentMode = Nothing;
     m_startPoint = QPointF();
 
+    m_paused = true;
+
     this->setFlag(QGraphicsItem::ItemIsFocusable, true);
-    this->setPaused(true);
 
     this->setAcceptHoverEvents(true);
     this->setAcceptedMouseButtons(Qt::RightButton | Qt::LeftButton);
@@ -48,13 +47,15 @@ GameObject::GameObject(QGraphicsItem * parent, int levelID) :
 GameObject::~GameObject()
 {
     //remove its components
-    QList<Component*> components = m_IDsByComponents.keys();
-    qDeleteAll(components);
-
+    qDeleteAll(m_components);
     m_componentRegistry.clear();
-    m_IDsByComponents.clear();
 
     delete m_causeEffectManager;
+}
+
+void GameObject::initiateObject()
+{
+    emit causeInitiated();
 }
 
 CauseEffectManager* GameObject::getCauseEffectManager()
@@ -64,11 +65,11 @@ CauseEffectManager* GameObject::getCauseEffectManager()
 
 int GameObject::getAvailableComponentID()
 {
+    QSet<int> ids = m_componentRegistry.keys().toSet();
     for (int i = 1; i<5000; i++)
     {
-        if (!m_registeredIDs.contains(i))
+        if (!ids.contains(i))
         {
-            m_registeredIDs.insert(i);
             return i;
         }
     }
@@ -537,15 +538,12 @@ void GameObject::setPaused(bool pause)
     if (pause)
     {
         m_paused = true;
-//        this->setFlag(QGraphicsItem::ItemIsMovable, true);
 
-        if (!m_visibleInGame)
-            this->setVisible(true);
+        this->setVisible(true);
     }
     else
     {
         m_paused = false;
-//        this->setFlag(QGraphicsItem::ItemIsMovable, false);
 
         if (!m_visibleInGame)
             this->setVisible(false);
@@ -559,8 +557,7 @@ void GameObject::setPaused(bool pause)
 
 Component* GameObject::addComponent(QString name)
 {
-    QList<Component*> components = m_IDsByComponents.keys();
-    foreach(Component* c, components)
+    foreach(Component* c, m_components)
     {
         if (c->objectName() == name)
         {
@@ -574,7 +571,7 @@ Component* GameObject::addComponent(QString name)
     if (component)
     {
         m_componentRegistry.insert(component->getID(), component);
-        m_IDsByComponents.insert(component, component->getID());
+        m_components.insert(component);
 
         emit componentAdded(component);
         return component;
@@ -585,13 +582,10 @@ Component* GameObject::addComponent(QString name)
 
 bool GameObject::removeComponent(Component *component)
 {
-    QList<Component*> components = m_IDsByComponents.keys();
-    if (components.contains(component))
+    if (m_components.contains(component))
     {
-        int ID = m_IDsByComponents.value(component);
-        m_IDsByComponents.remove(component);
-        m_componentRegistry.remove(ID);
-        m_registeredIDs.remove(ID);
+        m_componentRegistry.remove(component->getID());
+        m_components.remove(component);
 
         emit componentRemoved(component);
         delete component;
@@ -604,8 +598,7 @@ bool GameObject::removeComponent(Component *component)
 void GameObject::privateSerialize(QDomElement &componentObject)
 {
     //serialize components
-    QList<Component*> components = m_IDsByComponents.keys();
-    foreach(Component* c, components)
+    foreach(Component* c, m_components)
     {
         componentObject.appendChild(c->serialize());
     }
@@ -624,8 +617,8 @@ void GameObject::privateDeserialize(const QDomElement &componentObject)
         Component* c = factory.createComponent(this, component);
         if (c)
         {
-            m_IDsByComponents.insert(c, c->getID());
             m_componentRegistry.insert(c->getID(), c);
+            m_components.insert(c);
             emit componentAdded(c);
         }
         component = component.nextSiblingElement("component");
@@ -645,22 +638,7 @@ QSet<QString> GameObject::getEditProperties()
 
 void GameObject::launchEditorDialog()
 {
-    QWidget* parent = 0;
-    if (this->scene())
-    {
-        if (scene()->views().count() > 0)
-        {
-            if (scene()->views().at(0)->parentWidget())
-            {
-                parent = scene()->views().at(0)->parentWidget();
-
-                while (parent->parentWidget())
-                {
-                    parent = parent->parentWidget();
-                }
-            }
-        }
-    }
+    QWidget *parent = GameCore::getInstance().getDialogParent();
 
     GameObjectEditDialog* dlg = new GameObjectEditDialog(parent);
     dlg->editObject(this);
@@ -669,22 +647,7 @@ void GameObject::launchEditorDialog()
 
 void GameObject::launchSaveDialog()
 {
-    QWidget* parent = 0;
-    if (this->scene())
-    {
-        if (scene()->views().count() > 0)
-        {
-            if (scene()->views().at(0)->parentWidget())
-            {
-                parent = scene()->views().at(0)->parentWidget();
-
-                while (parent->parentWidget())
-                {
-                    parent = parent->parentWidget();
-                }
-            }
-        }
-    }
+    QWidget *parent = GameCore::getInstance().getDialogParent();
 
     GameFileDialog *dlg = new GameFileDialog(parent);
     dlg->setAcceptMode(GameFileDialog::Save);

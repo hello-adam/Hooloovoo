@@ -17,7 +17,7 @@ bool FileManager::createNewGame(const QString &gameDirectoryName, const QString 
 {
     QDir gameDir(gameDirectoryName);
     if (gameDir.exists())
-        return QDomElement();
+        return false;
 
     m_activeGameFileDirectory = getDefaultGamesPath() + gameDirectoryName;
     m_activeGameFileName = gameDirectoryName + ".game";
@@ -148,6 +148,12 @@ bool FileManager::saveLevel(const QDomElement &data, const QString &fileName, bo
     file.close();
 
     return true;
+}
+
+bool FileManager::removeLevel(const QString &fileName)
+{
+    QFile file(getLevelPath() + fileName);
+    return file.remove();
 }
 
 QDomElement FileManager::loadGameObject(const QString &fileName)

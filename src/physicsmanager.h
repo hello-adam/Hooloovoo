@@ -43,8 +43,6 @@ private:
     QHash<b2Fixture*, PhysicsComponent*> m_fixtureToComponent;
 
 public slots:
-    void start();
-    void pause();
     void takeStep();
     void setWorldBounds(QRectF rect);
 

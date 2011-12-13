@@ -5,7 +5,7 @@
 PhysicsManager::PhysicsManager(QObject *parent) :
     QObject(parent)
 {
-    m_gravity = -10;
+    m_gravity = -42;
     m_world = new b2World(b2Vec2(0.0f, m_gravity));
     m_contactListener = new ContactListener();
     m_world->SetContactListener(m_contactListener);
@@ -36,7 +36,10 @@ b2Body* PhysicsManager::addBody(b2BodyDef *bodyDef, b2FixtureDef fixtureDef[], i
 bool PhysicsManager::removeBody(b2Body *body)
 {
     if (!m_bodyToComponent.keys().contains(body))
+    {
+        qDebug() << "cannot find body in world, it cannot be removed!";
         return false;
+    }
 
     b2Fixture* fixture = body->GetFixtureList();
     while (fixture)
@@ -48,14 +51,6 @@ bool PhysicsManager::removeBody(b2Body *body)
     m_world->DestroyBody(body);
     m_bodyToComponent.remove(body);
     return true;
-}
-
-void PhysicsManager::start()
-{
-}
-
-void PhysicsManager::pause()
-{
 }
 
 void PhysicsManager::takeStep()

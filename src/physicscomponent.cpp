@@ -35,8 +35,6 @@ PhysicsComponent::PhysicsComponent(GameObject *parentObject) :
 
     connect (m_parentObject, SIGNAL(newTessellation()),
              this, SLOT(instantiate()));
-
-    instantiate();
 }
 
 PhysicsComponent::~PhysicsComponent()
@@ -79,6 +77,7 @@ void PhysicsComponent::instantiate()
     if (m_body)
     {
         PhysicsManager::getInstance().removeBody(m_body);
+        m_body = 0;
     }
 
     b2BodyDef bodyDef;
@@ -148,10 +147,24 @@ void PhysicsComponent::instantiate()
     m_body->SetLinearVelocity(b2Vec2(m_vx, m_vy));
 }
 
+void PhysicsComponent::enterContact(PhysicsComponent* contact, ContactType type)
+{
+    m_contacts.insert(contact, type);
+
+    if (contact)
+        emit enteringContact(contact->getParentObject()->getLevelID());
+}
+
+void PhysicsComponent::leaveContact(PhysicsComponent* contact)
+{
+    m_contacts.remove(contact);
+
+    if (contact)
+        emit leavingContact(contact->getParentObject()->getLevelID());
+}
+
 void PhysicsComponent::updateParent()
 {
-    dealWithDelayedPropertyAlterations();
-
     if (m_body)
     {
         b2Vec2 position = m_body->GetPosition();
@@ -159,31 +172,6 @@ void PhysicsComponent::updateParent()
         m_parentObject->setPos(position.x*20.0f, position.y*-20.0f);
         m_parentObject->setRotation(-(angle * 360.0) / (2 * 3.14159));
     }
-}
-
-//some of these will be happening during the physics step, and the body can not be altered until the step is finished so property changes will wait until the step is done
-void PhysicsComponent::reactToPropertyTrigger(QStringList args)
-{
-    m_delayedPropertyAlterations.push_back(args);
-}
-
-void PhysicsComponent::dealWithDelayedPropertyAlterations()
-{
-    foreach (QStringList args, m_delayedPropertyAlterations)
-    {
-        if (args.count() == 3)
-        {
-            if (args.at(0) == this->objectName())
-            {
-                if (this->metaObject()->indexOfProperty(args.at(1).toStdString().c_str()) >= 0)
-                {
-                    this->setProperty(args.at(1).toStdString().c_str(), QVariant(args.at(2)));
-                }
-            }
-        }
-    }
-
-    m_delayedPropertyAlterations.clear();
 }
 
 PhysicsComponent::ContactType PhysicsComponent::getContactCondition()

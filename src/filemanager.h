@@ -22,6 +22,7 @@ public:
     QDomElement createNewLevel(const QString &fileName);
     QDomElement loadLevel(const QString &fileName);
     bool saveLevel(const QDomElement &data, const QString &fileName, bool overwrite = true);
+    bool removeLevel(const QString &fileName);
 
     QDomElement loadGameObject(const QString &fileName);
     bool saveGameObject(const QDomElement &data, const QString &fileName, bool overwrite = true);
