@@ -5,6 +5,7 @@ AnimationComponent::AnimationComponent(GameObject *parentObject) :
     Component(parentObject)
 {
     this->setObjectName("Animation Component");
+    m_tag = "Animation";
 
     m_activeByDefault = false;
     m_timeStep = 10;

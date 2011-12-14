@@ -20,6 +20,8 @@ GameCore::GameCore(QObject *parent) :
 
     m_dialogParent = 0;
 
+    m_centeredObjectID = -1;
+
     qRegisterMetaType<Command>("Command");
 
     m_gameTimer.setInterval(1000.0 / 60.0);
@@ -83,6 +85,16 @@ GameCore::~GameCore()
 
 void GameCore::gameStep()
 {
+    if (m_gameObjectsByID.value(m_centeredObjectID, 0))
+    {
+        GameObject* centeredObject = m_gameObjectsByID.value(m_centeredObjectID);
+
+        for (int i=0; i<m_scene->views().count(); i++)
+        {
+            m_scene->views().at(i)->centerOn(centeredObject);
+        }
+    }
+
     PhysicsManager::getInstance().takeStep();
     emit timerTick();
     this->destroyDeadObjects();

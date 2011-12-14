@@ -12,15 +12,21 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->setCentralWidget(ui->stackedWidget);
+
     m_gameGraphicsView = new GraphicsView();
+    m_editorGraphicsView = new GraphicsView();
 
     m_gameGraphicsView->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
     m_gameGraphicsView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    m_gameGraphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_gameGraphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    m_gameGraphicsView->setScene(GameCore::getInstance().getGraphicsScene());
+    m_editorGraphicsView->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+    m_editorGraphicsView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
-    this->setCentralWidget(ui->stackedWidget);
-    ui->editorLayout->insertWidget(0, m_gameGraphicsView);
+    ui->editorLayout->insertWidget(0, m_editorGraphicsView);
+    ui->playLayout->insertWidget(0, m_gameGraphicsView);
 
     connect(ui->tb_pause, SIGNAL(toggled(bool)),
             GameCore::getInstance().getTogglePauseAction(), SLOT(setChecked(bool)));
@@ -123,6 +129,9 @@ void MainWindow::startScreenEditGame()
     {
         if (GameCore::getInstance().loadGame(ui->listWidget->currentItem()->text()))
         {
+            m_editorGraphicsView->setScene(GameCore::getInstance().getGraphicsScene());
+            m_gameGraphicsView->setScene(0);
+
             switchToGameEditorScreen();
             ui->tb_pause->setChecked(true);
         }
@@ -135,6 +144,9 @@ void MainWindow::startScreenPlayGame()
     {
         if (GameCore::getInstance().loadGame(ui->listWidget->currentItem()->text()))
         {
+            m_gameGraphicsView->setScene(GameCore::getInstance().getGraphicsScene());
+            m_editorGraphicsView->setScene(0);
+
             switchToGameScreen();
             ui->tb_pause->setChecked(false);
         }

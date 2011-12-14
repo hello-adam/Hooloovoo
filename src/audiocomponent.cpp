@@ -5,6 +5,7 @@ AudioComponent::AudioComponent(GameObject *parentObject) :
     Component(parentObject)
 {
     this->setObjectName("Audio Component");
+    m_tag = "Audio";
 
     m_file = "";
     m_repeat = false;

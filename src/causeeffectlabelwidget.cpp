@@ -23,7 +23,12 @@ CauseEffectLabelWidget::CauseEffectLabelWidget(Component *component, QString nam
     m_selectionID = -1;
     m_selectionName = "";
 
-    ui->tb_Name->setText(component->getTag() + "::" + m_name);
+    if (m_name.startsWith("cause"))
+        ui->tb_Name->setText(component->getTag() + "::" + m_name.mid(5));
+    else if (m_name.startsWith("effect"))
+        ui->tb_Name->setText(component->getTag() + "::" + m_name.mid(6));
+    else
+        ui->tb_Name->setText(component->getTag() + "::" + m_name);
 
     this->setNeutralAppearance();
     connect(ui->tb_Name, SIGNAL(clicked()),

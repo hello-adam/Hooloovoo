@@ -6,6 +6,7 @@ SpawnComponent::SpawnComponent(GameObject *parentObject) :
     Component(parentObject)
 {
     this->setObjectName("Spawn Component");
+    m_tag = "Spawn";
 
     m_objectFileName = "";
     m_interval = -1;

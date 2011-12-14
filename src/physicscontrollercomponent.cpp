@@ -5,6 +5,7 @@ PhysicsControllerComponent::PhysicsControllerComponent(GameObject *parentObject)
     Component(parentObject)
 {
     this->setObjectName("Physics Controller Component");
+    m_tag = "PhysicsControl";
 
     m_physicsComponent = 0;
     m_value = QPointF(0, 0);

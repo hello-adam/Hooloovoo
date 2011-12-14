@@ -5,6 +5,7 @@ InputComponent::InputComponent(GameObject *parentObject) :
 {
     this->setObjectName("Input Component");
     qRegisterMetaType<Qt::Key>("Key");
+    m_tag = "Input";
 
     m_key = Qt::Key_0;
 }

@@ -80,6 +80,8 @@ private:
     QSet<GameObject*> m_gameObjects;
     int getAvailableGameObjectID();
 
+    int m_centeredObjectID;
+
     QList<InputReceiver*> m_inputReceivers;
 
     QString m_currentGameName;
@@ -131,6 +133,8 @@ public slots:
 
     void togglePaused();
     void togglePaused(bool pause);
+
+    void setCenteredObject(int objectLevelID) {m_centeredObjectID = objectLevelID;}
 
     void savePlayState();
     void loadPlayState();

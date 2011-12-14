@@ -143,9 +143,25 @@ void LevelManager::editSelected()
     if (!ui->lw_Levels->currentItem())
         return;
 
-//    if (GameCore::getInstance().getCurrentLevel() == ui->lw_Levels->currentItem()->text() + FileManager::getLevelExtensions().at(0).mid(1))
-//        return;
+    //TODO: make it so that this only happens when a modification occurs (this would require modification tracking of some sort)
+    QMessageBox saveMessage(this);
+    saveMessage.setText("Would you like to save the current level before switching levels?\n(Unsaved changes will be permanently lost.)");
+    saveMessage.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    int ret = saveMessage.exec();
 
-    GameCore::getInstance().issueCommand(GameCore::ChangeLevel, ui->lw_Levels->currentItem()->text() + FileManager::getLevelExtensions().at(0).mid(1));
-    this->update();
+    if (ret == QMessageBox::Save)
+    {
+        GameCore::getInstance().saveCurrentLevel();
+        GameCore::getInstance().issueCommand(GameCore::ChangeLevel, ui->lw_Levels->currentItem()->text() + FileManager::getLevelExtensions().at(0).mid(1));
+        this->update();
+    }
+    else if (ret == QMessageBox::Discard)
+    {
+        GameCore::getInstance().issueCommand(GameCore::ChangeLevel, ui->lw_Levels->currentItem()->text() + FileManager::getLevelExtensions().at(0).mid(1));
+        this->update();
+    }
+    else if (ret == QMessageBox::Cancel)
+    {
+
+    }
 }

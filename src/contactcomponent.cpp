@@ -6,6 +6,7 @@ ContactComponent::ContactComponent(GameObject *parentObject) :
     Component(parentObject)
 {
     this->setObjectName("Contact Component");
+    m_tag = "Contact";
 
     m_physicsComponent = 0;
 

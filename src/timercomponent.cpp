@@ -5,6 +5,7 @@ TimerComponent::TimerComponent(GameObject *parentObject) :
     Component(parentObject)
 {
     this->setObjectName("Timer Component");
+    m_tag = "Timer";
 
     m_timeStep = 1;
     m_currentStep = 0;

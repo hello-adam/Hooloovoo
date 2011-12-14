@@ -665,3 +665,8 @@ void GameObject::saveObject(QString fileName)
 {
     FileManager::getInstance().saveGameObject(this->serialize(), fileName);
 }
+
+void GameObject::effectTakeCameraFocus()
+{
+    GameCore::getInstance().setCenteredObject(this->getLevelID());
+}

@@ -7,7 +7,7 @@ PhysicsComponent::PhysicsComponent(GameObject *parentObject) :
     Component(parentObject)
 {
     m_body = 0;
-    m_tag = "physics";
+    m_tag = "Physics";
 
     this->setObjectName("Physics Component");
     qRegisterMetaType<PhysicsComponent::BodyType>("BodyType");

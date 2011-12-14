@@ -127,6 +127,7 @@ public slots:
     void saveObject(QString fileName);
     void launchSaveDialog();
     void effectDestroy() {m_destroyed = true;}
+    void effectTakeCameraFocus();
 };
 
 #endif // GAMEOBJECT_H

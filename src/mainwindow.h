@@ -27,6 +27,7 @@ private:
     void initializeMenus();
 
     GraphicsView *m_gameGraphicsView;
+    GraphicsView *m_editorGraphicsView;
 
     QMenu* m_playGameMenu;
     QMenu* m_createGameMenu;

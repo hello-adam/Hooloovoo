@@ -4,6 +4,7 @@ CommandComponent::CommandComponent(GameObject *parentObject) :
     Component(parentObject)
 {
     this->setObjectName("Command Component");
+    m_tag = "Command";
 
     m_command = GameCore::ChangeLevel;
     m_parameter = "";
