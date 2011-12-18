@@ -38,7 +38,7 @@ GameObject::GameObject(int levelID) :
 
     m_paused = true;
 
-    this->setFlag(QGraphicsItem::ItemIsFocusable, true);
+    this->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
     this->setAcceptHoverEvents(true);
     this->setAcceptedMouseButtons(Qt::RightButton | Qt::LeftButton);
@@ -259,7 +259,7 @@ void GameObject::paint (QPainter * painter, const QStyleOptionGraphicsItem * opt
     painter->setOpacity(this->opacity());
     painter->drawPixmap(boundingRect().toRect(), m_pixmap);
 
-    if (this->hasFocus() && m_paused)
+    if (this->isSelected() && m_paused)
     {
         painter->setPen(Qt::green);
         if (m_outlineRect.isNull())
@@ -319,7 +319,7 @@ void GameObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 void GameObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    this->setFocus(Qt::MouseFocusReason);
+    QGraphicsItem::mousePressEvent(event);
 
     if (event->button() != Qt::LeftButton || !m_paused)
     {
@@ -378,6 +378,8 @@ void GameObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void GameObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+    QGraphicsItem::mouseReleaseEvent(event);
+
     if (event->button() != Qt::LeftButton || !m_paused)
     {
         event->ignore();

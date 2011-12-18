@@ -111,7 +111,9 @@ void MainWindow::initializeMenus()
     m_objectMenu->addAction(GameCore::getInstance().getEditSelectedObjectAction());
     m_objectMenu->addAction(GameCore::getInstance().getSaveSelectedObjectAction());
     m_objectMenu->addAction(GameCore::getInstance().getRemoveSelectedObjectAction());
+    GameCore::getInstance().getCopySelectedObjectAction()->setShortcut(QKeySequence::Copy);
     m_objectMenu->addAction(GameCore::getInstance().getCopySelectedObjectAction());
+    GameCore::getInstance().getPasteSelectedObjectAction()->setShortcut(QKeySequence::Paste);
     m_objectMenu->addAction(GameCore::getInstance().getPasteSelectedObjectAction());
 
     m_helpMenu->addAction("&About...", this, SLOT(launchAboutDialog()));

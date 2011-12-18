@@ -62,7 +62,6 @@ public:
     QAction* getSwitchGameAction() {return m_switchGame;}
     QAction* getCreateGameAction() {return m_createGame;}
     QAction* getSaveLevelAction() {return m_saveLevel;}
-    //QAction* getManageLevelsAction() {return m_manageLevels;}
     QAction* getEditCurrentLevelAction() {return m_editCurrentLevel;}
     QAction* getAddObjectToLevelAction() {return m_addObjectToLevel;}
     QAction* getEditSelectedObjectAction() {return m_editSelectedObject;}
@@ -87,7 +86,6 @@ private:
     QString m_currentGameName;
     QString m_currentLevelName;
     QString m_currentGameStartLevel;
-    //LevelManager m_levelManager;
 
     bool m_isPaused;
     void pause();
@@ -100,6 +98,7 @@ private:
     QWidget* m_dialogParent;
 
     QDomElement serializeSelectedObject();
+    int m_selectedObjectID;
 
     void destroyLevel();
     QDomElement serializeLevel();
@@ -111,7 +110,6 @@ private:
     QAction* m_switchGame;
     QAction* m_createGame;
     QAction* m_saveLevel;
-    //QAction* m_manageLevels;
     QAction* m_editCurrentLevel;
     QAction* m_addObjectToLevel;
     QAction* m_editSelectedObject;
@@ -143,7 +141,6 @@ public slots:
     void createGame();
 
     void saveCurrentLevel();
-    //void launchManageLevelsDialog();
     void launchEditLevelDialog();
 
     void addObjectToCurrentLevelSlot();
@@ -153,6 +150,8 @@ public slots:
 
     void copySelectedObjectToClipboard();
     void pasteClipboardObjectToCurrentLevel(QPointF pos = QPointF());
+
+    void checkSceneSelection();
 };
 
 #endif // CORE_H

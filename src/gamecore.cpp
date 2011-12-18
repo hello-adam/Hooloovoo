@@ -17,6 +17,8 @@ GameCore::GameCore(QObject *parent) :
 {
     m_scene = new GraphicsScene();
     m_scene->setSceneRect(0, 0, 800, 600);
+    connect(m_scene, SIGNAL(selectionChanged()),
+            this, SLOT(checkSceneSelection()));
 
     m_dialogParent = 0;
 
@@ -161,7 +163,6 @@ int GameCore::addObjectToCurrentLevel(const QDomElement &objectElement, QPointF 
     gameObject->deserialize(objectElement);
     if (!pos.isNull())
     {
-        qDebug() << "pos is not null";
         gameObject->setPos(pos);
     }
     gameObject->initiateObject();
@@ -486,38 +487,77 @@ void GameCore::addObjectToCurrentLevelSlot()
 
 void GameCore::editSelectedObject()
 {
+    if (!m_gameObjectsByID.value(m_selectedObjectID, 0))
+        return;
 
+    m_gameObjectsByID.value(m_selectedObjectID)->launchEditorDialog();
 }
 
 void GameCore::saveSelectedObject()
 {
+    if (!m_gameObjectsByID.value(m_selectedObjectID, 0))
+        return;
 
+    m_gameObjectsByID.value(m_selectedObjectID)->launchSaveDialog();
 }
 
 void GameCore::removeSelectedObject()
 {
-
+    removeObjectFromCurrentLevel(m_selectedObjectID);
 }
 
 void GameCore::copySelectedObjectToClipboard()
 {
     m_clipBoardElement = serializeSelectedObject();
+
+    emit hasObjectOnClipboard(!m_clipBoardElement.isNull());
 }
 
 void GameCore::pasteClipboardObjectToCurrentLevel(QPointF pos)
 {
     if (!m_clipBoardElement.isNull())
-        addObjectToCurrentLevel(m_clipBoardElement);
+    {
+        if (pos.isNull())
+        {
+            pos = QPointF(42, 42);
+            if (m_scene->views().count() > 0)
+            {
+                pos = m_scene->views().at(0)->mapToScene(m_scene->views().at(0)->width()/2, m_scene->views().at(0)->height()/2);
+            }
+        }
+
+        addObjectToCurrentLevel(m_clipBoardElement, pos);
+    }
 }
 
 QDomElement GameCore::serializeSelectedObject()
 {
     QDomElement selected;
 
-    if (m_scene->focusItem())
+    if (m_gameObjectsByID.value(m_selectedObjectID, 0))
     {
-
+        selected = m_gameObjectsByID.value(m_selectedObjectID)->serialize();
     }
 
     return selected;
+}
+
+void GameCore::checkSceneSelection()
+{
+    if (m_scene->selectedItems().count() > 0)
+    {
+        if (dynamic_cast<GameObject*>(m_scene->selectedItems().at(0)))
+        {
+            GameObject *object = dynamic_cast<GameObject*>(m_scene->selectedItems().at(0));
+            m_selectedObjectID = m_gameObjectsByID.key(object, -1);
+
+            if (m_selectedObjectID >= 0)
+            {
+                emit hasSelectedObject(true);
+                return;
+            }
+        }
+    }
+
+    emit hasSelectedObject(false);
 }
