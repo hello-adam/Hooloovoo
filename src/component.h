@@ -4,6 +4,7 @@
 #include <QtXml>
 #include <QSharedPointer>
 #include <QKeyEvent>
+#include "property.h"
 class GameObject;
 
 class Component : public QObject
@@ -13,6 +14,7 @@ class Component : public QObject
 
 public:
     Component(GameObject* parentObject);
+    ~Component();
 
     bool deserialize(const QDomElement & specs);
     QDomElement serialize();
@@ -32,10 +34,16 @@ public:
 
     int getID() {return m_ID;}
 
+    QList<Property*> getProperties() const {return m_properties;}
+    Property* getPropertyRoot();
+
 protected:
     GameObject* m_parentObject;
     QString m_tag;
     int m_ID;
+
+    QList<Property*> m_properties;
+    Property* m_propertyRoot;
 
     virtual void privateSerialize(QDomElement & componentObject) {Q_UNUSED(componentObject)}
     virtual void privateDeserialize(const QDomElement & componentObject) {Q_UNUSED(componentObject)}

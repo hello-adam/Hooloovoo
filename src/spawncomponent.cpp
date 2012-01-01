@@ -14,6 +14,11 @@ SpawnComponent::SpawnComponent(GameObject *parentObject) :
     m_offset = QPointF(0, 0);
 
     connect(&GameCore::getInstance(), SIGNAL(timerTick()), this, SLOT(reactToTimerTick()));
+
+    m_properties << new Property(this, "objectFile", Property::GameObjectDialog);
+    m_properties << new Property(this, "spawnInterval");
+    m_properties << new Property(this, "xOffset");
+    m_properties << new Property(this, "yOffset");
 }
 
 QSet<QString> SpawnComponent::getEditProperties()

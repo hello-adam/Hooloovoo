@@ -4,6 +4,10 @@
 #include <QMainWindow>
 #include "graphicsview.h"
 #include "levelmanager.h"
+#include <QDockWidget>
+#include "gameobjecteditwidget.h"
+#include "causeandeffecteditwidget.h"
+#include <QToolBar>
 
 namespace Ui {
     class MainWindow;
@@ -35,7 +39,18 @@ private:
     QMenu* m_objectMenu;
     QMenu* m_helpMenu;
 
+    QDockWidget* m_levelManagerDock;
     LevelManager *m_levelManager;
+
+    QDockWidget *m_gameObjectEditorDock;
+    GameObjectEditWidget *m_gameObjectEditorView;
+
+    QDockWidget *m_causeAndEffectEditDock;
+    CauseAndEffectEditWidget *m_causeAndEffectEditWidget;
+
+    QDockWidget *m_fileBrowserDock;
+
+    QToolBar* m_previewControlBar;
 
 signals:
 
@@ -52,6 +67,7 @@ private slots:
     void switchToGameEditorScreen();
 
     void launchLevelManager();
+    void gameObjectSelectionChanged(bool);
 
     void launchAboutDialog();
 };

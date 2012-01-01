@@ -28,8 +28,6 @@ private:
     Phonon::AudioOutput *m_audioOutput;
     Phonon::Path m_path;
 
-    void reactToTrigger(QString trigger);
-
 signals:
     void causePlaybackFinished();
 

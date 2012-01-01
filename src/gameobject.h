@@ -5,7 +5,9 @@
 #include <QSharedPointer>
 #include <QUuid>
 #include <QDialog>
+#include <QMultiHash>
 #include "component.h"
+#include "gameobjectmodel.h"
 class CauseEffectManager;
 
 class GameObject : public Component, public QGraphicsItem
@@ -56,9 +58,11 @@ public:
     double width() {return m_pixmap.width()*scale();}
     double height() {return m_pixmap.height()*scale();}
 
-    Component* addComponent(QString name);
+    Component* addComponent(QString name, int id = -1);
+    Component* addComponent(QDomElement specs);
     bool removeComponent(Component* component);
-    QList<Component*> getComponents() {return m_components.toList();}
+    QList<Component*> getComponents() {return m_components;}
+    QList<Component*> getComponents(QString componentName) {return m_componentsByName.values(componentName);}
     Component* getComponentByID (int ID) {return m_componentRegistry.value(ID, 0);}
 
     bool polarLessThan(const QPoint &a, const QPoint &b);
@@ -73,10 +77,14 @@ public:
 
     bool isDestroyed() {return m_destroyed;}
 
+    GameObjectModel* getModel() {return m_model;}
+
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
 private:
+    GameObjectModel* m_model;
+
     int m_levelID;
     QUuid m_uid;
     QString m_pixmapFileName;
@@ -90,7 +98,8 @@ private:
     bool m_destroyed;
 
     QHash<int, Component*> m_componentRegistry;
-    QSet<Component*> m_components;
+    QList<Component*> m_components;
+    QMultiHash<QString, Component*> m_componentsByName;
 
     MouseEditMode m_modeOnClick;
     MouseEditMode m_currentMode;

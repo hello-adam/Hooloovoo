@@ -8,6 +8,9 @@ CommandComponent::CommandComponent(GameObject *parentObject) :
 
     m_command = GameCore::ChangeLevel;
     m_parameter = "";
+
+    m_properties << new Property(this, "command");
+    m_properties << new Property(this, "parameter");
 }
 
 CommandComponent::~CommandComponent()

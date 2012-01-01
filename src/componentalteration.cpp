@@ -5,17 +5,41 @@ ComponentAlteration::ComponentAlteration(QObject *parent) :
 {
 }
 
-bool alterComponent(Component* component)
+bool ComponentAlteration::alterComponent(Component* component)
 {
     return true;
 }
 
-QDomElement serialize()
+QString m_componentName;
+QString m_componentTag;
+QString m_componentProperty;
+QVariant m_propertyValue;
+
+QDomElement ComponentAlteration::serialize()
 {
-    return QDomElement();
+    QDomDocument doc;
+    QDomElement data = doc.createElement("componentalteration");
+
+    data.setAttribute("name", m_componentName);
+    data.setAttribute("tag", m_componentTag);
+    data.setAttribute("property", m_componentProperty);
+
+    QDomElement value = doc.createElement("propertyvalue");
+
+    return data;
 }
 
-bool deserialze(QDomElement & specs)
+bool ComponentAlteration::deserialze(QDomElement & specs)
 {
     return true;
+}
+
+QString ComponentAlteration::getStringValue()
+{
+    return "";
+}
+
+void ComponentAlteration::setStringValue(QString value)
+{
+
 }

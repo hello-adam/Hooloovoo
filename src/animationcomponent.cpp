@@ -12,6 +12,10 @@ AnimationComponent::AnimationComponent(GameObject *parentObject) :
     m_files = QStringList();
     m_elapsedTime = 0;
     m_currentFrame = 0;
+
+    m_properties << new Property(this, "timeStep");
+    m_properties << new Property(this, "activeByDefault");
+    m_properties << new Property(this, "pixmapFiles", Property::PictureDialog);
 }
 
 void AnimationComponent::setDefault(bool active)

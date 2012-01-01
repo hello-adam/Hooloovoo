@@ -15,7 +15,7 @@ public:
     Component* createComponent(GameObject* parentObject, QString name);
     Component* createComponent(GameObject* parentObject, const QDomElement & specs);
 
-    QStringList availableComponents();
+    static QStringList availableComponents();
     static QString componentInfo(QString name);
 };
 

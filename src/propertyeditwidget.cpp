@@ -172,10 +172,10 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
     }
     else if (value.type() == QVariant::PointF)
     {
-        PointEdit *pointEdit = new PointEdit(value.toPointF(), this);
-        m_editWidget = pointEdit;
-        ui->horizontalLayout->addWidget(pointEdit);
-        return true;
+//        PointEdit *pointEdit = new PointEdit(value.toPointF(), this);
+//        m_editWidget = pointEdit;
+//        ui->horizontalLayout->addWidget(pointEdit);
+//        return true;
     }
 
     return false;
@@ -200,8 +200,8 @@ QVariant PropertyEditWidget::getValue()
     else if (qobject_cast<QCheckBox*>(m_editWidget))
         value.setValue(qobject_cast<QCheckBox*>(m_editWidget)->isChecked());
 
-    else if (qobject_cast<PointEdit*>(m_editWidget))
-        value.setValue(qobject_cast<PointEdit*>(m_editWidget)->getPoint());
+//    else if (qobject_cast<PointEdit*>(m_editWidget))
+//        value.setValue(qobject_cast<PointEdit*>(m_editWidget)->getPoint());
 
     else if (qobject_cast<TriggerLineEdit*>(m_editWidget))
         value.setValue(qobject_cast<TriggerLineEdit*>(m_editWidget)->getTriggerText());

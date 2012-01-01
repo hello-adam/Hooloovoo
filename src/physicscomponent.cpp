@@ -35,6 +35,16 @@ PhysicsComponent::PhysicsComponent(GameObject *parentObject) :
 
     connect (m_parentObject, SIGNAL(newTessellation()),
              this, SLOT(instantiate()));
+
+    m_properties << new Property(this, "physicsType");
+    m_properties << new Property(this, "isSensor");
+    m_properties << new Property(this, "staticRotation");
+    m_properties << new Property(this, "density");
+    m_properties << new Property(this, "friction");
+    m_properties << new Property(this, "linearDamping");
+    m_properties << new Property(this, "xVelocity");
+    m_properties << new Property(this, "yVelocity");
+    m_properties << new Property(this, "angularVelocity");
 }
 
 PhysicsComponent::~PhysicsComponent()
@@ -145,6 +155,8 @@ void PhysicsComponent::instantiate()
     m_body->SetFixedRotation(m_staticRotation);
     m_body->SetLinearDamping(m_linearDamping);
     m_body->SetLinearVelocity(b2Vec2(m_vx, m_vy));
+
+    updateParent();
 }
 
 void PhysicsComponent::enterContact(PhysicsComponent* contact, ContactType type)

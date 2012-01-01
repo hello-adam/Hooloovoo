@@ -8,6 +8,8 @@ InputComponent::InputComponent(GameObject *parentObject) :
     m_tag = "Input";
 
     m_key = Qt::Key_0;
+
+    m_properties << new Property(this, "key");
 }
 
 QSet<QString> InputComponent::getEditProperties()

@@ -42,10 +42,26 @@ GameObject::GameObject(int levelID) :
 
     this->setAcceptHoverEvents(true);
     this->setAcceptedMouseButtons(Qt::RightButton | Qt::LeftButton);
+
+    m_components.push_back(this);
+
+    m_model = new GameObjectModel(this);
+
+    m_properties << new Property(this, "pixmapFileName", Property::PictureDialog);
+    m_properties << new Property(this, "position");
+    m_properties << new Property(this, "zCoordinate");
+    m_properties << new Property(this, "clockwiseRotation");
+    m_properties << new Property(this, "visibleInGame");
+    m_properties << new Property(this, "defaultColor");
+    m_properties << new Property(this, "opacityAmount");
 }
 
 GameObject::~GameObject()
 {
+    delete m_model;
+
+    m_components.removeAll(this);
+
     //remove its components
     qDeleteAll(m_components);
     m_componentRegistry.clear();
@@ -557,7 +573,7 @@ void GameObject::setPaused(bool pause)
     }
 }
 
-Component* GameObject::addComponent(QString name)
+Component* GameObject::addComponent(QString name, int id)
 {
     foreach(Component* c, m_components)
     {
@@ -572,8 +588,20 @@ Component* GameObject::addComponent(QString name)
     Component* component = factory.createComponent(this, name);
     if (component)
     {
-        m_componentRegistry.insert(component->getID(), component);
-        m_components.insert(component);
+        if (id < 1)
+            m_componentRegistry.insert(component->getID(), component);
+        else
+            m_componentRegistry.insert(id, component);
+
+        m_componentsByName.insert(component->objectName(), component);
+
+        m_components.clear();
+        m_components.push_back(this);
+        QStringList componentNames = factory.availableComponents();
+        foreach(QString componentName, componentNames)
+        {
+            m_components << m_componentsByName.values(componentName);
+        }
 
         emit componentAdded(component);
         return component;
@@ -582,12 +610,25 @@ Component* GameObject::addComponent(QString name)
     return 0;
 }
 
+Component* GameObject::addComponent(QDomElement specs)
+{
+    Component *c = addComponent(specs.attribute("name"), specs.attribute("id").toInt());
+
+    if (c)
+    {
+        c->deserialize(specs);
+    }
+
+    return c;
+}
+
 bool GameObject::removeComponent(Component *component)
 {
     if (m_components.contains(component))
     {
         m_componentRegistry.remove(component->getID());
-        m_components.remove(component);
+        m_components.removeAll(component);
+        m_componentsByName.remove(component->objectName(), component);
 
         emit componentRemoved(component);
         delete component;
@@ -612,17 +653,11 @@ void GameObject::privateSerialize(QDomElement &componentObject)
 void GameObject::privateDeserialize(const QDomElement &componentObject)
 {
     //deserialize components
-    ComponentFactory factory;
     QDomElement component = componentObject.firstChildElement("component");
     while (!component.isNull())
     {
-        Component* c = factory.createComponent(this, component);
-        if (c)
-        {
-            m_componentRegistry.insert(c->getID(), c);
-            m_components.insert(c);
-            emit componentAdded(c);
-        }
+        addComponent(component);
+
         component = component.nextSiblingElement("component");
     }
 

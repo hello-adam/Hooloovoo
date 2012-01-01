@@ -10,6 +10,9 @@ TimerComponent::TimerComponent(GameObject *parentObject) :
     m_timeStep = 1;
     m_currentStep = 0;
     m_activeByDefault = false;
+
+    m_properties << new Property(this, "activeByDefault");
+    m_properties << new Property(this, "timeStep");
 }
 
 QSet<QString> TimerComponent::getEditProperties()

@@ -27,6 +27,8 @@ private slots:
     void removeSelectedLevel();
     void setSelectedAsStartLevel();
     void editSelected();
+    void reloadCurrentLevel();
+    void saveCurrentLevel();
 
 };
 

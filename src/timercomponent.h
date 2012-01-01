@@ -26,8 +26,6 @@ private:
 
     int m_currentStep;
 
-    void reactToTrigger(QString trigger);
-
 signals:
     void causeStepElapsed();
 

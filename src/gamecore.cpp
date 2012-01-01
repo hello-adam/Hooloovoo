@@ -485,6 +485,14 @@ void GameCore::addObjectToCurrentLevelSlot()
     }
 }
 
+GameObject* GameCore::selectedObject()
+{
+    if (!m_gameObjectsByID.value(m_selectedObjectID, 0))
+        return 0;
+
+    return m_gameObjectsByID.value(m_selectedObjectID);
+}
+
 void GameCore::editSelectedObject()
 {
     if (!m_gameObjectsByID.value(m_selectedObjectID, 0))

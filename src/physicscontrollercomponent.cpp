@@ -28,6 +28,10 @@ PhysicsControllerComponent::PhysicsControllerComponent(GameObject *parentObject)
             this, SLOT(checkForAddedPhysicsComponent(Component*)));
     connect(parentObject, SIGNAL(componentRemoved(Component*)),
             this, SLOT(checkForRemovedPhysicsComponent(Component*)));
+
+    m_properties << new Property(this, "controlType");
+    m_properties << new Property(this, "requiredContact");
+    m_properties << new Property(this, "value");
 }
 
 PhysicsControllerComponent::~PhysicsControllerComponent()

@@ -5,6 +5,7 @@
 #include "gamecore.h"
 #include "filemanager.h"
 #include "gamefiledialog.h"
+#include "propertydelegate.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -28,8 +29,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->editorLayout->insertWidget(0, m_editorGraphicsView);
     ui->playLayout->insertWidget(0, m_gameGraphicsView);
 
-    connect(ui->tb_pause, SIGNAL(toggled(bool)),
-            GameCore::getInstance().getTogglePauseAction(), SLOT(setChecked(bool)));
+//    connect(ui->tb_pause, SIGNAL(toggled(bool)),
+//            GameCore::getInstance().getTogglePauseAction(), SLOT(setChecked(bool)));
+
+    m_previewControlBar = this->addToolBar("Preview Controls:");
+    m_previewControlBar->addAction(GameCore::getInstance().getTogglePauseAction());
+    m_previewControlBar->setVisible(false);
 
     connect(ui->pb_createGame, SIGNAL(clicked()),
             GameCore::getInstance().getCreateGameAction(), SLOT(trigger()));
@@ -40,8 +45,26 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->listWidget, SIGNAL(itemSelectionChanged()),
             this, SLOT(startScreenFileSelected()));
 
-    m_levelManager = new LevelManager(this);
-    m_levelManager->setWindowFlags(Qt::Dialog);
+    connect(&GameCore::getInstance(), SIGNAL(hasSelectedObject(bool)),
+            this, SLOT(gameObjectSelectionChanged(bool)));
+
+    setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+    setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
+
+
+    m_levelManagerDock = new QDockWidget("Level Manager", this);
+    m_levelManager = new LevelManager(m_levelManagerDock);
+    m_levelManagerDock->setWidget(m_levelManager);
+
+    m_gameObjectEditorDock = new QDockWidget("Object Properties", this);
+    m_gameObjectEditorView = new GameObjectEditWidget(m_gameObjectEditorDock);
+    m_gameObjectEditorDock->setWidget(m_gameObjectEditorView);
+
+    m_causeAndEffectEditDock = new QDockWidget("Object Cause And Effect", this);
+    m_causeAndEffectEditWidget = new CauseAndEffectEditWidget(m_causeAndEffectEditDock);
+    m_causeAndEffectEditDock->setWidget(m_causeAndEffectEditWidget);
+
+    m_fileBrowserDock = new QDockWidget("Files", this);
 
     initializeMenus();
 
@@ -64,7 +87,17 @@ MainWindow::~MainWindow()
         delete m_helpMenu;
 
     delete m_gameGraphicsView;
+
     delete m_levelManager;
+    delete m_levelManagerDock;
+
+    delete m_gameObjectEditorView;
+    delete m_gameObjectEditorDock;
+
+    delete m_causeAndEffectEditWidget;
+    delete m_causeAndEffectEditDock;
+
+    delete m_fileBrowserDock;
 
     delete ui;
 }
@@ -135,7 +168,7 @@ void MainWindow::startScreenEditGame()
             m_gameGraphicsView->setScene(0);
 
             switchToGameEditorScreen();
-            ui->tb_pause->setChecked(true);
+            GameCore::getInstance().getTogglePauseAction()->setChecked(true);
         }
     }
 }
@@ -150,7 +183,7 @@ void MainWindow::startScreenPlayGame()
             m_editorGraphicsView->setScene(0);
 
             switchToGameScreen();
-            ui->tb_pause->setChecked(false);
+            GameCore::getInstance().getTogglePauseAction()->setChecked(false);
         }
     }
 }
@@ -171,6 +204,12 @@ void MainWindow::switchToStartScreen()
 {
     ui->stackedWidget->setCurrentIndex(0);
 
+    m_gameObjectEditorDock->setVisible(false);
+    m_causeAndEffectEditDock->setVisible(false);
+    m_levelManagerDock->setVisible(false);
+    m_previewControlBar->setVisible(false);
+    m_fileBrowserDock->setVisible(false);
+
     QMenuBar* startScreenMenuBar = new QMenuBar();
     startScreenMenuBar->addMenu(m_helpMenu);
     this->setMenuBar(startScreenMenuBar);
@@ -179,6 +218,12 @@ void MainWindow::switchToStartScreen()
 void MainWindow::switchToGameScreen()
 {
     ui->stackedWidget->setCurrentIndex(2);
+
+    m_gameObjectEditorDock->setVisible(false);
+    m_causeAndEffectEditDock->setVisible(false);
+    m_levelManagerDock->setVisible(false);
+    m_previewControlBar->setVisible(false);
+    m_fileBrowserDock->setVisible(false);
 
     QMenuBar* playMenuBar = new QMenuBar();
     playMenuBar->addMenu(m_playGameMenu);
@@ -190,6 +235,30 @@ void MainWindow::switchToGameEditorScreen()
 {
     ui->stackedWidget->setCurrentIndex(1);
 
+    m_fileBrowserDock->setVisible(true);
+    this->addDockWidget(Qt::BottomDockWidgetArea, m_fileBrowserDock, Qt::Horizontal);
+
+    m_gameObjectEditorDock->setVisible(true);
+    this->addDockWidget(Qt::RightDockWidgetArea, m_gameObjectEditorDock, Qt::Vertical);
+    //m_gameObjectEditorDock->setMinimumWidth(300);
+
+    m_causeAndEffectEditDock->setVisible(true);
+    this->addDockWidget(Qt::RightDockWidgetArea, m_causeAndEffectEditDock, Qt::Vertical);
+    //m_causeAndEffectEditDock->setMinimumWidth(300);
+
+    this->tabifyDockWidget(m_gameObjectEditorDock, m_causeAndEffectEditDock);
+    QList<QTabBar*> tabBars = this->findChildren<QTabBar*>();
+    if(tabBars.count())
+    {
+        tabBars.first()->setCurrentIndex(0);
+    }
+
+    m_levelManagerDock->setVisible(true);
+    this->addDockWidget(Qt::LeftDockWidgetArea, m_levelManagerDock, Qt::Vertical);
+    //m_levelManagerDock->setMinimumWidth(150);
+
+    m_previewControlBar->setVisible(true);
+
     QMenuBar* createMenuBar = new QMenuBar();
     createMenuBar->addMenu(m_createGameMenu);
     createMenuBar->addMenu(m_levelMenu);
@@ -200,7 +269,22 @@ void MainWindow::switchToGameEditorScreen()
 
 void MainWindow::launchLevelManager()
 {
-    m_levelManager->showNormal();
+//    m_levelManager->showNormal();
+}
+
+void MainWindow::gameObjectSelectionChanged(bool hasSelection)
+{
+    if (!hasSelection)
+    {
+        m_gameObjectEditorView->setGameObject(0);
+        m_causeAndEffectEditWidget->setGameObject(0);
+    }
+    else
+    {
+        m_gameObjectEditorView->setGameObject(GameCore::getInstance().selectedObject());
+
+        m_causeAndEffectEditWidget->setGameObject(GameCore::getInstance().selectedObject());
+    }
 }
 
 void MainWindow::launchAboutDialog()

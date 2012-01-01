@@ -21,6 +21,9 @@ public:
     QDomElement serialize();
     bool deserialze(QDomElement & specs);
 
+    QString getStringValue();
+    void setStringValue(QString value);
+
 private:
     QString m_componentName;
     QString m_componentTag;

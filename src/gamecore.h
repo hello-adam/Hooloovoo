@@ -56,6 +56,8 @@ public:
 
     bool isPaused() {return m_isPaused;}
 
+    GameObject* selectedObject();
+
     QAction* getTogglePauseAction() {return m_togglePaused;}
     QAction* getSavePlayStateAction() {return m_savePlayState;}
     QAction* getLoadPlayStateAction() {return m_loadPlayState;}

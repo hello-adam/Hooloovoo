@@ -48,7 +48,20 @@ HEADERS += \
     src/picturepreviewwidget.h \
     src/commandcomponent.h \
     src/componentalteration.h \
-    src/levelmanager.h
+    src/levelmanager.h \
+    src/gameobjectmodel.h \
+    src/property.h \
+    src/propertydelegate.h \
+    src/editwidgets/editwidget.h \
+    src/editwidgets/stringedit.h \
+    src/propertytreeview.h \
+    src/editwidgets/doubleedit.h \
+    src/editwidgets/coloredit.h \
+    src/editwidgets/integeredit.h \
+    src/editwidgets/booleanedit.h \
+    src/editwidgets/stringlistedit.h \
+    src/editwidgets/enumedit.h \
+    src/gameobjecteditwidget.h
 
 SOURCES += \
     src/gameobject.cpp \
@@ -88,7 +101,20 @@ SOURCES += \
     src/picturepreviewwidget.cpp \
     src/commandcomponent.cpp \
     src/componentalteration.cpp \
-    src/levelmanager.cpp
+    src/levelmanager.cpp \
+    src/gameobjectmodel.cpp \
+    src/property.cpp \
+    src/propertydelegate.cpp \
+    src/editwidgets/editwidget.cpp \
+    src/editwidgets/stringedit.cpp \
+    src/propertytreeview.cpp \
+    src/editwidgets/doubleedit.cpp \
+    src/editwidgets/coloredit.cpp \
+    src/editwidgets/integeredit.cpp \
+    src/editwidgets/booleanedit.cpp \
+    src/editwidgets/stringlistedit.cpp \
+    src/editwidgets/enumedit.cpp \
+    src/gameobjecteditwidget.cpp
 
 FORMS += \
     src/gamefiledialog.ui \
@@ -104,9 +130,65 @@ FORMS += \
     src/causeandeffecteditwidget.ui \
     src/causeeffectlabelwidget.ui \
     src/picturepreviewwidget.ui \
-    src/levelmanager.ui
+    src/levelmanager.ui \
+    src/editwidgets/stringedit.ui \
+    src/editwidgets/doubleedit.ui \
+    src/editwidgets/coloredit.ui \
+    src/editwidgets/integeredit.ui \
+    src/editwidgets/booleanedit.ui \
+    src/editwidgets/stringlistedit.ui \
+    src/editwidgets/enumedit.ui \
+    src/gameobjecteditwidget.ui
 
 OTHER_FILES +=
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

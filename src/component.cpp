@@ -11,6 +11,25 @@ Component::Component(GameObject *parentObject) :
         m_ID = 0;
     else
         m_ID = parentObject->getAvailableComponentID();
+
+    m_propertyRoot = 0;
+
+    m_properties << new Property(this, "tag");
+}
+
+Component::~Component()
+{
+    qDeleteAll(m_properties);
+    if (!m_propertyRoot)
+        delete m_propertyRoot;
+}
+
+Property* Component::getPropertyRoot()
+{
+    if (!m_propertyRoot)
+        m_propertyRoot = new Property(0, objectName());
+
+    return m_propertyRoot;
 }
 
 GameObject* Component::getParentObject()

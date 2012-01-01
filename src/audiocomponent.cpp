@@ -14,6 +14,10 @@ AudioComponent::AudioComponent(GameObject *parentObject) :
     m_audioOutput = new Phonon::AudioOutput(Phonon::GameCategory, this);
 
     m_path = Phonon::createPath(m_audioObject, m_audioOutput);
+
+    m_properties << new Property(this, "audioFile", Property::AudioDialog);
+    m_properties << new Property(this, "volume");
+    m_properties << new Property(this, "repeat");
 }
 
 AudioComponent::~AudioComponent()

@@ -165,3 +165,13 @@ void LevelManager::editSelected()
 
     }
 }
+
+void LevelManager::reloadCurrentLevel()
+{
+
+}
+
+void LevelManager::saveCurrentLevel()
+{
+
+}

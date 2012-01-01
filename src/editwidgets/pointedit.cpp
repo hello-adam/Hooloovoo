@@ -1,13 +1,11 @@
 #include "pointedit.h"
 #include "ui_pointedit.h"
 
-PointEdit::PointEdit(QPointF point, QWidget *parent) :
-    QWidget(parent),
+PointEdit::PointEdit(Property *prop, QWidget *parent) :
+    EditWidget(prop, parent),
     ui(new Ui::PointEdit)
 {
     ui->setupUi(this);
-
-    this->setPoint(point);
 }
 
 PointEdit::~PointEdit()
@@ -15,13 +13,16 @@ PointEdit::~PointEdit()
     delete ui;
 }
 
-void PointEdit::setPoint(QPointF point)
+void PointEdit::setValue(QVariant value)
 {
-    ui->sb_x->setValue(point.x());
-    ui->sb_y->setValue(point.y());
+    if (value.type() == QVariant::Point || value.type() == QVariant::PointF)
+    {
+        ui->sb_x->setValue(value.toPointF().x());
+        ui->sb_y->setValue(value.toPointF().y());
+    }
 }
 
-QPointF PointEdit::getPoint()
+QVariant PointEdit::getValue()
 {
-    return QPointF(ui->sb_x->value(), ui->sb_y->value());
+    return QVariant(QPointF(ui->sb_x->value(), ui->sb_y->value()));
 }

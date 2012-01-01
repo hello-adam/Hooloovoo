@@ -48,3 +48,56 @@ void CauseAndEffectEditWidget::addEffect(Component *component, QString effect)
     connect(this, SIGNAL(deselection(int,QString)),
             m_effectWidgets.back(), SLOT(deselection(int,QString)));
 }
+
+void CauseAndEffectEditWidget::setGameObject(GameObject *gameObject)
+{
+    m_gameObject = gameObject;
+
+    if (m_gameObject)
+    {
+        connect(m_gameObject, SIGNAL(componentAdded(Component*)),
+                this, SLOT(refresh()));
+        connect(m_gameObject, SIGNAL(componentRemoved(Component*)),
+                this, SLOT(refresh()));
+        connect(m_gameObject, SIGNAL(causeInitiated()),
+                this, SLOT(refresh()));
+        connect(m_gameObject, SIGNAL(destroyed()),
+                this, SLOT(clearObjectReference()));
+    }
+
+    refresh();
+}
+
+void CauseAndEffectEditWidget::clearObjectReference()
+{
+    m_gameObject = 0;
+    refresh();
+}
+
+void CauseAndEffectEditWidget::refresh()
+{
+    qDeleteAll(m_causeWidgets);
+    qDeleteAll(m_effectWidgets);
+    m_causeWidgets.clear();
+    m_effectWidgets.clear();
+
+    if (!m_gameObject)
+        return;
+
+    QList<Component*> components = m_gameObject->getComponents();
+    foreach (Component* component, components)
+    {
+        //add cause and effect data
+        QStringList causes = component->getCauseList();
+        foreach(QString cause, causes)
+        {
+            addCause(component, cause);
+        }
+
+        QStringList effects = component->getEffectList();
+        foreach(QString effect, effects)
+        {
+            addEffect(component, effect);
+        }
+    }
+}
