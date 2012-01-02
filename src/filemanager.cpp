@@ -185,6 +185,8 @@ bool FileManager::saveGameObject(const QDomElement &data, const QString &fileNam
     data.save(fileStream, 2);
     file.close();
 
+    emit gameObjectAddedOrRemoved();
+
     return true;
 }
 
@@ -218,6 +220,69 @@ bool FileManager::savePlayState(const QDomElement &data, const QString &fileName
     file.close();
 
     return true;
+}
+
+QStringList FileManager::getAvailableFilesOfType(FileType type)
+{
+    switch (type)
+    {
+    case Game:
+        return getAvailableGames();
+    case Level:
+        return getAvailableLevels();
+    case Object:
+        return getAvailableGameObjects();
+    case PlayState:
+        return getAvailablePlayStates();
+    case Picture:
+        return getAvailablePictures();
+    case Audio:
+        return getAvailableAudio();
+    default:
+        return QStringList();
+    }
+}
+
+QStringList FileManager::getFileExtensionsForType(FileType type)
+{
+    switch (type)
+    {
+    case Game:
+        return getGameExtensions();
+    case Level:
+        return getLevelExtensions();
+    case Object:
+        return getObjectExtensions();
+    case PlayState:
+        return getPlayStateExtensions();
+    case Picture:
+        return getPictureExtensions();
+    case Audio:
+        return getAudioExtensions();
+    default:
+        return QStringList();
+    }
+}
+
+QString FileManager::getActivePathForType(FileType type)
+{
+    switch (type)
+    {
+    case Game:
+        return getDefaultGamesPath();
+    case Level:
+        return getLevelPath();
+    case Object:
+        return getObjectPath();
+    case PlayState:
+        return getPlayStatePath();
+    case Picture:
+        return getPicturePath();
+    case Audio:
+        return getAudioPath();
+    default:
+        return QString();
+    }
 }
 
 QStringList FileManager::getAvailableGameObjects()

@@ -44,6 +44,7 @@ GameObject* Component::getParentObject()
 
 QDomElement Component::serialize()
 {
+    qDebug() << "serialize start";
     QDomDocument doc;
 
     this->prepareForSerialization();
@@ -53,55 +54,9 @@ QDomElement Component::serialize()
     componentElement.setAttribute("name", this->objectName());
     componentElement.setAttribute("id", m_ID);
 
-    for (int i = 0; i<this->metaObject()->propertyCount(); i++)
+    for (int i=0; i<m_properties.count(); i++)
     {
-        QMetaProperty property = this->metaObject()->property(i);
-        QString name = property.name();
-
-        if (property.isValid() && property.type() != QVariant::Invalid && property.userType())
-        {
-            QVariant value = property.read(this);
-
-            if (property.isEnumType())
-            {
-                QDomElement prop = doc.createElement(name);
-                prop.setAttribute("type", value.type());
-                QVariant intValue = *reinterpret_cast<const int *>(value.constData());
-                prop.setAttribute("value", intValue.toString());
-                componentElement.appendChild(prop);
-            }
-            else if (value.type() == QVariant::StringList)
-            {
-                QDomElement prop = doc.createElement(name);
-
-                QStringList stringList = value.toStringList();
-                foreach(QString s, stringList)
-                {
-                    QDomElement child = doc.createElement("listitem");
-                    child.setAttribute("value", s);
-                    prop.appendChild(child);
-                }
-
-                prop.setAttribute("type", value.type());
-                prop.setAttribute("count", stringList.count());
-                componentElement.appendChild(prop);
-            }
-            else if (value.type() == QVariant::PointF)
-            {
-                QDomElement prop = doc.createElement(name);
-                prop.setAttribute("type", value.type());
-                prop.setAttribute("x", value.toPointF().x());
-                prop.setAttribute("y", value.toPointF().y());
-                componentElement.appendChild(prop);
-            }
-            else
-            {
-                QDomElement prop = doc.createElement(name);
-                prop.setAttribute("type", value.type());
-                prop.setAttribute("value", value.toString());
-                componentElement.appendChild(prop);
-            }
-        }
+        componentElement.appendChild(m_properties.at(i)->serialize());
     }
 
     privateSerialize(componentElement);

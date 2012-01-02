@@ -39,7 +39,7 @@ private:
     QToolButton* m_toolButton;
     QToolButton* m_removeButton;
 
-    GameFileDialog::FileType m_fileType;
+    FileManager::FileType m_fileType;
 
 private slots:
     void getStringFromFile();

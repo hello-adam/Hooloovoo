@@ -67,7 +67,7 @@ void GraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         GameFileDialog dlg(parent);
 
         dlg.setAcceptMode(GameFileDialog::Select);
-        dlg.setFileType(GameFileDialog::GameObject);
+        dlg.setFileType(FileManager::Object);
 
         if (dlg.exec() && !dlg.getFileName().isEmpty())
         {
@@ -82,6 +82,45 @@ void GraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
     delete addObject;
     delete editGlobal;
+}
+
+void GraphicsScene::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
+{
+    const QMimeData *data = event->mimeData();
+
+    if (!data->hasFormat("application/vnd.text.list"))
+        QGraphicsScene::dragMoveEvent(event);
+    else
+        event->accept();
+}
+
+void GraphicsScene::dropEvent(QGraphicsSceneDragDropEvent *event)
+{
+    const QMimeData *data = event->mimeData();
+
+    if (!data->hasFormat("application/vnd.text.list"))
+        QGraphicsScene::dropEvent(event);
+
+    QByteArray textData = data->data("application/vnd.text.list");
+    QDataStream textStream(&textData, QIODevice::ReadOnly);
+    QStringList textList;
+
+    while (!textStream.atEnd())
+    {
+        QString text;
+        textStream >> text;
+        textList << text;
+    }
+
+    foreach (QString fileName, textList)
+    {
+        if (fileName.endsWith(FileManager::getObjectExtensions().at(0).mid(1)))
+        {
+            GameCore::getInstance().addObjectToCurrentLevel(FileManager::getInstance().loadGameObject(fileName), event->scenePos());
+        }
+    }
+
+    event->accept();
 }
 
 void GraphicsScene::pause()

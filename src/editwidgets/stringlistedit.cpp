@@ -55,17 +55,17 @@ void StringListEdit::addItem()
     else if (dialogType == Property::AudioDialog)
     {
         dlg.setAcceptMode(GameFileDialog::Select);
-        dlg.setFileType(GameFileDialog::Audio);
+        dlg.setFileType(FileManager::Audio);
     }
     else if (dialogType == Property::PictureDialog)
     {
         dlg.setAcceptMode(GameFileDialog::Select);
-        dlg.setFileType(GameFileDialog::Picture);
+        dlg.setFileType(FileManager::Picture);
     }
     else if (dialogType == Property::GameObjectDialog)
     {
         dlg.setAcceptMode(GameFileDialog::Select);
-        dlg.setFileType(GameFileDialog::GameObject);
+        dlg.setFileType(FileManager::Object);
     }
 
     if (dlg.exec())
@@ -99,17 +99,17 @@ void StringListEdit::editSelectedItem()
         else if (dialogType == Property::AudioDialog)
         {
             dlg.setAcceptMode(GameFileDialog::Select);
-            dlg.setFileType(GameFileDialog::Audio);
+            dlg.setFileType(FileManager::Audio);
         }
         else if (dialogType == Property::PictureDialog)
         {
             dlg.setAcceptMode(GameFileDialog::Select);
-            dlg.setFileType(GameFileDialog::Picture);
+            dlg.setFileType(FileManager::Picture);
         }
         else if (dialogType == Property::GameObjectDialog)
         {
             dlg.setAcceptMode(GameFileDialog::Select);
-            dlg.setFileType(GameFileDialog::GameObject);
+            dlg.setFileType(FileManager::Object);
         }
 
         if (dlg.exec())

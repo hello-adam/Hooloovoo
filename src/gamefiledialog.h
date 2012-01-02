@@ -16,20 +16,19 @@ public:
     explicit GameFileDialog(QWidget *parent = 0);
     ~GameFileDialog();
 
-    enum FileType { Picture, Audio, GameObject, Level, Game, PlayState };
     enum AcceptMode { Select, Load, Save, Create };
 
     QString getFileName();
     QStringList getAllAvailableFiles();
 
     void setAcceptMode(AcceptMode mode);
-    void setFileType(FileType type);
+    void setFileType(FileManager::FileType type);
 
 private:
     Ui::GameFileDialog *ui;
 
     FilePreviewWidget* m_previewWidget;
-    FileType m_type;
+    FileManager::FileType m_type;
     QStringList m_extensions;
     QString m_directory;
 

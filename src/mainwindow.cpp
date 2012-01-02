@@ -65,6 +65,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_causeAndEffectEditDock->setWidget(m_causeAndEffectEditWidget);
 
     m_fileBrowserDock = new QDockWidget("Files", this);
+    m_fileBrowserWidget = new GameObjectFileWidget(m_fileBrowserDock);
+    m_fileBrowserDock->setWidget(m_fileBrowserWidget);
 
     initializeMenus();
 

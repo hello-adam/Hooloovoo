@@ -22,6 +22,9 @@ protected:
 //    void keyPressEvent(QKeyEvent *event);
 //    void keyReleaseEvent(QKeyEvent *event);
 
+    void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
+    void dropEvent(QGraphicsSceneDragDropEvent *event);
+
 private:
     QList<GameObject*> m_gameObjects;
     bool m_isPaused;

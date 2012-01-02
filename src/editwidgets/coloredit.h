@@ -19,7 +19,8 @@ public:
     void setValue(QVariant value);
 
 private:
-    QColor m_color;
+    QColor getColor();
+    void setColor(QColor color);
     Ui::ColorEdit *ui;
 
 private slots:

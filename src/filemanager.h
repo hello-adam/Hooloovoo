@@ -15,6 +15,8 @@ public:
         return instance;
     }
 
+    enum FileType { Picture, Audio, Object, Level, Game, PlayState };
+
     bool createNewGame(const QString &gameDirectoryName, const QString &startLevel = QString());
     QDomElement loadGame(const QString &fileDirectory);
     bool saveGame(QString startLevel = QString(), bool overwrite = true);
@@ -30,13 +32,16 @@ public:
     QDomElement loadPlayState(const QString &fileName);
     bool savePlayState(const QDomElement &data, const QString &fileName, bool overwrite = true);
 
+    QStringList getAvailableFilesOfType(FileType type);
+    static QStringList getFileExtensionsForType(FileType type);
+    QString getActivePathForType(FileType type);
+
     QStringList getAvailableGameObjects();
     QStringList getAvailableLevels();
     QStringList getAvailableGames();
     QStringList getAvailablePlayStates();
     QStringList getAvailablePictures();
     QStringList getAvailableAudio();
-
 
     static QStringList getObjectExtensions() {return QStringList("*.gameobject");}
     static QStringList getLevelExtensions() {return QStringList("*.level");}
@@ -61,6 +66,7 @@ private:
     QString m_activeGameFileName;
 
 signals:
+    void gameObjectAddedOrRemoved();
 
 public slots:
 

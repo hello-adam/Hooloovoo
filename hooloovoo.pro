@@ -61,7 +61,9 @@ HEADERS += \
     src/editwidgets/booleanedit.h \
     src/editwidgets/stringlistedit.h \
     src/editwidgets/enumedit.h \
-    src/gameobjecteditwidget.h
+    src/gameobjecteditwidget.h \
+    src/gamefilemodel.h \
+    src/gameobjectfilewidget.h
 
 SOURCES += \
     src/gameobject.cpp \
@@ -114,7 +116,9 @@ SOURCES += \
     src/editwidgets/booleanedit.cpp \
     src/editwidgets/stringlistedit.cpp \
     src/editwidgets/enumedit.cpp \
-    src/gameobjecteditwidget.cpp
+    src/gameobjecteditwidget.cpp \
+    src/gamefilemodel.cpp \
+    src/gameobjectfilewidget.cpp
 
 FORMS += \
     src/gamefiledialog.ui \
@@ -138,9 +142,15 @@ FORMS += \
     src/editwidgets/booleanedit.ui \
     src/editwidgets/stringlistedit.ui \
     src/editwidgets/enumedit.ui \
-    src/gameobjecteditwidget.ui
+    src/gameobjecteditwidget.ui \
+    src/gameobjectfilewidget.ui
 
 OTHER_FILES +=
+
+
+
+
+
 
 
 

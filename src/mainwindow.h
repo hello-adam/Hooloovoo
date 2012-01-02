@@ -7,6 +7,7 @@
 #include <QDockWidget>
 #include "gameobjecteditwidget.h"
 #include "causeandeffecteditwidget.h"
+#include "gameobjectfilewidget.h"
 #include <QToolBar>
 
 namespace Ui {
@@ -48,6 +49,7 @@ private:
     QDockWidget *m_causeAndEffectEditDock;
     CauseAndEffectEditWidget *m_causeAndEffectEditWidget;
 
+    GameObjectFileWidget *m_fileBrowserWidget;
     QDockWidget *m_fileBrowserDock;
 
     QToolBar* m_previewControlBar;

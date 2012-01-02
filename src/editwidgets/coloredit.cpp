@@ -22,26 +22,40 @@ void ColorEdit::setValue(QVariant value)
 {
     if (value.type() == QVariant::Color)
     {
-        m_color = value.value<QColor>();
-
-        ui->pushButton->setPalette(QPalette(m_color));
+        QColor color = value.value<QColor>();
+        setColor(color);
     }
 }
 
 QVariant ColorEdit::getValue()
 {
-    return QVariant(m_color);
+    return QVariant(getColor());
+}
+
+QColor ColorEdit::getColor()
+{
+    return QColor(ui->sb_R->value(),
+                  ui->sb_G->value(),
+                  ui->sb_B->value());
+}
+
+void ColorEdit::setColor(QColor color)
+{
+    ui->pushButton->setPalette(QPalette(color));
+
+    ui->sb_R->setValue(color.red());
+    ui->sb_G->setValue(color.green());
+    ui->sb_B->setValue(color.blue());
 }
 
 void ColorEdit::launchColorEditor()
 {
     QColorDialog dlg;
 
-    dlg.setCurrentColor(m_color);
+    dlg.setCurrentColor(getColor());
 
     if (dlg.exec())
     {
-        m_color = dlg.selectedColor();
-        ui->pushButton->setPalette(QPalette(m_color));
+        setColor(dlg.selectedColor());
     }
 }

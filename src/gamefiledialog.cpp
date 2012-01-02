@@ -21,7 +21,7 @@ GameFileDialog::GameFileDialog(QWidget *parent) :
 
     connect(ui->le_selectedFile, SIGNAL(textChanged(QString)), this, SLOT(fileSelectionChanged()));
 
-    m_type = Picture;
+    m_type = FileManager::Picture;
     m_directory = "";
 }
 
@@ -37,7 +37,7 @@ QString GameFileDialog::getFileName()
 {
     QString fileName = ui->le_selectedFile->text();
 
-    if (m_type != Game)
+    if (m_type != FileManager::Game)
     {
         QString fileExtension = m_extensions.at(0).mid(1);
 
@@ -90,7 +90,7 @@ void GameFileDialog::setAcceptMode(AcceptMode mode)
     }
 }
 
-void GameFileDialog::setFileType(FileType type)
+void GameFileDialog::setFileType(FileManager::FileType type)
 {
     m_type = type;
 
@@ -98,47 +98,18 @@ void GameFileDialog::setFileType(FileType type)
 
     QStringList files;
 
-    if (type == Picture)
+    files = FileManager::getInstance().getAvailableFilesOfType(type);
+    m_extensions = FileManager::getFileExtensionsForType(type);
+    m_directory = FileManager::getInstance().getActivePathForType(type);
+
+    if (type == FileManager::Game)
     {
-        files = FileManager::getInstance().getAvailablePictures();
-        m_extensions = FileManager::getPictureExtensions();
-        m_directory = FileManager::getInstance().getPicturePath();
-    }
-    else if (type == Audio)
-    {
-        files = FileManager::getInstance().getAvailableAudio();
-        m_extensions = FileManager::getAudioExtensions();
-        m_directory = FileManager::getInstance().getAudioPath();
-    }
-    else if (type == GameObject)
-    {
-        files = FileManager::getInstance().getAvailableGameObjects();
-        m_extensions = FileManager::getObjectExtensions();
-        m_directory = FileManager::getInstance().getObjectPath();
-    }
-    else if (type == Level)
-    {
-        files = FileManager::getInstance().getAvailableLevels();
-        m_extensions = FileManager::getLevelExtensions();
-        m_directory = FileManager::getInstance().getLevelPath();
-    }
-    else if (type == Game)
-    {
-        files = FileManager::getInstance().getAvailableGames();
-        m_extensions = FileManager::getGameExtensions();
-        m_directory = FileManager::getInstance().getDefaultGamesPath();
         ui->pb_Import->setEnabled(false);
-    }
-    else if (type == PlayState)
-    {
-        files = FileManager::getInstance().getAvailablePlayStates();
-        m_extensions = FileManager::getPlayStateExtensions();
-        m_directory = FileManager::getInstance().getPlayStatePath();
     }
 
     QStringList noExtensionFiles;
 
-    if (type != Game)
+    if (type != FileManager::Game)
     {
         foreach (QString file, files)
         {
@@ -175,11 +146,11 @@ void GameFileDialog::setupPreviewWidget()
         m_previewWidget = 0;
     }
 
-    if (m_type == Audio)
+    if (m_type == FileManager::Audio)
     {
         m_previewWidget = new AudioPreviewWidget();
     }
-    if (m_type == Picture)
+    if (m_type == FileManager::Picture)
     {
         m_previewWidget = new PicturePreviewWidget();
     }

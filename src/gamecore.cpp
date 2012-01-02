@@ -428,7 +428,7 @@ void GameCore::switchGame()
     GameFileDialog dlg(m_dialogParent);
 
     dlg.setAcceptMode(GameFileDialog::Load);
-    dlg.setFileType(GameFileDialog::Game);
+    dlg.setFileType(FileManager::Game);
 
     if (dlg.exec() && !dlg.getFileName().isEmpty())
     {
@@ -441,7 +441,7 @@ void GameCore::createGame()
     GameFileDialog dlg(m_dialogParent);
 
     dlg.setAcceptMode(GameFileDialog::Create);
-    dlg.setFileType(GameFileDialog::Game);
+    dlg.setFileType(FileManager::Game);
 
     if (dlg.exec())
     {
@@ -468,7 +468,7 @@ void GameCore::addObjectToCurrentLevelSlot()
     GameFileDialog dlg(m_dialogParent);
 
     dlg.setAcceptMode(GameFileDialog::Load);
-    dlg.setFileType(GameFileDialog::GameObject);
+    dlg.setFileType(FileManager::Object);
 
     if (dlg.exec())
     {

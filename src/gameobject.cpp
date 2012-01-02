@@ -641,9 +641,9 @@ bool GameObject::removeComponent(Component *component)
 void GameObject::privateSerialize(QDomElement &componentObject)
 {
     //serialize components
-    foreach(Component* c, m_components)
+    for (int i=1; i<m_components.count(); i++)
     {
-        componentObject.appendChild(c->serialize());
+        componentObject.appendChild(m_components.at(i)->serialize());
     }
 
     //serialize cause effect info
@@ -688,7 +688,7 @@ void GameObject::launchSaveDialog()
 
     GameFileDialog *dlg = new GameFileDialog(parent);
     dlg->setAcceptMode(GameFileDialog::Save);
-    dlg->setFileType(GameFileDialog::GameObject);
+    dlg->setFileType(FileManager::Object);
 
     if (dlg->exec())
     {

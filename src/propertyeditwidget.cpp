@@ -20,7 +20,7 @@ PropertyEditWidget::PropertyEditWidget(QWidget *parent) :
     m_toolButton = new QToolButton();
     m_toolButton->setText("...");
 
-    m_fileType = GameFileDialog::Picture;
+    m_fileType = FileManager::Picture;
 
     m_removeButton = new QToolButton();
     m_removeButton->setText("Remove");
@@ -94,21 +94,21 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
             ui->horizontalLayout->addWidget(lineEdit);
             if (QString(property.name()).contains("pixmap", Qt::CaseInsensitive))
             {
-                m_fileType = GameFileDialog::Picture;
+                m_fileType = FileManager::Picture;
                 ui->horizontalLayout->addWidget(m_toolButton);
 
                 connect(m_toolButton, SIGNAL(clicked()), this, SLOT(getStringFromFile()));
             }
             else if (QString(property.name()).contains("object", Qt::CaseInsensitive))
             {
-                m_fileType = GameFileDialog::GameObject;
+                m_fileType = FileManager::Object;
                 ui->horizontalLayout->addWidget(m_toolButton);
 
                 connect(m_toolButton, SIGNAL(clicked()), this, SLOT(getStringFromFile()));
             }
             else if (QString(property.name()).contains("audio", Qt::CaseInsensitive))
             {
-                m_fileType = GameFileDialog::Audio;
+                m_fileType = FileManager::Audio;
                 ui->horizontalLayout->addWidget(m_toolButton);
 
                 connect(m_toolButton, SIGNAL(clicked()), this, SLOT(getStringFromFile()));
@@ -152,7 +152,7 @@ bool PropertyEditWidget::setProperty(QMetaProperty property, QObject* object)
         ui->verticalLayout->insertWidget(0,listWidget);
         if (QString(property.name()).contains("pixmap", Qt::CaseInsensitive))
         {
-            m_fileType = GameFileDialog::Picture;
+            m_fileType = FileManager::Picture;
             ui->horizontalLayout->addWidget(m_toolButton);
             m_toolButton->setText("Add");
             ui->horizontalLayout->addWidget(m_removeButton);
