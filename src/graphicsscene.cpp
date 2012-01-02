@@ -16,6 +16,7 @@ GraphicsScene::GraphicsScene(QObject *parent) :
 {
     connect(&PhysicsManager::getInstance(), SIGNAL(boundsChanged()),
             this, SLOT(update()));
+    m_showResolutionRect = false;
 }
 
 void GraphicsScene::drawBackground(QPainter *painter, const QRectF &rect)
@@ -47,13 +48,15 @@ void GraphicsScene::drawForeground(QPainter *painter, const QRectF &rect)
         painter->setBrush(Qt::transparent);
         painter->drawRect(PhysicsManager::getInstance().getBoundingRect());
 
-        //draw border of in-game sight
-        painter->setPen(Qt::blue);
-        painter->setPen(Qt::DashLine);
-        QRectF visibleRegion = QRectF(QPointF(0, 0),
-                                 GameCore::getInstance().getResolution());
-        visibleRegion.moveCenter(this->views().at(0)->mapToScene(this->views().at(0)->width()/2, this->views().at(0)->height()/2));
-        painter->drawRect(visibleRegion);
+        if (m_showResolutionRect)
+        {
+            //draw border of in-game sight
+            painter->setPen(Qt::DashLine);
+            QRectF visibleRegion = QRectF(QPointF(0, 0),
+                                          GameCore::getInstance().getResolution());
+            visibleRegion.moveCenter(this->views().at(0)->mapToScene(this->views().at(0)->width()/2, this->views().at(0)->height()/2));
+            painter->drawRect(visibleRegion);
+        }
     }
 }
 

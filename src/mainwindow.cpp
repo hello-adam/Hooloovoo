@@ -33,7 +33,13 @@ MainWindow::MainWindow(QWidget *parent) :
 //            GameCore::getInstance().getTogglePauseAction(), SLOT(setChecked(bool)));
 
     m_previewControlBar = this->addToolBar("Preview Controls:");
+    QWidget *spaceWidget = new QWidget(m_previewControlBar);
+    spaceWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_previewControlBar->addWidget(spaceWidget);
     m_previewControlBar->addAction(GameCore::getInstance().getTogglePauseAction());
+    QWidget *spaceWidget2 = new QWidget(m_previewControlBar);
+    spaceWidget2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_previewControlBar->addWidget(spaceWidget2);
     m_previewControlBar->setVisible(false);
 
     connect(ui->pb_createGame, SIGNAL(clicked()),
@@ -79,6 +85,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    if (m_editorViewMenu)
+        delete m_editorViewMenu;
     if (m_playGameMenu)
         delete m_playGameMenu;
     if (m_createGameMenu)
@@ -116,11 +124,18 @@ void MainWindow::keyReleaseEvent(QKeyEvent *ke)
 
 void MainWindow::initializeMenus()
 {
+    m_editorViewMenu = new QMenu("&View");
     m_playGameMenu = new QMenu("&Game");
     m_createGameMenu = new QMenu("&Game");
     m_levelMenu = new QMenu("&Level");
     m_helpMenu = new QMenu("&Help");
     m_objectMenu = new QMenu("&Object");
+
+    m_editorViewMenu->addAction(GameCore::getInstance().getToggleResolutionVisibleAction());
+    GameCore::getInstance().getToggleResolutionVisibleAction()->setChecked(false);
+    m_editorViewMenu->addAction("&Show Level Manager", this, SLOT(showLevelManager(bool)))->setCheckable(true);
+    m_editorViewMenu->addAction("&Show Object Editor", this, SLOT(showObjectEditor(bool)))->setCheckable(true);
+    m_editorViewMenu->addAction("&Show Object File Browser", this, SLOT(showFileBrowser(bool)))->setCheckable(true);
 
     m_playGameMenu->addAction(GameCore::getInstance().getSavePlayStateAction());
     m_playGameMenu->addAction(GameCore::getInstance().getLoadPlayStateAction());
@@ -265,7 +280,11 @@ void MainWindow::switchToGameEditorScreen()
 
     QMenuBar* createMenuBar = new QMenuBar();
     createMenuBar->addMenu(m_createGameMenu);
-    createMenuBar->addMenu(m_levelMenu);
+    createMenuBar->addMenu(m_editorViewMenu);
+    m_editorViewMenu->actions().at(1)->setChecked(true);
+    m_editorViewMenu->actions().at(2)->setChecked(true);
+    m_editorViewMenu->actions().at(3)->setChecked(true);
+    //createMenuBar->addMenu(m_levelMenu);
     createMenuBar->addMenu(m_objectMenu);
     createMenuBar->addMenu(m_helpMenu);
     this->setMenuBar(createMenuBar);

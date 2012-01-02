@@ -33,6 +33,10 @@ GameCore::GameCore(QObject *parent) :
     m_gameTimer.setInterval(1000.0 / 60.0);
     connect(&m_gameTimer, SIGNAL(timeout()), this, SLOT(gameStep()));
 
+    m_toggleResolutionVisible = new QAction("&Show Resolution Rectangle", this);
+    m_toggleResolutionVisible->setCheckable(true);
+    connect(m_toggleResolutionVisible, SIGNAL(toggled(bool)), m_scene, SLOT(setShowResolutionRect(bool)));
+
     m_togglePaused = new QAction("&Pause Game", this);
     m_togglePaused->setCheckable(true);
     connect(m_togglePaused, SIGNAL(toggled(bool)), this, SLOT(togglePaused(bool)));
@@ -369,16 +373,9 @@ void GameCore::handleKeyEvent(QKeyEvent *ke)
 
     else
     {
-        if (ke->key() == Qt::Key_Space && ke->type() == QKeyEvent::KeyPress)
+        foreach(InputReceiver* receiver, m_inputReceivers)
         {
-            this->togglePaused();
-        }
-        else
-        {
-            foreach(InputReceiver* receiver, m_inputReceivers)
-            {
-                receiver->handleKeyEvent(ke);
-            }
+            receiver->handleKeyEvent(ke);
         }
 
         ke->accept();

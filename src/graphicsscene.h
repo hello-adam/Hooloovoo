@@ -28,10 +28,12 @@ protected:
 private:
     QList<GameObject*> m_gameObjects;
     bool m_isPaused;
+    bool m_showResolutionRect;
 
 signals:
 
 public slots:
+    void setShowResolutionRect(bool show) {m_showResolutionRect = show; this->update();}
 
 };
 

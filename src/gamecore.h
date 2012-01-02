@@ -59,6 +59,7 @@ public:
     GameObject* selectedObject();
 
     QAction* getTogglePauseAction() {return m_togglePaused;}
+    QAction* getToggleResolutionVisibleAction() {return m_toggleResolutionVisible;}
     QAction* getSavePlayStateAction() {return m_savePlayState;}
     QAction* getLoadPlayStateAction() {return m_loadPlayState;}
     QAction* getSwitchGameAction() {return m_switchGame;}
@@ -109,6 +110,7 @@ private:
     QDomElement serializeLevel();
     bool deserializeLevel(const QDomElement &levelElement);
 
+    QAction* m_toggleResolutionVisible;
     QAction* m_togglePaused;
     QAction* m_savePlayState;
     QAction* m_loadPlayState;
