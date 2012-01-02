@@ -19,7 +19,7 @@ public:
 
     bool createNewGame(const QString &gameDirectoryName, const QString &startLevel = QString());
     QDomElement loadGame(const QString &fileDirectory);
-    bool saveGame(QString startLevel = QString(), bool overwrite = true);
+    bool saveGame(QString startLevel = QString(), QSize resolution = QSize(800, 600), bool overwrite = true);
 
     QDomElement createNewLevel(const QString &fileName);
     QDomElement loadLevel(const QString &fileName);

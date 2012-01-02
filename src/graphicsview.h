@@ -11,10 +11,14 @@ public:
     explicit GraphicsView(QWidget *parent = 0);
 
 protected:
+    QSize m_resolution;
+
+    void resizeEvent(QResizeEvent *event);
 
 signals:
 
 public slots:
+    void setResolution(QSize resolution);
 
 };
 

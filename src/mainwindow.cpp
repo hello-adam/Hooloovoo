@@ -184,6 +184,8 @@ void MainWindow::startScreenPlayGame()
             m_gameGraphicsView->setScene(GameCore::getInstance().getGraphicsScene());
             m_editorGraphicsView->setScene(0);
 
+            m_gameGraphicsView->setResolution(GameCore::getInstance().getResolution());
+
             switchToGameScreen();
             GameCore::getInstance().getTogglePauseAction()->setChecked(false);
         }

@@ -48,6 +48,7 @@ public slots:
 
 signals:
     void stepTaken();
+    void boundsChanged();
 };
 
 #endif // PHYSICSMANAGER_H

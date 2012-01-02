@@ -30,6 +30,10 @@ private slots:
     void reloadCurrentLevel();
     void saveCurrentLevel();
 
+    void changeGameResolution();
+    void changeLevelSize();
+    void changeLevelGravity();
+    void changeLevelColor();
 };
 
 #endif // LEVELMANAGER_H

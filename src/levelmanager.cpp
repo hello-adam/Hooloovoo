@@ -20,9 +20,27 @@ LevelManager::LevelManager(QWidget *parent) :
             this, SLOT(setSelectedAsStartLevel()));
     connect(ui->pb_edit, SIGNAL(clicked()),
             this, SLOT(editSelected()));
+    connect(ui->pb_reloadCurrentLevel, SIGNAL(clicked()),
+            this, SLOT(reloadCurrentLevel()));
+    connect(ui->pb_saveCurrentLevel, SIGNAL(clicked()),
+            this, SLOT(saveCurrentLevel()));
+    connect(ui->sb_gravity, SIGNAL(valueChanged(double)),
+            this, SLOT(changeLevelGravity()));
+    connect(ui->sb_width, SIGNAL(valueChanged(int)),
+            this, SLOT(changeLevelSize()));
+    connect(ui->sb_height, SIGNAL(valueChanged(int)),
+            this, SLOT(changeLevelSize()));
+    connect(ui->cb_resolution, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(changeGameResolution()));
 
     connect(&GameCore::getInstance(), SIGNAL(levelDataChanged()),
             this, SLOT(update()));
+
+    ui->cb_resolution->addItem("640x480");
+    ui->cb_resolution->addItem("800x600");
+    ui->cb_resolution->addItem("1024x768");
+
+    ui->cb_resolution->setCurrentIndex(1);
 }
 
 LevelManager::~LevelManager()
@@ -32,10 +50,9 @@ LevelManager::~LevelManager()
 
 void LevelManager::update()
 {
+    //setup levels
     ui->lw_Levels->clear();
-
     QStringList levels = FileManager::getInstance().getAvailableLevels();
-
     foreach (QString level, levels)
     {
         QFont startLevelFont;
@@ -66,6 +83,30 @@ void LevelManager::update()
 
         ui->lw_Levels->addItem(item);
     }
+
+    //setup resolution
+    QSize resolution = GameCore::getInstance().getResolution();
+    if (resolution.width() == 640)
+    {
+        ui->cb_resolution->setCurrentIndex(0);
+    }
+    else if (resolution.width() == 800)
+    {
+        ui->cb_resolution->setCurrentIndex(1);
+    }
+    else if (resolution.height() == 1024)
+    {
+        ui->cb_resolution->setCurrentIndex(2);
+    }
+    else
+    {
+        ui->cb_resolution->setCurrentIndex(1);
+    }
+
+    //setup level details
+    ui->sb_gravity->setValue(PhysicsManager::getInstance().getGravity());
+    ui->sb_width->setValue(PhysicsManager::getInstance().getBoundingRect().width());
+    ui->sb_height->setValue(PhysicsManager::getInstance().getBoundingRect().height());
 }
 
 void LevelManager::renameSelectedLevel()
@@ -168,10 +209,68 @@ void LevelManager::editSelected()
 
 void LevelManager::reloadCurrentLevel()
 {
+    QMessageBox saveMessage(this);
+    saveMessage.setText("If you reload the level, all unsaved changes will be lost.  Continue?");
+    saveMessage.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    int ret = saveMessage.exec();
 
+    if (ret == QMessageBox::Yes)
+    {
+        GameCore::getInstance().issueCommand(GameCore::ChangeLevel, GameCore::getInstance().getCurrentLevel());
+        GameCore::getInstance().issueCommand(GameCore::ChangeLevel, ui->lw_Levels->currentItem()->text() + FileManager::getLevelExtensions().at(0).mid(1));
+        this->update();
+    }
+    else if (ret == QMessageBox::No)
+    {
+    }
 }
 
 void LevelManager::saveCurrentLevel()
 {
+    GameCore::getInstance().saveCurrentLevel();
+    this->update();
+}
 
+void LevelManager::changeGameResolution()
+{
+    int width;
+    int height;
+    if (ui->cb_resolution->currentText() == "640x480")
+    {
+        width = 640;
+        height = 480;
+    }
+    else if (ui->cb_resolution->currentText() == "800x600")
+    {
+        width = 800;
+        height = 600;
+    }
+    else if (ui->cb_resolution->currentText() == "1024x768")
+    {
+        width = 1024;
+        height = 768;
+    }
+    else
+    {
+        width = 800;
+        height = 600;
+    }
+
+    GameCore::getInstance().setResolution(width, height);
+
+    GameCore::getInstance().saveCurrentGame();
+}
+
+void LevelManager::changeLevelSize()
+{
+    PhysicsManager::getInstance().setWorldBounds(QRectF(0, 0, ui->sb_width->value(), ui->sb_height->value()));
+}
+
+void LevelManager::changeLevelGravity()
+{
+    PhysicsManager::getInstance().setGravity(ui->sb_gravity->value());
+}
+
+void LevelManager::changeLevelColor()
+{
 }

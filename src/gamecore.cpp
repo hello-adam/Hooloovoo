@@ -19,6 +19,10 @@ GameCore::GameCore(QObject *parent) :
     m_scene->setSceneRect(0, 0, 800, 600);
     connect(m_scene, SIGNAL(selectionChanged()),
             this, SLOT(checkSceneSelection()));
+    connect(this, SIGNAL(resolutionChanged()),
+            m_scene, SLOT(update()));
+    connect(&PhysicsManager::getInstance(), SIGNAL(boundsChanged()),
+            this, SLOT(adjustSceneSize()));
 
     m_dialogParent = 0;
 
@@ -229,11 +233,17 @@ bool GameCore::loadGame(QString gameName)
     QDomElement level = gameElem.firstChildElement("startlevel");
     QString startLevel = level.attribute("file");
 
+    QDomElement resolutionElem = gameElem.firstChildElement("resolution");
+
     if (this->deserializeLevel(FileManager::getInstance().loadLevel(startLevel)))
     {
         m_currentGameStartLevel = startLevel;
         m_currentLevelName = startLevel;
         m_currentGameName = gameName;
+
+        m_resolution = QSize(resolutionElem.attribute("width", "800").toInt(),
+                             resolutionElem.attribute("height", "600").toInt());
+
         emit levelDataChanged();
         return true;
     }
@@ -257,7 +267,7 @@ bool GameCore::createGame(QString gameName)
 
 bool GameCore::saveCurrentGame()
 {
-    return FileManager::getInstance().saveGame();
+    return FileManager::getInstance().saveGame(m_currentGameStartLevel, m_resolution);
 }
 
 void GameCore::destroyLevel()
@@ -279,7 +289,7 @@ void GameCore::destroyLevel()
 bool GameCore::setCurrentGameStartLevel(QString levelName)
 {
     m_currentGameStartLevel = levelName;
-    return FileManager::getInstance().saveGame(levelName);
+    return FileManager::getInstance().saveGame(levelName, m_resolution);
 }
 
 QDomElement GameCore::serializeLevel()
@@ -568,4 +578,9 @@ void GameCore::checkSceneSelection()
     }
 
     emit hasSelectedObject(false);
+}
+
+void GameCore::adjustSceneSize()
+{
+    m_scene->setSceneRect(PhysicsManager::getInstance().getBoundingRect());
 }

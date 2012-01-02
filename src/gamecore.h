@@ -72,6 +72,9 @@ public:
     QAction* getCopySelectedObjectAction() {return m_copySelectedObject;}
     QAction* getPasteSelectedObjectAction() {return m_pasteSelectedObject;}
 
+    void setResolution(int width, int height) {m_resolution = QSize(width, height); emit resolutionChanged();}
+    QSize getResolution() {return m_resolution;}
+
 private:
     explicit GameCore(QObject *parent = 0);
     static GameCore *m_instance;
@@ -120,6 +123,8 @@ private:
     QAction* m_copySelectedObject;
     QAction* m_pasteSelectedObject;
 
+    QSize m_resolution;
+
 signals:
     void timerTick();
 
@@ -127,6 +132,7 @@ signals:
     void hasObjectOnClipboard(bool);
 
     void levelDataChanged();
+    void resolutionChanged();
 
 public slots:
     void gameStep();
@@ -154,6 +160,8 @@ public slots:
     void pasteClipboardObjectToCurrentLevel(QPointF pos = QPointF());
 
     void checkSceneSelection();
+
+    void adjustSceneSize();
 };
 
 #endif // CORE_H

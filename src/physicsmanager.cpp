@@ -87,4 +87,6 @@ void PhysicsManager::setWorldBounds(QRectF rect)
     bounds.CreateLoop(vs, 4);
 
     m_worldBounds->CreateFixture(&bounds, 0.0f);
+
+    emit boundsChanged();
 }

@@ -67,7 +67,7 @@ QDomElement FileManager::loadGame(const QString &fileDirectory)
     return element;
 }
 
-bool FileManager::saveGame(QString startLevel, bool overwrite)
+bool FileManager::saveGame(QString startLevel, QSize resolution, bool overwrite)
 {
     QDomDocument doc;
     QDomElement data = doc.createElement("game");
@@ -91,6 +91,11 @@ bool FileManager::saveGame(QString startLevel, bool overwrite)
     QDomElement levelElem = doc.createElement("startlevel");
     levelElem.setAttribute("file", startLevel);
     data.appendChild(levelElem);
+
+    QDomElement resolutionElem = doc.createElement("resolution");
+    resolutionElem.setAttribute("width", resolution.width());
+    resolutionElem.setAttribute("height", resolution.height());
+    data.appendChild(resolutionElem);
 
     QFile file(getActiveGamePath() + m_activeGameFileName);
     file.open(QFile::WriteOnly | QFile::Truncate);
