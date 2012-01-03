@@ -14,6 +14,8 @@ StringListEdit::StringListEdit(Property *prop, QWidget *parent) :
             this, SLOT(removeSelectedItem()));
     connect(ui->pb_Edit, SIGNAL(clicked()),
             this, SLOT(editSelectedItem()));
+
+    m_helper = prop->getValueHelperDialog();
 }
 
 StringListEdit::~StringListEdit()
@@ -36,7 +38,7 @@ QVariant StringListEdit::getValue()
 
     for (int i=0; i<ui->listWidget->count(); i++)
     {
-        list << ui->listWidget->itemAt(0, i)->text();
+        list << ui->listWidget->item(i)->text();
     }
 
     return QVariant(list);
@@ -45,24 +47,23 @@ QVariant StringListEdit::getValue()
 void StringListEdit::addItem()
 {
     GameFileDialog dlg;
-    Property::ValueHelperDialog dialogType = propertyValueHelperDialog();
 
-    if (dialogType == Property::NoHelperDialog)
+    if (m_helper == Property::NoHelperDialog)
     {
         ui->listWidget->addItem("<edit me>");
         return;
     }
-    else if (dialogType == Property::AudioDialog)
+    else if (m_helper == Property::AudioDialog)
     {
         dlg.setAcceptMode(GameFileDialog::Select);
         dlg.setFileType(FileManager::Audio);
     }
-    else if (dialogType == Property::PictureDialog)
+    else if (m_helper == Property::PictureDialog)
     {
         dlg.setAcceptMode(GameFileDialog::Select);
         dlg.setFileType(FileManager::Picture);
     }
-    else if (dialogType == Property::GameObjectDialog)
+    else if (m_helper == Property::GameObjectDialog)
     {
         dlg.setAcceptMode(GameFileDialog::Select);
         dlg.setFileType(FileManager::Object);

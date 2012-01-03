@@ -27,6 +27,9 @@ private:
 
     void setupComboBoxAndButtons();
 
+signals:
+    void editCompleted();
+
 public slots:
     void setGameObject(GameObject* gameObject);
 

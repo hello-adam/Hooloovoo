@@ -16,22 +16,24 @@ public:
 
     explicit Property(QObject *propertyHolder, QString propertyName, ValueHelperDialog helper = NoHelperDialog);
 
-    QDomElement serialize();
-    void deserialize(const QDomElement &prop);
+    virtual QDomElement serialize();
+    virtual void deserialize(const QDomElement &prop);
 
-    QVariant getValue();
-    void setValue(QVariant value);
+    virtual QVariant getValue();
+    virtual void setValue(QVariant value);
 
     ValueHelperDialog getValueHelperDialog() {return m_helper;}
+    void setValueHelperDialog(ValueHelperDialog helper) {m_helper = helper;}
 
-    QString getDisplayName();
-    QString getDisplayValue();
-    QWidget* createEditorWidget();
+    virtual QString getDisplayName();
+    virtual QString getDisplayValue();
+    virtual QWidget* createEditorWidget();
 
     bool isComponent() {return !m_propertyHolder;}
 
     QObject* getHolder() {return m_propertyHolder;}
     QMetaProperty getProperty() {return m_propertyHolder->metaObject()->property(m_propertyHolder->metaObject()->indexOfProperty(qPrintable(m_propertyName)));}
+    QString getName() {return m_propertyName;}
 
 private:
     QObject *m_propertyHolder;

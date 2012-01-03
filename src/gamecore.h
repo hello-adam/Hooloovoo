@@ -76,6 +76,8 @@ public:
     void setResolution(int width, int height) {m_resolution = QSize(width, height); emit resolutionChanged();}
     QSize getResolution() {return m_resolution;}
 
+    bool getObjectSatisfiesTag(int id, QString tag);
+
 private:
     explicit GameCore(QObject *parent = 0);
     static GameCore *m_instance;

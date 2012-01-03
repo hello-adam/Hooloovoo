@@ -40,6 +40,8 @@ void PropertyTreeView::closeEditor(QWidget *editor, QAbstractItemDelegate::EndEd
 
     this->rowsRemoved(m_parentIndexOfEditor, m_rowOfEditor, m_rowOfEditor);
 
+    emit editCompleted();
+
     QTreeView::closeEditor(editor, hint);
 }
 

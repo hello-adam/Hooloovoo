@@ -19,6 +19,7 @@ private:
     int m_rowOfEditor;
 
 signals:
+    void editCompleted();
 
 public slots:
 

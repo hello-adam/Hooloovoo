@@ -581,3 +581,15 @@ void GameCore::adjustSceneSize()
 {
     m_scene->setSceneRect(PhysicsManager::getInstance().getBoundingRect());
 }
+
+bool GameCore::getObjectSatisfiesTag(int id, QString tag)
+{
+    GameObject *object = m_gameObjectsByID.value(id, 0);
+
+    if (!object)
+        return false;
+
+    qDebug() << "contact tag: " << object->getTag() << " for id " << id;
+
+    return object->getTag() == tag;
+}

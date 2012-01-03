@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/hooloovoo_icon_6464.ico</file>
+        <file>images/hooloovoo_icon_6464.png</file>
+    </qresource>
+</RCC>

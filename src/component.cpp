@@ -123,6 +123,16 @@ bool Component::deserialize(const QDomElement &componentElement)
         }
     }
 
+//    foreach (Property* prop, m_properties)
+//    {
+//        QDomElement propElem = componentElement.firstChildElement(prop->getName());
+
+//        if (!propElem.isNull())
+//        {
+//            prop->deserialize(propElem);
+//        }
+//    }
+
     privateDeserialize(componentElement);
 
     return true;

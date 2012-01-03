@@ -25,6 +25,9 @@ GameObjectEditWidget::GameObjectEditWidget(QWidget *parent) :
     connect(ui->pb_removeSelected, SIGNAL(clicked()),
             this, SLOT(removeSelectedComponent()));
 
+    connect(m_propertyTreeView, SIGNAL(editCompleted()),
+            this, SIGNAL(editCompleted()));
+
     setupComboBoxAndButtons();
 }
 

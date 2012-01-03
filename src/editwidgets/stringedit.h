@@ -20,6 +20,7 @@ public:
 
 private:
     Ui::StringEdit *ui;
+    Property::ValueHelperDialog m_helper;
 
 private slots:
     void launchValueHelperDialog();

@@ -54,6 +54,7 @@ GameObject::GameObject(int levelID) :
     m_properties << new Property(this, "visibleInGame");
     m_properties << new Property(this, "defaultColor");
     m_properties << new Property(this, "opacityAmount");
+    m_properties << new Property(this, "scaleFactor");
 }
 
 GameObject::~GameObject()
@@ -321,7 +322,8 @@ void GameObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     }
     else if (selectedAction == removeAction)
     {
-        this->deleteLater();
+        GameCore::getInstance().removeObjectFromCurrentLevel(this->getLevelID());
+        GameCore::getInstance().destroyDeadObjects();
     }
     else if (selectedAction == saveAction)
     {
@@ -553,6 +555,7 @@ void GameObject::resizeToRect(QRectF rect)
 
 void GameObject::setPaused(bool pause)
 {
+    qDebug() << this->getTag();
     if (pause)
     {
         m_paused = true;

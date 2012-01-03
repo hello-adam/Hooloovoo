@@ -26,15 +26,18 @@ PhysicsComponent::PhysicsComponent(GameObject *parentObject) :
     connect (&PhysicsManager::getInstance(), SIGNAL(stepTaken()),
              this, SLOT(updateParent()));
 
-    connect (m_parentObject, SIGNAL(sendX(double)),
-             this, SLOT(setX(double)));
-    connect (m_parentObject, SIGNAL(sendY(double)),
-             this, SLOT(setY(double)));
-    connect (m_parentObject, SIGNAL(sendRotation(double)),
-             this, SLOT(setAngle(double)));
+    if (m_parentObject)
+    {
+        connect (m_parentObject, SIGNAL(sendX(double)),
+                 this, SLOT(setX(double)));
+        connect (m_parentObject, SIGNAL(sendY(double)),
+                 this, SLOT(setY(double)));
+        connect (m_parentObject, SIGNAL(sendRotation(double)),
+                 this, SLOT(setAngle(double)));
 
-    connect (m_parentObject, SIGNAL(newTessellation()),
-             this, SLOT(instantiate()));
+        connect (m_parentObject, SIGNAL(newTessellation()),
+                 this, SLOT(instantiate()));
+    }
 
     m_properties << new Property(this, "physicsType");
     m_properties << new Property(this, "isSensor");
@@ -162,6 +165,8 @@ void PhysicsComponent::instantiate()
 void PhysicsComponent::enterContact(PhysicsComponent* contact, ContactType type)
 {
     m_contacts.insert(contact, type);
+
+    qDebug() << "physics contact: " << this->getParentObject()->getTag() << "," << this->getParentObject()->getTag();
 
     if (contact)
         emit enteringContact(contact->getParentObject()->getLevelID());

@@ -10,6 +10,8 @@ int main (int argc, char *argv[])
 //                      "background-color: rgba(255,255,255,255); }"
 //                      "QTreeView::item { border: 1px solid darkgray; }");
 
+    app.setWindowIcon(QIcon(":/images/hooloovoo_icon_6464.png"));
+
     MainWindow window;
 
     window.showMaximized();

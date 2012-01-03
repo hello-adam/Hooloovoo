@@ -14,20 +14,23 @@ PhysicsControllerComponent::PhysicsControllerComponent(GameObject *parentObject)
 
     qRegisterMetaType<PhysicsControllerComponent::PhysicsControlType>("PhysicsControlType");
 
-    QList<Component*> components = parentObject->getComponents();
-    foreach (Component* c, components)
+    if (parentObject)
     {
-        if (c->objectName() == "Physics Component")
+        QList<Component*> components = parentObject->getComponents();
+        foreach (Component* c, components)
         {
-            m_physicsComponent = qobject_cast<PhysicsComponent*>(c);
-            break;
+            if (c->objectName() == "Physics Component")
+            {
+                m_physicsComponent = qobject_cast<PhysicsComponent*>(c);
+                break;
+            }
         }
-    }
 
-    connect(parentObject, SIGNAL(componentAdded(Component*)),
-            this, SLOT(checkForAddedPhysicsComponent(Component*)));
-    connect(parentObject, SIGNAL(componentRemoved(Component*)),
-            this, SLOT(checkForRemovedPhysicsComponent(Component*)));
+        connect(parentObject, SIGNAL(componentAdded(Component*)),
+                this, SLOT(checkForAddedPhysicsComponent(Component*)));
+        connect(parentObject, SIGNAL(componentRemoved(Component*)),
+                this, SLOT(checkForRemovedPhysicsComponent(Component*)));
+    }
 
     m_properties << new Property(this, "controlType");
     m_properties << new Property(this, "requiredContact");

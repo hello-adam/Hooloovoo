@@ -1,6 +1,8 @@
 #include "contactcomponent.h"
 #include "gameobject.h"
 #include "physicsmanager.h"
+#include "componentalteration.h"
+#include "gamecore.h"
 
 ContactComponent::ContactComponent(GameObject *parentObject) :
     Component(parentObject)
@@ -9,6 +11,7 @@ ContactComponent::ContactComponent(GameObject *parentObject) :
     m_tag = "Contact";
 
     m_physicsComponent = 0;
+    m_tagRequirement = "";
 
     QList<Component*> components = parentObject->getComponents();
     foreach (Component* c, components)
@@ -33,18 +36,25 @@ ContactComponent::ContactComponent(GameObject *parentObject) :
         connect(m_physicsComponent, SIGNAL(enteringContact(int)), this, SLOT(enterContact(int)));
         connect(m_physicsComponent, SIGNAL(leavingContact(int)), this, SLOT(leaveContact(int)));
     }
+
+    m_properties.push_back(new Property(this, "contactTagRequirement"));
 }
 
 QSet<QString> ContactComponent::getEditProperties()
 {
     QSet<QString> properties;
-    properties << "tag";
+    properties << "tag" << "contactTagRequirement";
     return properties;
 }
 
 void ContactComponent::enterContact(int contactObjectID)
 {
-    m_newContacts.insert(contactObjectID);
+    qDebug() << "entering contact: " << this->getTag() << "  req:" << m_tagRequirement;
+    if (GameCore::getInstance().getObjectSatisfiesTag(contactObjectID, m_tagRequirement))
+    {
+        m_newContacts.insert(contactObjectID);
+        qDebug() << "entering satisfied contact";
+    }
 }
 
 void ContactComponent::leaveContact(int contactObjectID)

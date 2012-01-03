@@ -34,8 +34,6 @@ public:
     QString getPixmapFile() {return m_pixmapFileName;}
     void setVisibleInGame(bool visibleInGame) {m_visibleInGame = visibleInGame;}
     bool getVisibleInGame() {return m_visibleInGame;}
-    void setTag(QString tag) {m_tag = tag;}
-    QString getTag() {return m_tag;}
     void setDefaultColor(QColor color) {m_defaultColor = color; setPixmapFile(m_pixmapFileName);}
     QColor getDefaultColor() {return m_defaultColor;}
     QList<QPolygonF> getTessellation() { if (m_tessellation.isEmpty()) createTesselation(); return m_tessellation;}
@@ -91,7 +89,6 @@ private:
     QPixmap m_pixmap;
     bool m_visibleInGame;
     bool m_paused;
-    QString m_tag;
     QColor m_defaultColor;
     QList<QPolygonF> m_tessellation;
 

@@ -70,6 +70,9 @@ MainWindow::MainWindow(QWidget *parent) :
     m_causeAndEffectEditWidget = new CauseAndEffectEditWidget(m_causeAndEffectEditDock);
     m_causeAndEffectEditDock->setWidget(m_causeAndEffectEditWidget);
 
+    connect(m_gameObjectEditorView, SIGNAL(editCompleted()),
+            m_causeAndEffectEditWidget, SLOT(refresh()));
+
     m_fileBrowserDock = new QDockWidget("Files", this);
     m_fileBrowserWidget = new GameObjectFileWidget(m_fileBrowserDock);
     m_fileBrowserDock->setWidget(m_fileBrowserWidget);
@@ -232,6 +235,8 @@ void MainWindow::switchToStartScreen()
     QMenuBar* startScreenMenuBar = new QMenuBar();
     startScreenMenuBar->addMenu(m_helpMenu);
     this->setMenuBar(startScreenMenuBar);
+
+    refreshGameList();
 }
 
 void MainWindow::switchToGameScreen()

@@ -20,6 +20,7 @@ public:
 
 private:
     Ui::StringListEdit *ui;
+    Property::ValueHelperDialog m_helper;
 
 private slots:
     void addItem();

@@ -17,6 +17,8 @@ StringEdit::StringEdit(Property *prop, QWidget *parent) :
         connect(ui->pb_fileSelect, SIGNAL(clicked()),
                 this, SLOT(launchValueHelperDialog()));
     }
+
+    m_helper = prop->getValueHelperDialog();
 }
 
 StringEdit::~StringEdit()
@@ -40,19 +42,18 @@ QVariant StringEdit::getValue()
 void StringEdit::launchValueHelperDialog()
 {
     GameFileDialog dlg;
-    Property::ValueHelperDialog dialogType = propertyValueHelperDialog();
 
-    if (dialogType == Property::AudioDialog)
+    if (m_helper == Property::AudioDialog)
     {
         dlg.setAcceptMode(GameFileDialog::Select);
         dlg.setFileType(FileManager::Audio);
     }
-    else if (dialogType == Property::PictureDialog)
+    else if (m_helper == Property::PictureDialog)
     {
         dlg.setAcceptMode(GameFileDialog::Select);
         dlg.setFileType(FileManager::Picture);
     }
-    else if (dialogType == Property::GameObjectDialog)
+    else if (m_helper == Property::GameObjectDialog)
     {
         dlg.setAcceptMode(GameFileDialog::Select);
         dlg.setFileType(FileManager::Object);

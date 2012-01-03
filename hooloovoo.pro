@@ -11,6 +11,8 @@ MOC_DIR = buildFiles/moc
 RCC_DIR = buildFiles/rcc
 UI_HEADERS_DIR = buildFiles/ui_h
 
+#RC_FILE += resources/appicon.rc
+
 HEADERS += \
     src/gameobject.h \
     src/gamecore.h \
@@ -63,7 +65,8 @@ HEADERS += \
     src/editwidgets/enumedit.h \
     src/gameobjecteditwidget.h \
     src/gamefilemodel.h \
-    src/gameobjectfilewidget.h
+    src/gameobjectfilewidget.h \
+    src/editwidgets/alterationedit.h
 
 SOURCES += \
     src/gameobject.cpp \
@@ -118,7 +121,8 @@ SOURCES += \
     src/editwidgets/enumedit.cpp \
     src/gameobjecteditwidget.cpp \
     src/gamefilemodel.cpp \
-    src/gameobjectfilewidget.cpp
+    src/gameobjectfilewidget.cpp \
+    src/editwidgets/alterationedit.cpp
 
 FORMS += \
     src/gamefiledialog.ui \
@@ -143,9 +147,18 @@ FORMS += \
     src/editwidgets/stringlistedit.ui \
     src/editwidgets/enumedit.ui \
     src/gameobjecteditwidget.ui \
-    src/gameobjectfilewidget.ui
+    src/gameobjectfilewidget.ui \
+    src/editwidgets/alterationedit.ui
 
-OTHER_FILES +=
+OTHER_FILES += \
+
+RESOURCES += \
+    resources/Icons.qrc \
+#    resources/appicon.rc
+
+
+
+
 
 
 
