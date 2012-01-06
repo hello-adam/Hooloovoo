@@ -72,6 +72,9 @@ private slots:
     void launchLevelManager();
     void gameObjectSelectionChanged(bool);
 
+    void pauseByFocus();
+    void pauseGame(bool);
+
     void showLevelManager(bool show) {m_levelManagerDock->setVisible(show);}
     void showObjectEditor(bool show) {m_gameObjectEditorDock->setVisible(show); m_causeAndEffectEditDock->setVisible(show);}
     void showFileBrowser(bool show) {m_fileBrowserDock->setVisible(show);}

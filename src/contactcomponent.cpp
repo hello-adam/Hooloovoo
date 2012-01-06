@@ -49,11 +49,9 @@ QSet<QString> ContactComponent::getEditProperties()
 
 void ContactComponent::enterContact(int contactObjectID)
 {
-    qDebug() << "entering contact: " << this->getTag() << "  req:" << m_tagRequirement;
     if (GameCore::getInstance().getObjectSatisfiesTag(contactObjectID, m_tagRequirement))
     {
         m_newContacts.insert(contactObjectID);
-        qDebug() << "entering satisfied contact";
     }
 }
 

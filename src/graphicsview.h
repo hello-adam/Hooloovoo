@@ -14,8 +14,10 @@ protected:
     QSize m_resolution;
 
     void resizeEvent(QResizeEvent *event);
+    void focusOutEvent(QFocusEvent *event);
 
 signals:
+    void lostFocus();
 
 public slots:
     void setResolution(QSize resolution);

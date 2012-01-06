@@ -27,6 +27,16 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="pb_removeObject">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Remove Selected Object</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -44,7 +54,7 @@
    <item>
     <widget class="QListView" name="listView">
      <property name="dragDropMode">
-      <enum>QAbstractItemView::DragOnly</enum>
+      <enum>QAbstractItemView::DragDrop</enum>
      </property>
      <property name="movement">
       <enum>QListView::Snap</enum>

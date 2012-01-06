@@ -74,7 +74,7 @@ GameCore::GameCore(QObject *parent) :
     connect(this, SIGNAL(hasSelectedObject(bool)), m_saveSelectedObject, SLOT(setEnabled(bool)));
 
     m_removeSelectedObject = new QAction("&Remove Selected Object", this);
-    connect(m_removeSelectedObject, SIGNAL(triggered()), this, SLOT(copySelectedObjectToClipboard()));
+    connect(m_removeSelectedObject, SIGNAL(triggered()), this, SLOT(removeSelectedObject()));
     connect(this, SIGNAL(hasSelectedObject(bool)), m_removeSelectedObject, SLOT(setEnabled(bool)));
 
     m_copySelectedObject = new QAction("&Copy Selected Object", this);
@@ -191,6 +191,11 @@ bool GameCore::removeObjectFromCurrentLevel(int objectID)
         return false;
 
     object->effectDestroy();
+
+    if (isPaused())
+    {
+        destroyDeadObjects();
+    }
     return true;
 }
 
@@ -308,9 +313,14 @@ QDomElement GameCore::serializeLevel()
     bounds.setAttribute("height", PhysicsManager::getInstance().getBoundingRect().height());
     QDomElement gravity = doc.createElement("gravity");
     gravity.setAttribute("yGravity", PhysicsManager::getInstance().getGravity());
+    QDomElement background = doc.createElement("backgroundcolor");
+    background.setAttribute("r", m_scene->getBackgroundColor().red());
+    background.setAttribute("g", m_scene->getBackgroundColor().green());
+    background.setAttribute("b", m_scene->getBackgroundColor().blue());
 
     levelData.appendChild(bounds);
     levelData.appendChild(gravity);
+    levelData.appendChild(background);
 
     level.appendChild(levelData);
 
@@ -341,6 +351,13 @@ bool GameCore::deserializeLevel(const QDomElement &levelElement)
     if (!gravity.isNull())
     {
         PhysicsManager::getInstance().setGravity(gravity.attribute("yGravity").toDouble());
+    }
+    QDomElement background = dataElement.firstChildElement("backgroundcolor");
+    if (!background.isNull())
+    {
+        m_scene->setBackgroundColor(QColor(background.attribute("r", "150").toInt(),
+                                           background.attribute("g", "150").toInt(),
+                                           background.attribute("b", "150").toInt()));
     }
 
     QDomElement gameobject = levelElement.firstChildElement("component");
@@ -455,6 +472,7 @@ void GameCore::createGame()
         if (!dlg.getFileName().isEmpty())
         {
             createGame(dlg.getFileName());
+            emit gamesChanged();
         }
     }
 }

@@ -44,7 +44,6 @@ GameObject* Component::getParentObject()
 
 QDomElement Component::serialize()
 {
-    qDebug() << "serialize start";
     QDomDocument doc;
 
     this->prepareForSerialization();

@@ -37,6 +37,8 @@ PhysicsComponent::PhysicsComponent(GameObject *parentObject) :
 
         connect (m_parentObject, SIGNAL(newTessellation()),
                  this, SLOT(instantiate()));
+//        connect (m_parentObject, SIGNAL(causeInitiated()),
+//                 this, SLOT(instantiate()));
     }
 
     m_properties << new Property(this, "physicsType");
@@ -48,6 +50,8 @@ PhysicsComponent::PhysicsComponent(GameObject *parentObject) :
     m_properties << new Property(this, "xVelocity");
     m_properties << new Property(this, "yVelocity");
     m_properties << new Property(this, "angularVelocity");
+
+    instantiate();
 }
 
 PhysicsComponent::~PhysicsComponent()
@@ -166,8 +170,6 @@ void PhysicsComponent::enterContact(PhysicsComponent* contact, ContactType type)
 {
     m_contacts.insert(contact, type);
 
-    qDebug() << "physics contact: " << this->getParentObject()->getTag() << "," << this->getParentObject()->getTag();
-
     if (contact)
         emit enteringContact(contact->getParentObject()->getLevelID());
 }
@@ -205,6 +207,7 @@ PhysicsComponent::ContactType PhysicsComponent::getContactCondition()
 
 void PhysicsComponent::setX(double x)
 {
+    instantiate();
     if (m_body)
     {
         m_body->SetTransform(b2Vec2(x/20.0f, m_body->GetPosition().y), m_body->GetAngle());
@@ -213,6 +216,7 @@ void PhysicsComponent::setX(double x)
 
 void PhysicsComponent::setY(double y)
 {
+    instantiate();
     if (m_body)
     {
         m_body->SetTransform(b2Vec2(m_body->GetPosition().x, y/-20.0f), m_body->GetAngle());
@@ -221,6 +225,7 @@ void PhysicsComponent::setY(double y)
 
 void PhysicsComponent::setAngle(double degrees)
 {
+    instantiate();
     if (m_body)
     {
         m_body->SetTransform(b2Vec2(m_body->GetPosition().x, m_body->GetPosition().y), -(degrees * (2 * 3.14159)) / 360.0);

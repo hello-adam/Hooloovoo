@@ -21,3 +21,10 @@ void GraphicsView::resizeEvent(QResizeEvent *event)
     if (m_resolution.width() > 0)
         setResolution(m_resolution);
 }
+
+void GraphicsView::focusOutEvent(QFocusEvent *event)
+{
+    emit lostFocus();
+
+    QGraphicsView::focusOutEvent(event);
+}

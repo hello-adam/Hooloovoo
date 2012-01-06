@@ -2,6 +2,7 @@
 #include "gamecore.h"
 #include "gameobjecteditdialog.h"
 #include <QPainter>
+#include <QBitmap>
 #include <QDebug>
 #include <QVariant>
 #include <QMenu>
@@ -30,6 +31,7 @@ GameObject::GameObject(int levelID) :
     m_visibleInGame = true;
     m_tag = "";
     m_defaultColor = QColor(0, 0, 128);
+    m_transparentColor = QColor(255, 255, 255);
     this->setPixmapFile("");
 
     m_modeOnClick = Nothing;
@@ -53,6 +55,7 @@ GameObject::GameObject(int levelID) :
     m_properties << new Property(this, "clockwiseRotation");
     m_properties << new Property(this, "visibleInGame");
     m_properties << new Property(this, "defaultColor");
+    m_properties << new Property(this, "transparencyColor");
     m_properties << new Property(this, "opacityAmount");
     m_properties << new Property(this, "scaleFactor");
 }
@@ -107,6 +110,7 @@ void GameObject::setPixmapFile(QString fileName)
         m_pixmapFileName = "";
     }
 
+    createPixmapMask();
     createTesselation();
 }
 
@@ -117,6 +121,13 @@ void GameObject::setTemporaryPixmapFile(QString fileName)
         m_pixmap = QPixmap(42, 42);
         m_pixmap.fill(m_defaultColor);
     }
+
+    createPixmapMask();
+}
+
+void GameObject::createPixmapMask()
+{
+    m_pixmap.setMask(m_pixmap.createMaskFromColor(m_transparentColor.rgb()));
 }
 
 void GameObject::createTesselation()
@@ -323,7 +334,7 @@ void GameObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     else if (selectedAction == removeAction)
     {
         GameCore::getInstance().removeObjectFromCurrentLevel(this->getLevelID());
-        GameCore::getInstance().destroyDeadObjects();
+//        GameCore::getInstance().destroyDeadObjects();
     }
     else if (selectedAction == saveAction)
     {
@@ -555,7 +566,6 @@ void GameObject::resizeToRect(QRectF rect)
 
 void GameObject::setPaused(bool pause)
 {
-    qDebug() << this->getTag();
     if (pause)
     {
         m_paused = true;

@@ -13,6 +13,11 @@ GameObjectFileWidget::GameObjectFileWidget(QWidget *parent) :
     connect(ui->pb_saveSelectedObject, SIGNAL(clicked()),
             GameCore::getInstance().getSaveSelectedObjectAction(), SLOT(trigger()));
 
+    connect(&GameCore::getInstance(), SIGNAL(hasSelectedObject(bool)),
+            ui->pb_removeObject, SLOT(setEnabled(bool)));
+    connect(ui->pb_removeObject, SIGNAL(clicked()),
+            GameCore::getInstance().getRemoveSelectedObjectAction(), SLOT(trigger()));
+
     m_model = new GameFileModel();
     m_model->setFileType(FileManager::Object);
 

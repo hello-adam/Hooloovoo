@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>images/hooloovoo_icon_6464.ico</file>
         <file>images/hooloovoo_icon_6464.png</file>
+        <file>images/titlescreen.png</file>
     </qresource>
 </RCC>

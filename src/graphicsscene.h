@@ -14,6 +14,9 @@ public:
     void pause();
     void unpause();
 
+    void setBackgroundColor(QColor color) {m_backgroundColor = color;}
+    QColor getBackgroundColor() {return m_backgroundColor;}
+
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect);
     void drawForeground(QPainter *painter, const QRectF &rect);
@@ -29,6 +32,7 @@ private:
     QList<GameObject*> m_gameObjects;
     bool m_isPaused;
     bool m_showResolutionRect;
+    QColor m_backgroundColor;
 
 signals:
 

@@ -10,6 +10,7 @@
 #include "gamefiledialog.h"
 #include "leveldatadialog.h"
 #include "filemanager.h"
+#include <QRgb>
 
 GraphicsScene::GraphicsScene(QObject *parent) :
     QGraphicsScene(parent)
@@ -17,17 +18,22 @@ GraphicsScene::GraphicsScene(QObject *parent) :
     connect(&PhysicsManager::getInstance(), SIGNAL(boundsChanged()),
             this, SLOT(update()));
     m_showResolutionRect = false;
+
+    m_backgroundColor = QColor::fromRgbF(0.3f, 0.7f, 0.8f);
 }
 
 void GraphicsScene::drawBackground(QPainter *painter, const QRectF &rect)
 {
     if (painter->paintEngine()->type()!= QPaintEngine::OpenGL)
     {
-        painter->setBrush(Qt::blue);
+        painter->setBrush(m_backgroundColor);
         painter->drawRect(rect);
     }
 
-    glClearColor(0.3f, 0.7f, 0.8f, 1.0f);
+    glClearColor(m_backgroundColor.redF(),
+                 m_backgroundColor.greenF(),
+                 m_backgroundColor.blueF(),
+                 m_backgroundColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 

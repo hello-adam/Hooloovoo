@@ -135,6 +135,7 @@ signals:
     void hasSelectedObject(bool);
     void hasObjectOnClipboard(bool);
 
+    void gamesChanged();
     void levelDataChanged();
     void resolutionChanged();
 

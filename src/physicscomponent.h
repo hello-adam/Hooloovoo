@@ -71,7 +71,7 @@ private:
     double m_y;
     double m_angle;
 
-    void privateDeserialize(const QDomElement &componentObject) {this->instantiate();}
+    void privateDeserialize(const QDomElement &componentObject) {instantiate();}
 
     //these are independent properties, so they are saved
     BodyType m_type;

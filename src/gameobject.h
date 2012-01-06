@@ -21,6 +21,7 @@ class GameObject : public Component, public QGraphicsItem
     Q_PROPERTY(double opacityAmount READ opacity WRITE setOpacity)
     Q_PROPERTY(double clockwiseRotation READ rotation WRITE setRotation)
     Q_PROPERTY(QColor defaultColor READ getDefaultColor WRITE setDefaultColor)
+    Q_PROPERTY(QColor transparencyColor READ getTransparentColor WRITE setTransparentColor)
     Q_PROPERTY(double scaleFactor READ scale WRITE setScale)
 
 public:
@@ -37,6 +38,9 @@ public:
     void setDefaultColor(QColor color) {m_defaultColor = color; setPixmapFile(m_pixmapFileName);}
     QColor getDefaultColor() {return m_defaultColor;}
     QList<QPolygonF> getTessellation() { if (m_tessellation.isEmpty()) createTesselation(); return m_tessellation;}
+
+    QColor getTransparentColor() {return m_transparentColor;}
+    void setTransparentColor(QColor color) {m_transparentColor = color; createPixmapMask();}
 
     void paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
     QRectF boundingRect() const;
@@ -90,6 +94,7 @@ private:
     bool m_visibleInGame;
     bool m_paused;
     QColor m_defaultColor;
+    QColor m_transparentColor;
     QList<QPolygonF> m_tessellation;
 
     bool m_destroyed;
@@ -104,6 +109,7 @@ private:
     void resizeToRect(QRectF rect);
     QRectF m_outlineRect;
 
+    void createPixmapMask();
     void createTesselation();
     QVector<QPoint> grahamScan(QList<QPoint> points, int minYIndex);
 

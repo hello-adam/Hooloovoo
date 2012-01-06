@@ -66,7 +66,8 @@ HEADERS += \
     src/gameobjecteditwidget.h \
     src/gamefilemodel.h \
     src/gameobjectfilewidget.h \
-    src/editwidgets/alterationedit.h
+    src/editwidgets/alterationedit.h \
+    src/aboutdialog.h
 
 SOURCES += \
     src/gameobject.cpp \
@@ -122,7 +123,8 @@ SOURCES += \
     src/gameobjecteditwidget.cpp \
     src/gamefilemodel.cpp \
     src/gameobjectfilewidget.cpp \
-    src/editwidgets/alterationedit.cpp
+    src/editwidgets/alterationedit.cpp \
+    src/aboutdialog.cpp
 
 FORMS += \
     src/gamefiledialog.ui \
@@ -148,13 +150,17 @@ FORMS += \
     src/editwidgets/enumedit.ui \
     src/gameobjecteditwidget.ui \
     src/gameobjectfilewidget.ui \
-    src/editwidgets/alterationedit.ui
+    src/editwidgets/alterationedit.ui \
+    src/aboutdialog.ui
 
 OTHER_FILES += \
 
 RESOURCES += \
     resources/Icons.qrc \
 #    resources/appicon.rc
+
+
+
 
 
 

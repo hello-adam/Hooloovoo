@@ -32,6 +32,8 @@ LevelManager::LevelManager(QWidget *parent) :
             this, SLOT(changeLevelSize()));
     connect(ui->cb_resolution, SIGNAL(currentIndexChanged(int)),
             this, SLOT(changeGameResolution()));
+    connect(ui->pb_selectColor, SIGNAL(clicked()),
+            this, SLOT(changeLevelColor()));
 
     connect(&GameCore::getInstance(), SIGNAL(levelDataChanged()),
             this, SLOT(update()));
@@ -217,7 +219,6 @@ void LevelManager::reloadCurrentLevel()
     if (ret == QMessageBox::Yes)
     {
         GameCore::getInstance().issueCommand(GameCore::ChangeLevel, GameCore::getInstance().getCurrentLevel());
-        GameCore::getInstance().issueCommand(GameCore::ChangeLevel, ui->lw_Levels->currentItem()->text() + FileManager::getLevelExtensions().at(0).mid(1));
         this->update();
     }
     else if (ret == QMessageBox::No)
@@ -273,4 +274,12 @@ void LevelManager::changeLevelGravity()
 
 void LevelManager::changeLevelColor()
 {
+    QColorDialog dlg;
+
+    dlg.setCurrentColor(GameCore::getInstance().getGraphicsScene()->getBackgroundColor());
+
+    if (dlg.exec())
+    {
+        GameCore::getInstance().getGraphicsScene()->setBackgroundColor(dlg.currentColor());
+    }
 }

@@ -6,6 +6,7 @@
 #include "filemanager.h"
 #include "gamefiledialog.h"
 #include "propertydelegate.h"
+#include "aboutdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -51,8 +52,15 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->listWidget, SIGNAL(itemSelectionChanged()),
             this, SLOT(startScreenFileSelected()));
 
+    connect(m_editorGraphicsView, SIGNAL(lostFocus()),
+            this, SLOT(pauseByFocus()));
+    connect(GameCore::getInstance().getTogglePauseAction(), SIGNAL(toggled(bool)),
+            this, SLOT(pauseGame(bool)));
+
     connect(&GameCore::getInstance(), SIGNAL(hasSelectedObject(bool)),
             this, SLOT(gameObjectSelectionChanged(bool)));
+    connect(&GameCore::getInstance(), SIGNAL(gamesChanged()),
+            this, SLOT(refreshGameList()));
 
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
@@ -72,6 +80,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(m_gameObjectEditorView, SIGNAL(editCompleted()),
             m_causeAndEffectEditWidget, SLOT(refresh()));
+    connect(m_gameObjectEditorView, SIGNAL(editCompleted()),
+            m_editorGraphicsView, SLOT(repaint()));
 
     m_fileBrowserDock = new QDockWidget("Files", this);
     m_fileBrowserWidget = new GameObjectFileWidget(m_fileBrowserDock);
@@ -163,6 +173,7 @@ void MainWindow::initializeMenus()
     m_objectMenu->addAction(GameCore::getInstance().getAddObjectToLevelAction());
     m_objectMenu->addAction(GameCore::getInstance().getEditSelectedObjectAction());
     m_objectMenu->addAction(GameCore::getInstance().getSaveSelectedObjectAction());
+    GameCore::getInstance().getRemoveSelectedObjectAction()->setShortcut(QKeySequence::Delete);
     m_objectMenu->addAction(GameCore::getInstance().getRemoveSelectedObjectAction());
     GameCore::getInstance().getCopySelectedObjectAction()->setShortcut(QKeySequence::Copy);
     m_objectMenu->addAction(GameCore::getInstance().getCopySelectedObjectAction());
@@ -315,7 +326,23 @@ void MainWindow::gameObjectSelectionChanged(bool hasSelection)
     }
 }
 
+void MainWindow::pauseByFocus()
+{
+    if (m_editorGraphicsView->scene())
+        GameCore::getInstance().getTogglePauseAction()->setChecked(true);
+}
+
+void MainWindow::pauseGame(bool pause)
+{
+    if (!pause)
+    {
+        m_editorGraphicsView->setFocus();
+    }
+}
+
 void MainWindow::launchAboutDialog()
 {
+    AboutDialog dlg(this);
 
+    dlg.exec();
 }
