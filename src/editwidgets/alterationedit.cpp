@@ -1,7 +1,7 @@
 #include "alterationedit.h"
 #include "ui_alterationedit.h"
-#include "../gameobject.h"
-#include "../componentfactory.h"
+#include "gameobject.h"
+#include "componentfactory.h"
 
 AlterationEdit::AlterationEdit(ComponentAlteration *prop, QWidget *parent) :
     EditWidget(prop, parent),

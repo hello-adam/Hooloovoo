@@ -2,7 +2,7 @@
 #define ALTERATIONEDIT_H
 
 #include "editwidget.h"
-#include "../componentalteration.h"
+#include "componentalteration.h"
 
 namespace Ui {
     class AlterationEdit;

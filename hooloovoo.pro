@@ -11,6 +11,11 @@ MOC_DIR = buildFiles/moc
 RCC_DIR = buildFiles/rcc
 UI_HEADERS_DIR = buildFiles/ui_h
 
+INCLUDEPATH += ./src/ \
+                ./src/editwidgets/ \
+                ./src/components/
+
+
 #RC_FILE += resources/appicon.rc
 
 HEADERS += \
@@ -67,35 +72,36 @@ HEADERS += \
     src/gamefilemodel.h \
     src/gameobjectfilewidget.h \
     src/editwidgets/alterationedit.h \
-    src/aboutdialog.h
+    src/aboutdialog.h \
+    src/components/timercomponent.h \
+    src/components/spawncomponent.h \
+    src/components/physicscontrollercomponent.h \
+    src/components/physicscomponent.h \
+    src/components/inputcomponent.h \
+    src/components/contactlistener.h \
+    src/components/contactcomponent.h \
+    src/components/componentfactory.h \
+    src/components/component.h \
+    src/components/commandcomponent.h \
+    src/components/audiocomponent.h \
+    src/components/animationcomponent.h
 
 SOURCES += \
     src/gameobject.cpp \
     src/gamecore.cpp \
-    src/component.cpp \
     src/main.cpp \
-    src/componentfactory.cpp \
     src/graphicsscene.cpp \
     src/graphicsview.cpp \
     src/gamefiledialog.cpp \
     src/gameobjecteditdialog.cpp \
     src/propertyeditwidget.cpp \
-    src/physicscomponent.cpp \
     src/physicsmanager.cpp \
-    src/physicscontrollercomponent.cpp \
     src/componentlistwidget.cpp \
-    src/spawncomponent.cpp \
-    src/animationcomponent.cpp \
-    src/inputcomponent.cpp \
     src/componenteditwidget.cpp \
-    src/contactlistener.cpp \
-    src/contactcomponent.cpp \
     src/inputreceiver.cpp \
     src/editwidgets/pointedit.cpp \
-    src/timercomponent.cpp \
     src/editwidgets/triggeredit.cpp \
     src/editwidgets/triggerlineedit.cpp \
-    src/audiocomponent.cpp \
     src/audiopreviewwidget.cpp \
     src/leveldatadialog.cpp \
     src/filemanager.cpp \
@@ -105,7 +111,6 @@ SOURCES += \
     src/causeandeffecteditwidget.cpp \
     src/causeeffectlabelwidget.cpp \
     src/picturepreviewwidget.cpp \
-    src/commandcomponent.cpp \
     src/componentalteration.cpp \
     src/levelmanager.cpp \
     src/gameobjectmodel.cpp \
@@ -124,7 +129,19 @@ SOURCES += \
     src/gamefilemodel.cpp \
     src/gameobjectfilewidget.cpp \
     src/editwidgets/alterationedit.cpp \
-    src/aboutdialog.cpp
+    src/aboutdialog.cpp \
+    src/components/timercomponent.cpp \
+    src/components/spawncomponent.cpp \
+    src/components/physicscontrollercomponent.cpp \
+    src/components/physicscomponent.cpp \
+    src/components/inputcomponent.cpp \
+    src/components/contactlistener.cpp \
+    src/components/contactcomponent.cpp \
+    src/components/componentfactory.cpp \
+    src/components/component.cpp \
+    src/components/commandcomponent.cpp \
+    src/components/audiocomponent.cpp \
+    src/components/animationcomponent.cpp
 
 FORMS += \
     src/gamefiledialog.ui \
@@ -158,6 +175,8 @@ OTHER_FILES += \
 RESOURCES += \
     resources/Icons.qrc \
 #    resources/appicon.rc
+
+
 
 
 

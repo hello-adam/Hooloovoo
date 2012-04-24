@@ -2,7 +2,7 @@
 #define EDITWIDGET_H
 
 #include <QWidget>
-#include "../property.h"
+#include "property.h"
 
 class EditWidget : public QWidget
 {

@@ -1,6 +1,6 @@
 #include "stringlistedit.h"
 #include "ui_stringlistedit.h"
-#include "../gamefiledialog.h"
+#include "gamefiledialog.h"
 
 StringListEdit::StringListEdit(Property *prop, QWidget *parent) :
     EditWidget(prop, parent),

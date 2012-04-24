@@ -1,8 +1,8 @@
 #include "triggeredit.h"
 #include "ui_triggeredit.h"
-#include "../componentfactory.h"
-#include "../gameobject.h"
-#include "../propertyeditwidget.h"
+#include "componentfactory.h"
+#include "gameobject.h"
+#include "propertyeditwidget.h"
 #include <QDebug>
 
 TriggerEdit::TriggerEdit(QWidget *parent) :

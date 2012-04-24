@@ -3,5 +3,6 @@
         <file>images/hooloovoo_icon_6464.ico</file>
         <file>images/hooloovoo_icon_6464.png</file>
         <file>images/titlescreen.png</file>
+        <file>images/titlescreen.svg</file>
     </qresource>
 </RCC>
